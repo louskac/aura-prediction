@@ -162,13 +162,9 @@ export default async function MarketsPage({ searchParams }: { searchParams: { ma
                   <label style={{ fontSize: "12px", color: "var(--color-text-muted)" }}>I want to predict:</label>
                   <select 
                     name="orderType" 
+                    className="premium-select"
                     style={{ 
-                      background: "var(--bg-secondary)", 
-                      color: "#fff", 
-                      border: "1px solid var(--border-light)", 
-                      borderRadius: "8px", 
-                      padding: "10px",
-                      outline: "none"
+                      padding: "10px 30px 10px 12px"
                     }}
                   >
                     <option value="BuyYes">YES (Buy Outcome)</option>

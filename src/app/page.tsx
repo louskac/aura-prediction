@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
   Trophy, 
@@ -11,644 +11,409 @@ import {
   Lock, 
   PieChart, 
   ShieldCheck, 
-  HelpCircle,
-  TrendingDown
+  Layers, 
+  Coins,
+  Sparkles,
+  Activity,
+  Zap,
+  Cpu,
+  Target,
+  HelpCircle
 } from "lucide-react";
 
+interface SportScenario {
+  id: string;
+  sportName: string;
+  fixture: string;
+  competitors: [string, string];
+  marketTitle: string;
+  outcomes: [string, string, string];
+  defaultOdds: [number, number, number];
+  poolSize: string;
+  navMultiplier: number;
+  sparklineData: number[];
+}
+
+const SPORT_SCENARIOS: SportScenario[] = [
+  {
+    id: "football",
+    sportName: "Football",
+    fixture: "Argentina vs Portugal",
+    competitors: ["Argentina", "Portugal"],
+    marketTitle: "Match Winner (R32)",
+    outcomes: ["ARG Win", "Draw", "POR Win"],
+    defaultOdds: [1.95, 3.40, 2.85],
+    poolSize: "184,520 USDC",
+    navMultiplier: 1.25,
+    sparklineData: [45, 52, 49, 62, 58, 71, 68, 75, 82, 80]
+  },
+  {
+    id: "basketball",
+    sportName: "Basketball",
+    fixture: "Boston Celtics vs LA Lakers",
+    competitors: ["Celtics", "Lakers"],
+    marketTitle: "Moneyline Winner",
+    outcomes: ["BOS Win", "OT Tie", "LAL Win"],
+    defaultOdds: [1.70, 14.50, 2.15],
+    poolSize: "312,900 USDC",
+    navMultiplier: 1.48,
+    sparklineData: [50, 48, 55, 60, 52, 68, 74, 80, 88, 92]
+  },
+  {
+    id: "tennis",
+    sportName: "Tennis",
+    fixture: "Carlos Alcaraz vs Jannik Sinner",
+    competitors: ["Alcaraz", "Sinner"],
+    marketTitle: "Match Winner",
+    outcomes: ["Alcaraz Win", "Match Tie", "Sinner Win"],
+    defaultOdds: [1.82, 28.00, 1.90],
+    poolSize: "96,400 USDC",
+    navMultiplier: 1.10,
+    sparklineData: [60, 58, 62, 65, 61, 70, 67, 72, 75, 78]
+  },
+  {
+    id: "racing",
+    sportName: "Formula 1",
+    fixture: "Hamilton vs Verstappen vs Leclerc",
+    competitors: ["Hamilton", "Verstappen"],
+    marketTitle: "Podium Winner",
+    outcomes: ["HAM Win", "LEC Win", "VER Win"],
+    defaultOdds: [2.90, 4.20, 1.65],
+    poolSize: "245,000 USDC",
+    navMultiplier: 1.62,
+    sparklineData: [40, 38, 45, 50, 48, 58, 62, 69, 72, 85]
+  }
+];
+
 export default function LandingPage() {
-  const [selectedMatchScenario, setSelectedMatchScenario] = useState<"favorite" | "upset">("upset");
+  const [activeSportId, setActiveSportId] = useState<string>("football");
+  const [selectedOutcomeIndex, setSelectedOutcomeIndex] = useState<number>(0);
+  const [collateralAmount, setCollateralAmount] = useState<number>(0.5);
+  const [leverageValue, setLeverageValue] = useState<number>(3);
+  
+  // Real-time animated ticker simulation parameters
+  const [simulatedTime, setSimulatedTime] = useState<number>(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSimulatedTime(prev => prev + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const activeSport = SPORT_SCENARIOS.find(s => s.id === activeSportId) || SPORT_SCENARIOS[0];
+  const activeOdds = activeSport.defaultOdds[selectedOutcomeIndex];
+  
+  // Live calculations with simulated pricing fluctuation
+  const fluctuation = Math.sin(simulatedTime / 4) * 0.04;
+  const currentOdds = Number((activeOdds + fluctuation).toFixed(2));
+  
+  const estimatedReturn = Number((collateralAmount * leverageValue * currentOdds).toFixed(3));
+  const estimatedYield = Number(((estimatedReturn - collateralAmount) / collateralAmount * 100).toFixed(1));
+  
+  // Live changing net asset value simulation
+  const rawNav = collateralAmount * activeSport.navMultiplier * (1 + Math.sin(simulatedTime / 6) * 0.06);
+  const simulatedNav = Number(rawNav.toFixed(3));
+
+  // Simulated sparkline points
+  const sparklinePoints = activeSport.sparklineData.map((val, idx) => {
+    const step = 280 / 9;
+    const x = Math.round(idx * step);
+    const wave = Math.sin((simulatedTime + idx) / 3) * 6;
+    const y = Math.round(90 - (val + wave) * 0.8);
+    return `${x},${y}`;
+  }).join(" ");
 
   return (
     <div className="landing-root">
-      {/* Dynamic Cyberpunk Background Accents */}
-      <div className="orb orb-1"></div>
-      <div className="orb orb-2"></div>
+      {/* Background Grids and Accent Colors */}
       <div className="grid-overlay"></div>
+      <div className="hud-orb hud-orb-primary"></div>
+      <div className="hud-orb hud-orb-accent"></div>
+      <div className="hud-orb hud-orb-cyan"></div>
 
-      {/* Header/Navbar */}
-      <header className="landing-header">
-        <div className="brand">
-          <Trophy size={28} className="text-accent-glow" />
-          <span className="brand-text">AURAPREDICT</span>
-        </div>
-        <div className="header-meta">
-          <span className="network-badge">
-            <span className="dot animate-pulse"></span>
-            Solana Devnet Active
-          </span>
-          <Link href="/dashboard" className="btn-primary-glow btn-sm">
-            Launch App <ArrowRight size={16} />
-          </Link>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-content">
-          <div className="concept-tag fade-in">
-            <ShieldCheck size={14} /> Decentralized Oracle-Verified Bracket Portfolios
+      {/* Top Scrolling Live Oracle Ticker */}
+      <div className="live-ticker-container">
+        <div className="live-ticker-track">
+          <div className="ticker-item">
+            <span className="dot-live"></span>
+            <span>[LIVE] User GqZn... prediction minted 1.5 SOL on Argentina @ 1.95x</span>
           </div>
-          <h1 className="hero-title fade-in">
-            Predict. Trade. <span className="gradient-accent-text">Hedge.</span>
+          <div className="ticker-item">
+            <span className="dot-live"></span>
+            <span>[ORACLE] TxLINE resolved Canada vs South Africa (1-0). Settled bracket NFT contracts</span>
+          </div>
+          <div className="ticker-item">
+            <span className="dot-live"></span>
+            <span>[POOL] Celtics vs Lakers liquidity pool reaches <span className="pool-value">312,900 USDC</span></span>
+          </div>
+          <div className="ticker-item">
+            <span className="dot-live"></span>
+            <span>[MINT] User 8sTu... drafted yield-bearing Sinner vs Alcaraz index token</span>
+          </div>
+          {/* Double content for infinite marquee loop */}
+          <div className="ticker-item">
+            <span className="dot-live"></span>
+            <span>[LIVE] User GqZn... prediction minted 1.5 SOL on Argentina @ 1.95x</span>
+          </div>
+          <div className="ticker-item">
+            <span className="dot-live"></span>
+            <span>[ORACLE] TxLINE resolved Canada vs South Africa (1-0). Settled bracket NFT contracts</span>
+          </div>
+          <div className="ticker-item">
+            <span className="dot-live"></span>
+            <span>[POOL] Celtics vs Lakers liquidity pool reaches <span className="pool-value">312,900 USDC</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div className="hud-container">
+        {/* Navigation Glass Panel Header */}
+        <header className="hud-panel hud-header">
+          <div className="hud-brand">
+            <Activity className="hud-brand-logo" size={24} />
+            <span className="hud-brand-text">AuraPredict</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-6 text-sm font-semibold text-gray-450 mr-6">
+              <Link href="/dashboard" className="hover:text-white transition-colors">Markets</Link>
+              <Link href="/fantasy" className="hover:text-white transition-colors">Liquid Fantasy</Link>
+              <Link href="/bracket" className="hover:text-white transition-colors">Bracket Indexes</Link>
+            </div>
+            <Link href="/dashboard" className="solana-neon-btn btn-sm">
+              Launch Console <ArrowRight size={14} />
+            </Link>
+          </div>
+        </header>
+
+        {/* Hero Section */}
+        <section className="hud-hero-section">
+          <div className="hud-badge">
+            <Sparkles size={13} className="text-accent" /> Solana Devnet Ecosystem
+          </div>
+          <h1 className="hud-hero-title">
+            The Liquid Prediction Ecosystem <br />
+            for <span className="gradient-cyan-pink">Global Sports.</span>
           </h1>
-          <p className="hero-subtitle fade-in">
-            AuraPredict assetizes tournament brackets into **Structured portfolios of conditional option shares** on the Solana blockchain. Mint your predictions as a tradeable NFT, track real-time Net Asset Value (NAV), and exit or double-down mid-tournament.
+          <p className="hud-hero-subtitle">
+            AuraPredict assetizes global sports fixture outcomes and brackets into tradeable, yield-bearing option portfolios. Backed by Solana smart contracts and verified trustlessly by the TxLINE Sports Oracle.
           </p>
-          <div className="hero-ctas fade-in">
-            <Link href="/dashboard" className="btn-primary-glow btn-lg">
-              Enter Platform <ArrowRight size={20} />
+          <div className="flex justify-center gap-4">
+            <Link href="/dashboard" className="solana-neon-btn accent btn-lg">
+              Enter Platform
             </Link>
-            <Link href="/bracket" className="btn-secondary btn-lg">
-              Interactive Bracket
+            <Link href="/fantasy" className="hud-btn-secondary btn-lg">
+              Aura Fantasy
             </Link>
           </div>
+        </section>
+
+        {/* Sports Selector Pills */}
+        <div className="sports-nav-bar">
+          {SPORT_SCENARIOS.map(sport => (
+            <button
+              key={sport.id}
+              onClick={() => {
+                setActiveSportId(sport.id);
+                setSelectedOutcomeIndex(0);
+              }}
+              className={`sport-pill ${activeSportId === sport.id ? "active" : ""}`}
+            >
+              <Trophy size={16} />
+              <span>{sport.sportName}</span>
+            </button>
+          ))}
         </div>
-      </section>
 
-      {/* How it Works / Core Innovation Cards */}
-      <section className="section features-section">
-        <div className="section-header">
-          <h2 className="section-title">Deconstructing The Innovation</h2>
-          <p className="section-subtitle">
-            Traditional brackets are binary all-or-nothing games. AuraPredict treats brackets as tradeable index portfolios driven by automated option pricing.
-          </p>
-        </div>
+        {/* Interactive Live Oracle simulator Widget */}
+        <div className="hud-panel terminal-layout">
+          {/* Controls Side */}
+          <div className="terminal-control-panel">
+            <div>
+              <span className="terminal-sport-tag">{activeSport.sportName} terminal</span>
+              <h2 className="terminal-market-title" style={{ marginTop: "4px" }}>
+                {activeSport.fixture}
+              </h2>
+              <p className="text-gray-400 text-sm mt-1">{activeSport.marketTitle}</p>
+            </div>
 
-        <div className="features-grid">
-          <div className="glass-panel feature-card">
-            <div className="feature-icon-wrapper">
-              <PieChart size={24} className="feature-icon" />
-            </div>
-            <h3>1. Bracket NFT Indexing</h3>
-            <p>
-              Locking your bracket allocates your USDC buy-in across 31 individual match options. Your Bracket NFT serves as a non-custodial index token whose value is the real-time sum of its active constituent shares.
-            </p>
-          </div>
-
-          <div className="glass-panel feature-card">
-            <div className="feature-icon-wrapper">
-              <TrendingUp size={24} className="feature-icon" />
-            </div>
-            <h3>2. Organic Upset Leverage</h3>
-            <p>
-              No arbitrary scoring rules. If you predict a major underdog to win, you buy their YES shares cheap (e.g. $0.05). If they win, the option matures to $1.00, yielding a 20x return on that node automatically.
-            </p>
-          </div>
-
-          <div className="glass-panel feature-card">
-            <div className="feature-icon-wrapper">
-              <RefreshCw size={24} className="feature-icon" />
-            </div>
-            <h3>3. Secondary Market Hedging</h3>
-            <p>
-              Since your bracket's point standing and future paths are recorded on-chain, you can trade your active bracket mid-tournament on Solana NFT marketplaces. Sell a front-running bracket to lock in guaranteed yield.
-            </p>
-          </div>
-
-          <div className="glass-panel feature-card">
-            <div className="feature-icon-wrapper">
-              <ShieldCheck size={24} className="feature-icon" />
-            </div>
-            <h3>4. Oracle-Driven Settlement</h3>
-            <p>
-              The TxLINE sports oracle cryptographically signatures and settles match outcomes directly on the Solana blockchain, ensuring secure, decentralized payouts directly to the final token holders.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Interactive Options Simulator Widget */}
-      <section className="section simulator-section">
-        <div className="simulator-container glass-panel">
-          <div className="simulator-info">
-            <div className="feature-icon-wrapper mini">
-              <TrendingUp size={20} className="text-accent" />
-            </div>
-            <h2>Option Pricing Simulator</h2>
-            <p>
-              Toggle below to see how predicting favorites vs. underdogs affects your initial bracket purchase price and potential return multiplier when the game resolves.
-            </p>
-            <div className="scenario-toggles">
-              <button 
-                onClick={() => setSelectedMatchScenario("favorite")} 
-                className={`toggle-btn ${selectedMatchScenario === "favorite" ? "active" : ""}`}
-              >
-                Predict Favorite (e.g. Argentina)
-              </button>
-              <button 
-                onClick={() => setSelectedMatchScenario("upset")} 
-                className={`toggle-btn ${selectedMatchScenario === "upset" ? "active" : ""}`}
-              >
-                Predict Upset (e.g. Cape Verde)
-              </button>
-            </div>
-          </div>
-
-          <div className="simulator-card">
-            <div className="card-header">
-              <span className="card-lbl">SOLANA OPTION CONTRACT</span>
-              <span className="card-id">#BIT-2026-R32</span>
-            </div>
-            <div className="simulator-stats">
-              <div className="stat-row">
-                <span>Contract Cost</span>
-                <span className="stat-value text-white">
-                  {selectedMatchScenario === "favorite" ? "$0.90 USDC" : "$0.05 USDC"}
-                </span>
+            <div className="terminal-market-card">
+              <span className="terminal-sport-tag">Select Outcome Option</span>
+              <div className="terminal-odds-grid">
+                {activeSport.outcomes.map((outcome, idx) => (
+                  <button
+                    key={outcome}
+                    onClick={() => setSelectedOutcomeIndex(idx)}
+                    className={`odds-btn ${selectedOutcomeIndex === idx ? "active" : ""}`}
+                  >
+                    <span className="odds-lbl">{outcome}</span>
+                    <span className="odds-val">{idx === selectedOutcomeIndex ? currentOdds : activeSport.defaultOdds[idx]}x</span>
+                  </button>
+                ))}
               </div>
-              <div className="stat-row">
-                <span>Settlement Value (On Win)</span>
-                <span className="stat-value text-white">$1.00 USDC</span>
+            </div>
+
+            <div className="terminal-slider-group">
+              <div className="terminal-slider-header">
+                <span>Collateral Allocation</span>
+                <span className="text-accent">{collateralAmount} SOL</span>
               </div>
-              <div className="stat-row highlight">
-                <span>Net Profit</span>
-                <span className="stat-value text-success">
-                  {selectedMatchScenario === "favorite" ? "+$0.10 USDC" : "+$0.95 USDC"}
-                </span>
-              </div>
-              <div className="stat-row highlight">
+              <input 
+                type="range" 
+                min="0.05" 
+                max="5" 
+                step="0.05" 
+                value={collateralAmount}
+                onChange={(e) => setCollateralAmount(parseFloat(e.target.value))}
+                className="terminal-slider"
+              />
+            </div>
+
+            <div className="terminal-slider-group">
+              <div className="terminal-slider-header">
                 <span>Leverage Multiplier</span>
-                <span className="stat-value text-accent">
-                  {selectedMatchScenario === "favorite" ? "1.11x Return" : "20.00x Return"}
-                </span>
+                <span className="text-red-500">{leverageValue}x Leverage</span>
               </div>
-            </div>
-            <div className="simulator-chart-bar">
-              <div 
-                className="fill-bar" 
-                style={{ 
-                  width: selectedMatchScenario === "favorite" ? "90%" : "5%",
-                  backgroundColor: selectedMatchScenario === "favorite" ? "var(--color-primary)" : "var(--color-accent)"
-                }}
-              ></div>
-            </div>
-            <div className="bar-labels">
-              <span>Cost Share</span>
-              <span>Potential Return ({selectedMatchScenario === "favorite" ? "+11%" : "+1900%"})</span>
+              <input 
+                type="range" 
+                min="1" 
+                max="10" 
+                step="1" 
+                value={leverageValue}
+                onChange={(e) => setLeverageValue(parseInt(e.target.value))}
+                className="terminal-slider"
+              />
             </div>
           </div>
+
+          {/* HUD Monitor visualization Side */}
+          <div className="terminal-viz-panel">
+            <div className="terminal-market-card roster-card-hud">
+              <div className="flex justify-between items-center border-b border-gray-800 pb-3">
+                <span className="terminal-sport-tag">Oracle Sync Output</span>
+                <span className="text-xs text-accent font-mono flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+                  CONNECTED
+                </span>
+              </div>
+
+              <div className="hud-metrics-row">
+                <div className="hud-metric-box">
+                  <span className="hud-metric-lbl">EST. Contract Return</span>
+                  <span className="hud-metric-val text-white">{estimatedReturn} SOL</span>
+                </div>
+                <div className="hud-metric-box">
+                  <span className="hud-metric-lbl">Simulated Yield ROI</span>
+                  <span className="hud-metric-val text-success">+{estimatedYield}%</span>
+                </div>
+              </div>
+
+              <div className="hud-metrics-row" style={{ borderBottom: "none", paddingBottom: 0 }}>
+                <div className="hud-metric-box">
+                  <span className="hud-metric-lbl">Live Net Asset Value</span>
+                  <span className="hud-metric-val text-accent">{simulatedNav} SOL</span>
+                </div>
+                <div className="hud-metric-box">
+                  <span className="hud-metric-lbl">Total Pool Volume</span>
+                  <span className="hud-metric-val text-gray-300 text-lg">{activeSport.poolSize}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="hud-sparkline-box">
+              <svg className="hud-sparkline-svg">
+                <polyline
+                  fill="none"
+                  stroke="var(--color-accent, #9dff00)"
+                  strokeWidth="2"
+                  points={sparklinePoints}
+                />
+              </svg>
+              <div className="flex justify-between w-full text-[10px] text-gray-500 font-mono" style={{ zIndex: 5 }}>
+                <span>SOLANA TICK HISTORY</span>
+                <span>VOLATILITY: HIGH</span>
+              </div>
+            </div>
+
+            <Link href="/dashboard" className="solana-neon-btn btn-lg w-full text-center" style={{ marginTop: "10px" }}>
+              Mint Outcome NFT Contract
+            </Link>
+          </div>
         </div>
-      </section>
 
-      {/* CTA Footer Section */}
-      <section className="cta-footer-section">
-        <h2>Ready to Assetize Your Bracket?</h2>
-        <p>AuraPredict is live on Solana Devnet. Mint your World Cup Bracket Index and start trading today.</p>
-        <Link href="/dashboard" className="btn-primary-glow btn-lg">
-          Launch AuraPredict <ArrowRight size={20} />
-        </Link>
-      </section>
+        {/* Feature Innovation walkthrough cards */}
+        <section className="hud-features-section">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-extrabold text-white">Platform Innovations</h2>
+            <p className="text-gray-400 mt-2 text-sm max-w-lg mx-auto">
+              Our core primitives rebuild sports markets with modern liquidity mechanisms on Solana.
+            </p>
+          </div>
 
-      <footer className="landing-footer-credits">
-        <span>© 2026 AuraPredict. Verified by TxLINE Sports Oracle on Solana.</span>
-        <span>All markets carry risk. Speculate responsibly.</span>
-      </footer>
+          <div className="hud-features-grid">
+            <div className="hud-feature-card">
+              <div className="hud-feature-icon">
+                <Layers size={22} />
+              </div>
+              <h3>Structured Bracket Indexes</h3>
+              <p>
+                Assetize tournament brackets into a single, yield-bearing NFT index. Watch your Net Asset Value (NAV) grow as your predictions advance, or trade pieces of your bracket mid-tournament.
+              </p>
+            </div>
 
-      {/* Landing Page Scoped CSS Styling */}
-      <style jsx global>{`
-        .landing-root {
-          min-height: 100vh;
-          background-color: var(--bg-primary);
-          color: var(--color-text-main);
-          font-family: var(--font-inter);
-          position: relative;
-          overflow: hidden;
-          padding-bottom: 80px;
-        }
+            <div className="hud-feature-card">
+              <div className="hud-feature-icon">
+                <Coins size={22} />
+              </div>
+              <h3>Yield-Bearing Sportstfs</h3>
+              <p>
+                Lock collateral deposits to back player or team outcome pools. Earn real yield distributions generated directly from secondary market trades and prediction fees.
+              </p>
+            </div>
 
-        /* Ambient Orbs */
-        .orb {
-          position: absolute;
-          border-radius: 50%;
-          filter: blur(120px);
-          z-index: 1;
-          opacity: 0.18;
-          pointer-events: none;
-        }
-        .orb-1 {
-          top: -10%;
-          left: 15%;
-          width: 500px;
-          height: 500px;
-          background: var(--color-primary);
-        }
-        .orb-2 {
-          bottom: 20%;
-          right: 10%;
-          width: 600px;
-          height: 600px;
-          background: var(--color-accent);
-        }
+            <div className="hud-feature-card">
+              <div className="hud-feature-icon">
+                <Zap size={22} />
+              </div>
+              <h3>Instant Oracle Settlements</h3>
+              <p>
+                Consensus scoring data is fed straight to smart contracts by the TxLINE Sports Oracle, verifying matches and enabling instant payouts to your wallet seconds after the whistle blows.
+              </p>
+            </div>
+          </div>
+        </section>
 
-        /* Cyberpunk Grid Overlay */
-        .grid-overlay {
-          position: absolute;
-          inset: 0;
-          background-image: 
-            linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-          background-size: 50px 50px;
-          z-index: 2;
-          pointer-events: none;
-        }
+        {/* Node consensus & network indicators */}
+        <section className="hud-stats-section border-t border-gray-905">
+          <div className="hud-stats-grid">
+            <div className="hud-stat-panel">
+              <div className="hud-stat-val text-accent">100%</div>
+              <div className="hud-stat-lbl">Decentralized consensus</div>
+            </div>
+            <div className="hud-stat-panel">
+              <div className="hud-stat-val text-white">400ms</div>
+              <div className="hud-stat-lbl">TxLINE Feed Latency</div>
+            </div>
+            <div className="hud-stat-panel">
+              <div className="hud-stat-val text-cyan-400">12,450+</div>
+              <div className="hud-stat-lbl">Active smart contracts</div>
+            </div>
+            <div className="hud-stat-panel">
+              <div className="hud-stat-val text-pink-500">&lt; $0.001</div>
+              <div className="hud-stat-lbl">Avg Solana network fee</div>
+            </div>
+          </div>
+        </section>
 
-        /* Header Navbar */
-        .landing-header {
-          position: relative;
-          z-index: 10;
-          max-width: 1200px;
-          margin: 0 auto;
-          height: var(--navbar-height);
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 0 24px;
-          border-bottom: 1px solid var(--border-light);
-        }
-        .brand {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-        .brand-text {
-          font-family: var(--font-outfit);
-          font-size: 24px;
-          font-weight: 900;
-          background: linear-gradient(135deg, #fff 0%, var(--color-primary-light) 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-        .header-meta {
-          display: flex;
-          align-items: center;
-          gap: 20px;
-        }
-        .network-badge {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          background: rgba(16, 185, 129, 0.08);
-          border: 1px solid rgba(16, 185, 129, 0.2);
-          color: var(--color-success);
-          font-size: 13px;
-          font-weight: 600;
-          padding: 6px 12px;
-          border-radius: 9999px;
-        }
-        .network-badge .dot {
-          width: 6px;
-          height: 6px;
-          background-color: var(--color-success);
-          border-radius: 50%;
-        }
-
-        /* Buttons styling */
-        .btn-primary-glow {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          background-color: var(--color-primary);
-          color: #fff;
-          font-weight: 600;
-          border-radius: 12px;
-          border: 1px solid var(--color-primary-light);
-          box-shadow: 0 0 16px var(--border-glow);
-          transition: var(--transition-smooth);
-          cursor: pointer;
-        }
-        .btn-primary-glow:hover {
-          background-color: var(--color-primary-light);
-          box-shadow: 0 0 24px rgba(131, 103, 248, 0.45);
-          transform: translateY(-2px);
-        }
-        .btn-sm {
-          padding: 8px 16px;
-          font-size: 14px;
-        }
-        .btn-lg {
-          padding: 16px 32px;
-          font-size: 16px;
-        }
-        .btn-secondary {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid var(--border-light);
-          color: #fff;
-          font-weight: 600;
-          border-radius: 12px;
-          transition: var(--transition-smooth);
-          cursor: pointer;
-        }
-        .btn-secondary:hover {
-          background: rgba(255, 255, 255, 0.08);
-          border-color: var(--color-text-muted);
-          transform: translateY(-2px);
-        }
-
-        /* Hero Section */
-        .hero-section {
-          position: relative;
-          z-index: 10;
-          max-width: 1000px;
-          margin: 0 auto;
-          padding: 100px 24px 60px 24px;
-          text-align: center;
-        }
-        .concept-tag {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          background: rgba(95, 59, 246, 0.1);
-          border: 1px solid var(--border-glow);
-          color: var(--color-primary-light);
-          font-weight: 600;
-          font-size: 13px;
-          padding: 8px 16px;
-          border-radius: 9999px;
-          margin-bottom: 24px;
-        }
-        .hero-title {
-          font-size: 72px;
-          font-weight: 900;
-          line-height: 1.1;
-          margin-bottom: 24px;
-          letter-spacing: -0.03em;
-        }
-        .hero-subtitle {
-          font-size: 19px;
-          line-height: 1.6;
-          color: var(--color-text-muted);
-          max-width: 760px;
-          margin: 0 auto 40px auto;
-        }
-        .hero-ctas {
-          display: flex;
-          justify-content: center;
-          gap: 16px;
-        }
-
-        /* Sections general */
-        .section {
-          position: relative;
-          z-index: 10;
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 80px 24px;
-        }
-        .section-header {
-          text-align: center;
-          margin-bottom: 60px;
-        }
-        .section-title {
-          font-size: 40px;
-          font-weight: 800;
-          margin-bottom: 16px;
-        }
-        .section-subtitle {
-          font-size: 16px;
-          color: var(--color-text-muted);
-          max-width: 600px;
-          margin: 0 auto;
-        }
-
-        /* Features grid */
-        .features-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-          gap: 24px;
-        }
-        .feature-card {
-          padding: 32px;
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-        .feature-icon-wrapper {
-          width: 50px;
-          height: 50px;
-          border-radius: 12px;
-          background: rgba(95, 59, 246, 0.1);
-          border: 1px solid var(--border-glow);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .feature-icon-wrapper.mini {
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
-        }
-        .feature-icon {
-          color: var(--color-primary-light);
-        }
-        .feature-card h3 {
-          font-size: 20px;
-          font-weight: 700;
-          color: #fff;
-        }
-        .feature-card p {
-          font-size: 14.5px;
-          line-height: 1.6;
-          color: var(--color-text-muted);
-        }
-
-        /* Options Simulator Widget */
-        .simulator-section {
-          display: flex;
-          justify-content: center;
-        }
-        .simulator-container {
-          width: 100%;
-          max-width: 950px;
-          padding: 48px;
-          display: flex;
-          align-items: center;
-          gap: 48px;
-        }
-        .simulator-info {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-        .simulator-info h2 {
-          font-size: 32px;
-          font-weight: 800;
-        }
-        .simulator-info p {
-          font-size: 15px;
-          line-height: 1.6;
-          color: var(--color-text-muted);
-        }
-        .scenario-toggles {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          margin-top: 16px;
-        }
-        .toggle-btn {
-          width: 100%;
-          text-align: left;
-          padding: 16px 20px;
-          border-radius: 12px;
-          font-size: 15px;
-          font-weight: 600;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid var(--border-light);
-          color: var(--color-text-muted);
-          cursor: pointer;
-          transition: var(--transition-smooth);
-        }
-        .toggle-btn:hover {
-          background: rgba(255, 255, 255, 0.06);
-          border-color: var(--border-glow);
-        }
-        .toggle-btn.active {
-          color: #fff;
-          background: rgba(95, 59, 246, 0.12);
-          border-color: var(--color-primary-light);
-          box-shadow: 0 0 12px rgba(95, 59, 246, 0.15);
-        }
-
-        .simulator-card {
-          width: 380px;
-          background: rgba(4, 8, 21, 0.8);
-          border: 1px solid var(--border-light);
-          border-radius: 16px;
-          padding: 28px;
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-          box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02);
-        }
-        .card-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-bottom: 1px solid var(--border-light);
-          padding-bottom: 12px;
-        }
-        .card-lbl {
-          font-size: 11px;
-          font-weight: 800;
-          color: var(--color-text-dim);
-          letter-spacing: 0.1em;
-        }
-        .card-id {
-          font-size: 12px;
-          font-weight: 700;
-          color: var(--color-accent);
-        }
-        .simulator-stats {
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
-        }
-        .stat-row {
-          display: flex;
-          justify-content: space-between;
-          font-size: 14px;
-          color: var(--color-text-muted);
-        }
-        .stat-row.highlight {
-          border-top: 1px dashed var(--border-light);
-          padding-top: 12px;
-          font-weight: 600;
-        }
-        .stat-value {
-          font-family: var(--font-outfit);
-          font-size: 16px;
-          font-weight: 700;
-        }
-        .text-white { color: #fff; }
-        .text-success { color: var(--color-success); }
-        .text-accent { color: var(--color-accent); }
-
-        .simulator-chart-bar {
-          height: 12px;
-          background: rgba(255, 255, 255, 0.05);
-          border-radius: 999px;
-          overflow: hidden;
-          position: relative;
-        }
-        .fill-bar {
-          height: 100%;
-          border-radius: 999px;
-          transition: var(--transition-smooth);
-        }
-        .bar-labels {
-          display: flex;
-          justify-content: space-between;
-          font-size: 11px;
-          color: var(--color-text-dim);
-        }
-
-        /* CTA Footer Section */
-        .cta-footer-section {
-          position: relative;
-          z-index: 10;
-          max-width: 800px;
-          margin: 0 auto;
-          padding: 80px 24px;
-          text-align: center;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 20px;
-        }
-        .cta-footer-section h2 {
-          font-size: 40px;
-          font-weight: 800;
-        }
-        .cta-footer-section p {
-          font-size: 16px;
-          color: var(--color-text-muted);
-          max-width: 500px;
-          margin-bottom: 12px;
-        }
-
-        /* Footer Credits */
-        .landing-footer-credits {
-          position: relative;
-          z-index: 10;
-          max-width: 1200px;
-          margin: 40px auto 0 auto;
-          border-top: 1px solid var(--border-light);
-          padding: 24px;
-          display: flex;
-          justify-content: space-between;
-          font-size: 12px;
-          color: var(--color-text-dim);
-        }
-
-        /* Text glows */
-        .text-accent-glow {
-          color: var(--color-accent);
-          filter: drop-shadow(0 0 6px var(--color-accent-dim));
-        }
-
-        /* Responsive adaptations */
-        @media (max-width: 900px) {
-          .simulator-container {
-            flex-direction: column;
-            padding: 32px;
-          }
-          .simulator-card {
-            width: 100%;
-          }
-          .hero-title {
-            font-size: 50px;
-          }
-          .landing-footer-credits {
-            flex-direction: column;
-            gap: 12px;
-            text-align: center;
-          }
-        }
-      `}</style>
+        {/* HUD Footer */}
+        <footer className="hud-footer">
+          <span>© 2026 AuraPredict. Consensus verified by TxLINE Sports Oracle on Solana.</span>
+          <div className="flex gap-4">
+            <Link href="/dashboard" className="hover:text-white transition-colors">Trade Portal</Link>
+            <Link href="/fantasy" className="hover:text-white transition-colors">Aura Fantasy</Link>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }

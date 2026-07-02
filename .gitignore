@@ -18,7 +18,12 @@ txline_token_cache.json
 .env.development.local
 .env.test.local
 .env.production.local
-
 # OS files
 .DS_Store
 Thumbs.db
+
+# TypeScript / Build Cache
+*.tsbuildinfo
+
+# Scratch JSON files
+scratch/*.json

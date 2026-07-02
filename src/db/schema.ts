@@ -71,3 +71,33 @@ export const trades = sqliteTable("trades", {
   price: integer("price").notNull(),
   timestamp: integer("timestamp").notNull(),
 });
+
+// Table: Fantasy Players (World Cup rosters and their dynamic valuations)
+export const fantasyPlayers = sqliteTable("fantasy_players", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  position: text("position").notNull(), // 'GK', 'DEF', 'MID', 'FWD'
+  team: text("team").notNull(),
+  basePrice: integer("base_price").notNull(), // Price in millions of points/credits (e.g. 15 = $15.0M)
+  currentPrice: integer("current_price").notNull(),
+  goals: integer("goals").notNull().default(0),
+  assists: integer("assists").notNull().default(0),
+  cleanSheets: integer("clean_sheets").notNull().default(0),
+  yellowCards: integer("yellow_cards").notNull().default(0),
+  redCards: integer("red_cards").notNull().default(0),
+  previousPoints: integer("previous_points").notNull().default(0),
+  currentPoints: integer("current_points").notNull().default(0),
+  fotmobId: integer("fotmob_id"),
+});
+
+// Table: User Fantasy Squad (11-player line-ups drafted)
+export const fantasySquads = sqliteTable("fantasy_squads", {
+  walletAddress: text("wallet_address").primaryKey(),
+  playerIds: text("player_ids").notNull(), // JSON array of player IDs (e.g. [1, 5, 12, ...])
+  budgetRemaining: integer("budget_remaining").notNull(), // Remaining budget in credits/points (scaled by 10, e.g. 1000 = $100.0M)
+  totalPoints: integer("total_points").notNull().default(0),
+  formation: text("formation").notNull().default("4-3-3"),
+  playDay: text("play_day").notNull().default("2026-06-29"),
+  createdAt: integer("created_at").notNull(),
+});
+

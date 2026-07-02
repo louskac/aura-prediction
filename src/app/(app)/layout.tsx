@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import "../global.css";
 import Link from "next/link";
-import { LayoutDashboard, Trophy, LineChart, FolderHeart, ShieldCheck, Database, Wallet } from "lucide-react";
+import { LayoutDashboard, Trophy, LineChart, FolderHeart, ShieldCheck, Database, Wallet, Activity } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "AuraPredict | World Cup Bracket & Prediction Markets",
@@ -26,9 +25,7 @@ export default async function RootLayout({
   const networkName = isDevnet ? "Solana Devnet" : "Solana Mainnet";
   const dotColor = isDevnet ? "var(--color-success)" : "#ffb700";
   return (
-    <html lang="en">
-      <body>
-        <div className="app-container">
+    <div className="app-container">
           {/* Desktop Sidebar Navigation */}
           <aside className="sidebar">
             <div>
@@ -44,6 +41,10 @@ export default async function RootLayout({
                 <Link href="/bracket" className="sidebar-link">
                   <Trophy size={20} />
                   Bracket Predictor
+                </Link>
+                <Link href="/fantasy" className="sidebar-link">
+                  <Activity size={20} />
+                  Aura Fantasy
                 </Link>
                 <Link href="/markets" className="sidebar-link">
                   <LineChart size={20} />
@@ -81,6 +82,10 @@ export default async function RootLayout({
             <Link href="/bracket" className="bottom-nav-link">
               <Trophy size={20} />
               <span>Bracket</span>
+            </Link>
+            <Link href="/fantasy" className="bottom-nav-link">
+              <Activity size={20} />
+              <span>Fantasy</span>
             </Link>
             <Link href="/markets" className="bottom-nav-link">
               <LineChart size={20} />
@@ -153,7 +158,5 @@ export default async function RootLayout({
             </main>
           </div>
         </div>
-      </body>
-    </html>
   );
 }

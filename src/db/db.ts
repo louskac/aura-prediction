@@ -99,11 +99,59 @@ export function initDb() {
       timestamp INTEGER NOT NULL,
       FOREIGN KEY (market_id) REFERENCES markets(id)
     );
+
+    CREATE TABLE IF NOT EXISTS fantasy_players (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      position TEXT NOT NULL,
+      team TEXT NOT NULL,
+      base_price INTEGER NOT NULL,
+      current_price INTEGER NOT NULL,
+      goals INTEGER NOT NULL DEFAULT 0,
+      assists INTEGER NOT NULL DEFAULT 0,
+      clean_sheets INTEGER NOT NULL DEFAULT 0,
+      yellow_cards INTEGER NOT NULL DEFAULT 0,
+      red_cards INTEGER NOT NULL DEFAULT 0,
+      previous_points INTEGER NOT NULL DEFAULT 0,
+      current_points INTEGER NOT NULL DEFAULT 0,
+      fotmob_id INTEGER
+    );
+
+    CREATE TABLE IF NOT EXISTS fantasy_squads (
+      wallet_address TEXT PRIMARY KEY,
+      player_ids TEXT NOT NULL,
+      budget_remaining INTEGER NOT NULL,
+      total_points INTEGER NOT NULL DEFAULT 0,
+      formation TEXT NOT NULL DEFAULT '4-3-3',
+      play_day TEXT NOT NULL DEFAULT '2026-06-29',
+      created_at INTEGER NOT NULL
+    );
   `);
 
   // Safe migration: add fixture_group_id if it doesn't already exist
   try {
     sqlite.exec(`ALTER TABLE fixtures ADD COLUMN fixture_group_id INTEGER;`);
+  } catch (_) {
+    // Column already exists — ignore
+  }
+
+  // Safe migration: add fotmob_id to fantasy_players if it doesn't already exist
+  try {
+    sqlite.exec(`ALTER TABLE fantasy_players ADD COLUMN fotmob_id INTEGER;`);
+  } catch (_) {
+    // Column already exists — ignore
+  }
+
+  // Safe migration: add formation to fantasy_squads if it doesn't already exist
+  try {
+    sqlite.exec(`ALTER TABLE fantasy_squads ADD COLUMN formation TEXT NOT NULL DEFAULT '4-3-3';`);
+  } catch (_) {
+    // Column already exists — ignore
+  }
+
+  // Safe migration: add play_day to fantasy_squads if it doesn't already exist
+  try {
+    sqlite.exec(`ALTER TABLE fantasy_squads ADD COLUMN play_day TEXT NOT NULL DEFAULT '2026-06-29';`);
   } catch (_) {
     // Column already exists — ignore
   }

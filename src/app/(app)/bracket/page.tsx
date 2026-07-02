@@ -3,7 +3,7 @@ import { bracketPredictions, fixtures as fixturesTable } from "@/db/schema";
 import { sql, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import BracketPredictorClient from "./BracketPredictorClient";
-import { syncFixtures } from "@/app/api/sync/route";
+import { syncFixtures } from "@/services/txline";
 
 // Server action to save bracket predictions
 async function submitBracket(formData: FormData) {
