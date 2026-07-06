@@ -372,25 +372,41 @@ export default function LandingPage() {
       <div className="console-glow-orb console-glow-accent"></div>
 
       <div className="console-container">
-        {/* Minimalist Navigation Bar (Fixed-Position) */}
-        <header className="console-header">
-          <div className="console-brand">
-            <Activity size={18} className="text-[#22c55e]" />
-            <span className="console-brand-text">AURA</span>
-            <span className="hud-data-tag font-mono text-[9px] spacer-ml-1">DEVNET.v1.0</span>
-          </div>
+        {/* Overhauled Navigation Bar */}
+        <header className="console-header-overhaul">
+          <Link href="/" className="header-logo-container">
+            <div className="logo-sashes">
+              <span className="logo-slash green"></span>
+              <span className="logo-slash blue"></span>
+              <span className="logo-slash purple"></span>
+              <span className="logo-slash teal"></span>
+            </div>
+            <span className="logo-text">AURA</span>
+            <span className="logo-ver">DEVNET.v1</span>
+          </Link>
 
-          <nav className="console-nav hidden lg:flex">
-            <Link href="/dashboard" className="console-nav-link">Trade Portal</Link>
-            <Link href="/fantasy" className="console-nav-link">Liquid Fantasy</Link>
-            <Link href="/bracket" className="console-nav-link">Bracket Indexes</Link>
+          <nav className="console-nav-overhaul">
+            <Link href="/dashboard" className="nav-item">
+              <span className="nav-slash green">/</span>
+              <span className="nav-text">Trade Portal</span>
+            </Link>
+            <Link href="/fantasy" className="nav-item">
+              <span className="nav-slash blue">/</span>
+              <span className="nav-text">Liquid Fantasy</span>
+            </Link>
+            <Link href="/bracket" className="nav-item">
+              <span className="nav-slash purple">/</span>
+              <span className="nav-text">Bracket Indexes</span>
+            </Link>
           </nav>
 
-          {/* Wallet Badge - Flex row alignment */}
-          <div className="layout-flex-row layout-flex-gap-4">
-            <div className="console-wallet-badge">
-              <span className="status-dot"></span>
-              <span className="font-mono text-xs">GQZn...GK2P</span>
+          <div className="console-actions-overhaul">
+            <div className="wallet-container-slanted">
+              <span className="wallet-slash teal">/</span>
+              <div className="wallet-content">
+                <span className="wallet-address font-mono">GQZn...GK2P</span>
+                <span className="wallet-balance">995.40 SOL</span>
+              </div>
             </div>
           </div>
         </header>
@@ -398,7 +414,8 @@ export default function LandingPage() {
         {/* Spacious Immersive Hero Area */}
         <section className="console-hero">
           <div className="console-hero-label">
-            <Sparkles size={11} className="spacer-mr-1" /> Solana Sports Engine
+            <span className="label-slash green">/</span>
+            <span className="label-text">Solana Sports Engine</span>
           </div>
 
           <h1 className="console-hero-title font-sans">
@@ -455,225 +472,6 @@ export default function LandingPage() {
                 <span className="console-footer-stat-val text-emerald-400">&lt; $0.001</span>
                 <span className="console-footer-stat-lbl">Average gas cost</span>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Simplified Active Contracts Preview Block */}
-        <section className="preview-section">
-          <div className="preview-section-header">
-            <span className="preview-section-lbl">Interactive Demo</span>
-            <h2 className="preview-section-title">Active Market Pools</h2>
-          </div>
-
-          {/* Simple Row Grid of Match Cards */}
-          <div className="preview-matches-grid">
-            {CONSOLE_MATCHES.map(match => (
-              <div 
-                key={match.id}
-                onClick={() => setActiveMatchId(match.id)}
-                className={`preview-match-card ${activeMatchId === match.id ? "active" : ""}`}
-              >
-                <div className="match-card-meta">
-                  <span className="match-card-sport">{match.sport}</span>
-                  {match.status === "LIVE" ? (
-                    <span className="match-card-status">
-                      <span className="status-dot animate-pulse"></span>
-                      {match.statusText}
-                    </span>
-                  ) : (
-                    <span className="match-card-status upcoming">{match.statusText}</span>
-                  )}
-                </div>
-                <h3 className="match-card-title">{match.fixture}</h3>
-                
-                {/* Analytics parameters injected directly on card */}
-                <div className="layout-flex-row layout-flex-gap-2 font-mono text-[9px] text-[#22c55e] py-1">
-                  <span>[ACCURACY: {match.oracleAccuracy}]</span>
-                  <span>[VOLATILITY: {match.volatility}]</span>
-                </div>
-
-                <div className="match-card-pool-info">
-                  <span className="font-mono text-[10px] text-gray-500 font-bold">POOL SIZE</span>
-                  <span className="match-card-pool-val font-mono">{match.poolSize}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Simplified Dynamic Details Drawer */}
-          <div className="preview-interactive-console">
-            {/* Left Column: Trade Inputs */}
-            <div className="preview-trade-panel">
-              <div className="layout-flex-between">
-                <div>
-                  <span className="match-card-sport font-mono font-bold">Outcome Contract Selector</span>
-                  <h4 className="text-xl font-bold mt-1 mb-4">{activeMatch.fixture}</h4>
-                </div>
-                {/* Top Corner Analytical tag */}
-                <div className="hud-data-tag font-mono text-[9px] py-1 px-3">
-                  STABLE_FEED
-                </div>
-              </div>
-
-              <div className="preview-options-grid">
-                {activeMatch.outcomes.map((outcome, idx) => (
-                  <div
-                    key={outcome.name}
-                    onClick={() => setSelectedOutcomeIdx(idx)}
-                    className={`preview-option-pill ${selectedOutcomeIdx === idx ? "selected" : ""}`}
-                  >
-                    <span className="preview-option-name font-mono">{outcome.name.split(" ")[0]}</span>
-                    <span className="preview-option-odds">{outcome.odds}x</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="preview-slider-group">
-                <div className="preview-slider-info font-mono text-[11px]">
-                  <span>Collateral Allocation</span>
-                  <span className="preview-slider-val font-bold">{tradeSize} SOL</span>
-                </div>
-                <input
-                  type="range"
-                  min="0.05"
-                  max="5.00"
-                  step="0.05"
-                  value={tradeSize}
-                  onChange={(e) => setTradeSize(parseFloat(e.target.value))}
-                  className="preview-range-input"
-                />
-              </div>
-
-              <div className="preview-slider-group">
-                <div className="preview-slider-info font-mono text-[11px]">
-                  <span>Leverage Multiplier</span>
-                  <span className="font-bold text-pink-500">{leverage}x Leverage</span>
-                </div>
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  step="1"
-                  value={leverage}
-                  onChange={(e) => setLeverage(parseInt(e.target.value))}
-                  className="preview-range-input"
-                />
-              </div>
-
-              {/* Technical consensus nodes checklist */}
-              <div className="hud-divider-dotted"></div>
-              <div className="layout-flex-col layout-flex-gap-2 font-mono text-[10px] text-gray-500">
-                <span className="text-gray-400 font-bold mb-1">TXLINE CONSENSUS CHECKS:</span>
-                <div className="layout-flex-between">
-                  <span>✓ 1. Fixture Lock-in Verified</span>
-                  <span className="text-emerald-400 font-bold">SUCCESS</span>
-                </div>
-                <div className="layout-flex-between">
-                  <span>✓ 2. Multi-Node Signatures Synced</span>
-                  <span className="text-emerald-400 font-bold">100% OK</span>
-                </div>
-                <div className="layout-flex-between">
-                  <span>✓ 3. SOL Devnet Contract Mapping</span>
-                  <span className="text-emerald-400 font-bold">DEPLOYED</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column: Analytics & Settlements */}
-            <div className="preview-chart-panel">
-              <div className="preview-stats-row">
-                <div className="preview-stat-box">
-                  <span className="preview-stat-lbl">Return Contract</span>
-                  <span className="preview-stat-val">{estReturn} SOL</span>
-                </div>
-                <div className="preview-stat-box">
-                  <span className="preview-stat-lbl">Implied ROI</span>
-                  <span className="preview-stat-val text-emerald-400 font-bold">+{estYield}%</span>
-                </div>
-              </div>
-
-              {/* Sparkline Chart Grid */}
-              <div className="preview-chart-box">
-                <svg className="absolute inset-0 w-full h-full">
-                  <line x1="0" y1="35" x2="300" y2="35" className="preview-chart-grid" />
-                  <line x1="0" y1="70" x2="300" y2="70" className="preview-chart-grid" />
-                  <line x1="0" y1="105" x2="300" y2="105" className="preview-chart-grid" />
-                  <polyline
-                    fill="none"
-                    stroke="#22c55e"
-                    strokeWidth="2.5"
-                    points={points}
-                    style={{ filter: "drop-shadow(0 0 4px rgba(34, 197, 94, 0.35))" }}
-                  />
-                </svg>
-                <div className="absolute bottom-2 left-3 right-3 layout-flex-between text-[9px] text-gray-500 font-mono">
-                  <span>ORACLE SYNC: SECURE</span>
-                  <span>ACCURACY RATE: {activeMatch.oracleAccuracy}</span>
-                </div>
-              </div>
-
-              {/* Console logs */}
-              <div className="preview-logger font-mono">
-                {logs.map((log, index) => (
-                  <div key={index} className="layout-flex-row layout-flex-gap-2">
-                    <span className="time">{index === 0 ? "LIVE" : "SYNC"}</span>
-                    <span className="msg">{log}</span>
-                  </div>
-                ))}
-              </div>
-
-              <button className="preview-mint-btn w-full font-mono uppercase tracking-wider text-xs">
-                [ Mint Analytics Contract ]
-              </button>
-            </div>
-          </div>
-        </section>
-
-        {/* Feature Innovations Onboarding Overhaul */}
-        <section className="console-innovations">
-          <h2 className="console-innovations-title">Application Core Pillars</h2>
-          <div className="console-innovations-grid">
-            {/* Pillar 1 */}
-            <div className="console-innovation-card">
-              <div className="console-innovation-icon animate-pulse">
-                <TrendingUp size={20} />
-              </div>
-              <div className="layout-flex-between">
-                <h3>1. Option Analytics Pools</h3>
-                <span className="hud-data-tag font-mono text-[9px] px-2 py-0.5">OPTION_ANALYTICS</span>
-              </div>
-              <p>
-                Analyze and trade directly on fixture outcomes with on-chain option tokens. Lock collateral to buy YES/NO contracts, adjust leverage sizes from 1x to 10x, and trade your positions dynamically before the final whistle blows.
-              </p>
-            </div>
-
-            {/* Pillar 2 */}
-            <div className="console-innovation-card">
-              <div className="console-innovation-icon">
-                <Layers size={20} />
-              </div>
-              <div className="layout-flex-between">
-                <h3>2. Structured Bracket Indexes</h3>
-                <span className="hud-data-tag font-mono text-[9px] px-2 py-0.5">BRACKET_NFT_INDEX</span>
-              </div>
-              <p>
-                Assetize entire tournament brackets into a single unified NFT index. Own your bracket predictions as structured portfolios, with index Net Asset Value (NAV) updating instantly as scores settle on the Solana ledger.
-              </p>
-            </div>
-
-            {/* Pillar 3 */}
-            <div className="console-innovation-card">
-              <div className="console-innovation-icon">
-                <Coins size={20} />
-              </div>
-              <div className="layout-flex-between">
-                <h3>3. Yield-Bearing Fantasy Squads</h3>
-                <span className="hud-data-tag font-mono text-[9px] px-2 py-0.5">LIQUIDITY_POOLS</span>
-              </div>
-              <p>
-                Draft player roster options and pool collateral with your fantasy squad. Back active positions to claim real yield shares generated from platform trade commissions and dynamic liquidity allocation pools.
-              </p>
             </div>
           </div>
         </section>
@@ -894,12 +692,76 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Minimal Footer */}
-        <footer className="console-footer">
-          <span>© 2026 AuraPredict. Consensus verified by TxLINE Sports Oracle on Solana.</span>
-          <div className="layout-flex-row layout-flex-gap-6 font-semibold">
-            <Link href="/dashboard" className="hover:text-white transition-colors">Markets</Link>
-            <Link href="/fantasy" className="hover:text-white transition-colors">Aura Fantasy</Link>
+        {/* Overhauled Premium Console Footer */}
+        <footer className="console-footer-overhaul">
+          <div className="footer-grid-clean">
+            {/* Column 1: Brand Info */}
+            <div className="footer-brand-col">
+              <div className="header-logo-container mb-3">
+                <div className="logo-sashes">
+                  <span className="logo-slash green"></span>
+                  <span className="logo-slash blue"></span>
+                  <span className="logo-slash purple"></span>
+                  <span className="logo-slash teal"></span>
+                </div>
+                <span className="logo-text">AURA</span>
+                <span className="logo-ver font-mono">DEVNET</span>
+              </div>
+              <p className="footer-subtext">
+                Sports prediction index protocol on Solana. Verified on-chain consensus settling instantly.
+              </p>
+            </div>
+
+            {/* Column 2: Developers */}
+            <div className="footer-links-col">
+              <span className="footer-col-lbl">[ PROTOCOL ]</span>
+              <div className="footer-vertical-links">
+                <Link href="/api-dump" className="nav-item">
+                  <span className="nav-slash green">/</span>
+                  <span className="nav-text">API Raw Dump</span>
+                </Link>
+                <Link href="/admin" className="nav-item">
+                  <span className="nav-slash blue">/</span>
+                  <span className="nav-text">TxLINE Admin</span>
+                </Link>
+                <a href="https://txline-docs.txodds.com" target="_blank" rel="noopener noreferrer" className="nav-item">
+                  <span className="nav-slash purple">/</span>
+                  <span className="nav-text">TxLINE Docs</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Column 3: Platform */}
+            <div className="footer-links-col">
+              <span className="footer-col-lbl">[ MARKETS ]</span>
+              <div className="footer-vertical-links">
+                <Link href="/markets" className="nav-item">
+                  <span className="nav-slash teal">/</span>
+                  <span className="nav-text">Fantasy Markets</span>
+                </Link>
+                <Link href="/portfolio" className="nav-item">
+                  <span className="nav-slash green">/</span>
+                  <span className="nav-text">Fan Portfolio</span>
+                </Link>
+                <Link href="/dashboard" className="nav-item">
+                  <span className="nav-slash blue">/</span>
+                  <span className="nav-text">Trade Portal</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="footer-bottom-divider"></div>
+
+          <div className="footer-bottom">
+            <span className="copyright font-mono">© 2026 AURAPREDICT. Consensus verified on Solana.</span>
+            <div className="footer-socials font-mono">
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="social-link">TWITTER</a>
+              <span className="text-gray-700">/</span>
+              <a href="https://discord.gg" target="_blank" rel="noopener noreferrer" className="social-link">DISCORD</a>
+              <span className="text-gray-700">/</span>
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="social-link">GITHUB</a>
+            </div>
           </div>
         </footer>
       </div>

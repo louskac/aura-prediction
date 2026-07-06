@@ -678,15 +678,29 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 6px 18px;
+  transform: skewX(-12deg);
+  margin-bottom: 24px;
+}
+.console-hero-label .label-slash {
+  font-family: var(--font-outfit), sans-serif;
+  font-weight: 900;
+  font-size: 14px;
+  color: #22c55e;
+  text-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+  transform: skewX(12deg);
+  display: inline-block;
+}
+.console-hero-label .label-text {
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #22c55e;
-  background: rgba(34, 197, 94, 0.04);
-  border: 1px solid rgba(34, 197, 94, 0.15);
-  padding: 6px 16px;
-  border-radius: 9999px;
+  letter-spacing: 0.15em;
+  color: #fff;
+  transform: skewX(12deg);
+  display: inline-block;
 }
 .console-hero-title {
   font-family: var(--font-outfit), sans-serif;
@@ -1573,4 +1587,438 @@ a {
 }
 .purple-radial {
   background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(9, 13, 26, 0.8) 100%);
+}
+
+/* Overhauled Premium Console Footer Styles */
+.console-footer-overhaul {
+  margin-top: 100px;
+  padding: 60px 0 40px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+.console-footer-overhaul .footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.2fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+@media (max-width: 768px) {
+  .console-footer-overhaul .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+.console-footer-overhaul .footer-brand-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.console-footer-overhaul .footer-description {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #94a3b8;
+  max-width: 360px;
+}
+.console-footer-overhaul .footer-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  width: fit-content;
+}
+.console-footer-overhaul .footer-status-badge .status-dot.green {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+}
+.console-footer-overhaul .footer-title {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #64748b;
+  margin-bottom: 18px;
+}
+.console-footer-overhaul .footer-links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.console-footer-overhaul .footer-link {
+  font-size: 13px;
+  color: #94a3b8;
+  text-decoration: none;
+  transition: color 0.2s ease, padding-left 0.2s ease;
+}
+.console-footer-overhaul .footer-link:hover {
+  color: #fff;
+  padding-left: 4px;
+}
+.console-footer-overhaul .footer-oracle-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+.console-footer-overhaul .oracle-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-family: monospace;
+}
+.console-footer-overhaul .oracle-detail-row .lbl {
+  color: #64748b;
+}
+.console-footer-overhaul .oracle-detail-row .val {
+  color: #f8fafc;
+  font-weight: bold;
+}
+.console-footer-overhaul .footer-bottom-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.04);
+  margin-bottom: 24px;
+}
+.console-footer-overhaul .footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #64748b;
+}
+@media (max-width: 768px) {
+  .console-footer-overhaul .footer-bottom {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+}
+.console-footer-overhaul .footer-socials {
+  display: flex;
+  gap: 12px;
+}
+.console-footer-overhaul .social-link {
+  color: #64748b;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.console-footer-overhaul .social-link:hover {
+  color: #fff;
+}
+
+
+
+
+/* Overhauled Header CSS */
+.console-header-overhaul {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(3, 7, 18, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 0 40px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Gradient line under the header matching the 4 colors */
+.console-header-overhaul::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #22c55e 0%, #3b82f6 33%, #a855f7 66%, #10b981 100%);
+  opacity: 0.8;
+}
+
+@media (max-width: 991px) {
+  .console-header-overhaul {
+    padding: 0 20px;
+  }
+}
+
+/* Logo container with slanted sashes */
+.header-logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.logo-sashes {
+  display: flex;
+  gap: 2px;
+}
+
+.logo-slash {
+  width: 3px;
+  height: 16px;
+  transform: skewX(-12deg);
+  display: inline-block;
+  border-radius: 1px;
+}
+
+.logo-slash.green { background-color: #22c55e; box-shadow: 0 0 6px rgba(34, 197, 94, 0.4); }
+.logo-slash.blue { background-color: #3b82f6; box-shadow: 0 0 6px rgba(59, 130, 246, 0.4); }
+.logo-slash.purple { background-color: #a855f7; box-shadow: 0 0 6px rgba(168, 85, 247, 0.4); }
+.logo-slash.teal { background-color: #10b981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.4); }
+
+.header-logo-container .logo-text {
+  font-family: var(--font-outfit), sans-serif;
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #fff;
+}
+
+.header-logo-container .logo-ver {
+  font-family: monospace;
+  font-size: 8px;
+  font-weight: 700;
+  color: #64748b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+/* Nav Menu Items */
+.console-nav-overhaul {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+@media (max-width: 991px) {
+  .console-nav-overhaul {
+    display: none;
+  }
+}
+
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  padding: 6px 14px;
+  transform: skewX(-12deg);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid transparent;
+}
+
+.nav-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  opacity: 0;
+  z-index: -1;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-item:hover::before {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-item:hover {
+  transform: skewX(-12deg) scale(1.03);
+}
+
+.nav-slash {
+  font-family: var(--font-outfit), sans-serif;
+  font-weight: 900;
+  font-size: 15px;
+  transform: skewX(12deg);
+  display: inline-block;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.nav-slash.green { color: #22c55e; }
+.nav-slash.blue { color: #3b82f6; }
+.nav-slash.purple { color: #a855f7; }
+.nav-slash.teal { color: #10b981; }
+
+.nav-text {
+  font-size: 12.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  display: inline-block;
+  transform: skewX(12deg);
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-item:hover .nav-text {
+  color: #fff;
+}
+
+.nav-item:hover .nav-slash {
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+/* Wallet Pill */
+.wallet-container-slanted {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 6px 14px;
+  transform: skewX(-12deg);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.wallet-container-slanted:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(16, 185, 129, 0.3);
+  transform: skewX(-12deg) scale(1.04);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+}
+
+.wallet-container-slanted .wallet-slash {
+  font-family: var(--font-outfit), sans-serif;
+  font-weight: 900;
+  font-size: 15px;
+  color: #10b981;
+  display: inline-block;
+  transform: skewX(12deg);
+  transition: filter 0.3s ease;
+}
+
+.wallet-container-slanted:hover .wallet-slash {
+  filter: drop-shadow(0 0 6px #10b981);
+}
+
+.wallet-container-slanted .wallet-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.1;
+  transform: skewX(12deg);
+}
+
+.wallet-container-slanted .wallet-address {
+  font-size: 9px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.05em;
+}
+
+.wallet-container-slanted .wallet-balance {
+  font-size: 11px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+/* Overhauled Premium Console Footer Styles */
+.console-footer-overhaul {
+  margin-top: 100px;
+  padding: 48px 0 32px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.console-footer-overhaul .footer-grid-clean {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 768px) {
+  .console-footer-overhaul .footer-grid-clean {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+.console-footer-overhaul .footer-brand-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.console-footer-overhaul .footer-subtext {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #64748b;
+  max-width: 280px;
+}
+
+.console-footer-overhaul .footer-links-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.console-footer-overhaul .footer-col-lbl {
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 0.1em;
+}
+
+.console-footer-overhaul .footer-vertical-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.console-footer-overhaul .footer-bottom-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.04);
+  margin-bottom: 24px;
+}
+
+.console-footer-overhaul .footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #64748b;
+}
+
+@media (max-width: 768px) {
+  .console-footer-overhaul .footer-bottom {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+}
+
+.console-footer-overhaul .footer-socials {
+  display: flex;
+  gap: 12px;
+}
+
+.console-footer-overhaul .social-link {
+  color: #64748b;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.console-footer-overhaul .social-link:hover {
+  color: #fff;
 }
