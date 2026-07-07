@@ -5,20 +5,20 @@
   --bg-card: rgba(14, 21, 48, 0.55);
   --bg-card-hover: rgba(22, 33, 74, 0.7);
   
-  --color-primary: #5f3bf6;
-  --color-primary-light: #8367f8;
-  --color-accent: #9dff00; /* Neon Lime */
-  --color-accent-dim: rgba(157, 255, 0, 0.15);
+  --color-primary: #3b82f6; /* Set primary color to brand blue */
+  --color-primary-light: #60efff;
+  --color-accent: #22c55e; /* Brand Emerald Green */
+  --color-accent-dim: rgba(34, 197, 94, 0.15);
   
   --color-text-main: #f3f4f6;
   --color-text-muted: #9ca3af;
   --color-text-dim: #6b7280;
   
-  --color-success: #10b981;
+  --color-success: #22c55e;
   --color-danger: #ff2e74;
   --color-warning: #f59e0b;
 
-  --border-glow: rgba(95, 59, 246, 0.25);
+  --border-glow: rgba(34, 197, 94, 0.25);
   --border-light: rgba(255, 255, 255, 0.07);
   
   --sidebar-width: 260px;
@@ -71,9 +71,7 @@ a {
 
 /* Custom premium styles */
 .gradient-text {
-  background: linear-gradient(135deg, #fff 30%, var(--color-primary-light) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #ffffff;
 }
 
 .gradient-accent-text {
@@ -84,19 +82,19 @@ a {
 
 /* Glassmorphism containers */
 .glass-panel {
-  background: var(--bg-card);
+  background: rgba(10, 15, 30, 0.65);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-light);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 0px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
   transition: var(--transition-smooth);
 }
 
 .glass-panel:hover {
-  border-color: rgba(95, 59, 246, 0.4);
-  background: var(--bg-card-hover);
-  box-shadow: 0 8px 32px 0 rgba(95, 59, 246, 0.08);
+  border-color: rgba(0, 229, 255, 0.25);
+  background: rgba(10, 15, 30, 0.8);
+  box-shadow: 0 8px 32px 0 rgba(0, 229, 255, 0.05);
 }
 
 /* Page transitions */
@@ -147,7 +145,7 @@ a {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding-bottom: 32px;
+  padding-bottom: 24px;
   border-bottom: 1px solid var(--border-light);
 }
 
@@ -155,9 +153,7 @@ a {
   font-family: var(--font-outfit);
   font-size: 22px;
   font-weight: 800;
-  background: linear-gradient(135deg, #fff 0%, var(--color-primary-light) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #fff;
 }
 
 .sidebar-menu {
@@ -252,42 +248,59 @@ a {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background-color: var(--color-primary);
-  color: #fff;
-  font-weight: 600;
-  padding: 12px 24px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--color-accent);
+  color: #030712;
+  font-weight: 900;
+  padding: 10px 22px;
+  border-radius: 0px;
+  transform: skewX(-12deg);
+  border: 1px solid var(--color-accent);
   cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-outfit), sans-serif;
   transition: var(--transition-smooth);
 }
 
-.btn-primary:hover {
-  background-color: var(--color-primary-light);
-  box-shadow: 0 0 20px rgba(95, 59, 246, 0.4);
-  transform: translateY(-1px);
+.btn-primary > * {
+  transform: skewX(12deg);
 }
 
-.btn-accent {
+.btn-primary:hover {
+  background-color: #aeff22;
+  border-color: #aeff22;
+  box-shadow: 0 0 20px rgba(157, 255, 0, 0.4);
+  transform: skewX(-12deg) translateY(-1px);
+}
+
+.btn-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background-color: var(--color-accent-dim);
-  color: var(--color-accent);
-  font-weight: 600;
-  padding: 12px 24px;
-  border-radius: 12px;
-  border: 1px solid rgba(157, 255, 0, 0.3);
+  background-color: rgba(255, 255, 255, 0.03);
+  color: #fff;
+  font-weight: 800;
+  padding: 10px 22px;
+  border-radius: 0px;
+  transform: skewX(-12deg);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-outfit), sans-serif;
   transition: var(--transition-smooth);
 }
 
-.btn-accent:hover {
-  background-color: var(--color-accent);
-  color: var(--bg-primary);
-  box-shadow: 0 0 20px rgba(157, 255, 0, 0.35);
-  transform: translateY(-1px);
+.btn-secondary > * {
+  transform: skewX(12deg);
+}
+
+.btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 15px rgba(157, 255, 0, 0.15);
+  transform: skewX(-12deg) translateY(-1px);
 }
 
 /* Status Pill */
@@ -296,9 +309,12 @@ a {
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  border-radius: 9999px;
-  font-size: 13px;
-  font-weight: 600;
+  border-radius: 0px;
+  transform: skewX(-12deg);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .status-pill.live {
@@ -547,13 +563,16 @@ a {
   background-image: url('/images/athlete_soccer_action.jpg');
   background-size: cover;
   background-position: center 20%;
-  opacity: 0.65;
-  filter: brightness(0.65) contrast(1.2) saturate(1.1);
+  opacity: 0.15;
+  filter: grayscale(1) brightness(0.35) contrast(1.35);
 }
 .hero-bg-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(30, 58, 138, 0.75) 0%, rgba(3, 7, 18, 0.8) 50%, rgba(34, 197, 94, 0.3) 100%);
+  background: 
+    radial-gradient(circle at 80% 15%, rgba(0, 229, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 20% 75%, rgba(34, 197, 94, 0.06) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(2, 6, 23, 0) 40%, #020617 100%);
 }
 
 /* Grid overlay */
@@ -2021,4 +2040,28 @@ a {
 
 .console-footer-overhaul .social-link:hover {
   color: #fff;
+}
+
+/* Ambient Cyberpunk Glow Orbs */
+.console-glow-orb {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  filter: blur(140px);
+  pointer-events: none;
+  z-index: 2;
+  transition: all 0.5s ease;
+}
+
+.console-glow-primary {
+  top: 5%;
+  right: 10%;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.35) 0%, transparent 75%); /* Glowing Blue */
+}
+
+.console-glow-accent {
+  bottom: 10%;
+  left: 5%;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.25) 0%, transparent 75%); /* Glowing Emerald Green */
 }

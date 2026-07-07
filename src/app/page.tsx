@@ -25,6 +25,12 @@ import {
   Database
 } from "lucide-react";
 
+import SashLogo from "@/components/ui/SashLogo";
+import SlantedNavItem from "@/components/ui/SlantedNavItem";
+import WalletBadge from "@/components/ui/WalletBadge";
+import PlayerCard from "@/components/ui/PlayerCard";
+import BracketDiagram from "@/components/ui/BracketDiagram";
+
 interface OptionOutcome {
   name: string;
   probability: number;
@@ -96,205 +102,6 @@ const CONSOLE_MATCHES: MatchContract[] = [
     oracleAccuracy: "99.88%"
   }
 ];
-
-function LandingPlayerCard({ 
-  name, 
-  position, 
-  flag, 
-  fotmobId, 
-  fps, 
-  yieldVal, 
-  accentColor 
-}: { 
-  name: string; 
-  position: string; 
-  flag: string; 
-  fotmobId: number; 
-  fps: string; 
-  yieldVal: string; 
-  accentColor: string; 
-}) {
-  const [hovered, setHovered] = useState(false);
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const el = e.currentTarget;
-    const elRect = el.getBoundingClientRect();
-    const x = e.clientX - elRect.left;
-    const y = e.clientY - elRect.top;
-    const xc = elRect.width / 2;
-    const yc = elRect.height / 2;
-    setRotateX((yc - y) / 5);
-    setRotateY((x - xc) / 5);
-  };
-
-  const handleMouseLeave = () => {
-    setHovered(false);
-    setRotateX(0);
-    setRotateY(0);
-  };
-
-  const getPositionGlow = (pos: string) => {
-    switch (pos) {
-      case "GK": return "#f59e0b";
-      case "DEF": return "#06b6d4";
-      case "MID": return "#a855f7";
-      case "FWD": return "#9dff00";
-      default: return "#00e5ff";
-    }
-  };
-
-  const glow = getPositionGlow(position);
-  const lastName = name.split(" ").slice(-1)[0];
-  const photoUrl = `https://images.fotmob.com/image_resources/playerimages/${fotmobId}.png`;
-
-  return (
-    <div 
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        width: "110px",
-        height: "165px",
-        position: "relative",
-        cursor: "pointer",
-        clipPath: "polygon(0% 0%, 100% 0%, 100% 82%, 50% 100%, 0% 82%)",
-        background: hovered 
-          ? `linear-gradient(135deg, var(--color-accent) 0%, ${accentColor} 100%)`
-          : `linear-gradient(135deg, ${accentColor}55 0%, rgba(255,255,255,0.05) 50%, ${accentColor}22 100%)`,
-        padding: "1.5px",
-        transition: "transform 0.1s ease, filter 0.3s ease",
-        transform: hovered 
-          ? `perspective(300px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.08) translateY(-4px)` 
-          : "perspective(300px) rotateX(0deg) rotateY(0deg) scale(1)",
-        filter: hovered 
-          ? `drop-shadow(0 15px 30px rgba(0,0,0,0.6)) drop-shadow(0 0 15px ${accentColor}88)` 
-          : `drop-shadow(0 6px 12px rgba(0,0,0,0.45))`,
-      }}
-    >
-      <div style={{
-        width: "100%",
-        height: "100%",
-        clipPath: "polygon(0% 0%, 100% 0%, 100% 82%, 50% 100%, 0% 82%)",
-        background: "linear-gradient(180deg, rgba(10, 20, 50, 0.95) 0%, rgba(5, 10, 25, 0.98) 100%)",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        padding: "10px 8px 26px 8px",
-        position: "relative",
-        overflow: "hidden"
-      }}>
-        {/* Holographic Glare Overlay */}
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          background: hovered 
-            ? `linear-gradient(${rotateY * 4 + 135}deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.06) 100%)`
-            : `linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 60%)`,
-          mixBlendMode: "overlay",
-          pointerEvents: "none",
-          zIndex: 5,
-          transition: "background 0.1s ease"
-        }} />
-
-        {hovered && (
-          <div style={{
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(135deg, rgba(255, 0, 128, 0.08) 0%, rgba(0, 255, 255, 0.08) 50%, rgba(255, 255, 0, 0.08) 100%)",
-            mixBlendMode: "color-dodge",
-            pointerEvents: "none",
-            zIndex: 4,
-            animation: "pulse 2s infinite alternate"
-          }} />
-        )}
-
-        {/* Card Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 10 }}>
-          <span style={{ fontSize: "11px" }}>
-            <span style={{ display: "inline-flex", borderRadius: "50%", overflow: "hidden", width: "13px", height: "13px", border: "0.5px solid rgba(255,255,255,0.2)" }}>
-              <img src={flag} alt="flag" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            </span>
-          </span>
-          <span style={{ 
-            fontSize: "8px", 
-            fontWeight: 850, 
-            background: glow, 
-            color: position === "FWD" || position === "MID" ? "#000" : "#fff",
-            padding: "1px 4px", 
-            borderRadius: "3px" 
-          }}>{position}</span>
-        </div>
-
-        {/* Player Avatar */}
-        <div style={{ 
-          width: "54px", 
-          height: "54px", 
-          margin: "4px auto", 
-          position: "relative",
-          zIndex: 10
-        }}>
-          <div style={{ width: "100%", height: "100%", position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <img 
-              src={photoUrl} 
-              alt={name}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "contain",
-                filter: "drop-shadow(0px 3px 5px rgba(0,0,0,0.6))",
-                zIndex: 2
-              }}
-            />
-            {/* Subtle background glow for the photo */}
-            <div style={{
-              position: "absolute",
-              inset: "10%",
-              borderRadius: "50%",
-              background: `radial-gradient(circle, ${glow}44 0%, transparent 70%)`,
-              filter: "blur(4px)",
-              zIndex: 1,
-              pointerEvents: "none"
-            }} />
-          </div>
-        </div>
-
-        {/* Player Name */}
-        <div style={{ 
-          fontSize: "10px", 
-          fontWeight: 800, 
-          textAlign: "center", 
-          lineHeight: "1.1",
-          color: "#fff",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          margin: "4px 0",
-          zIndex: 10,
-          textShadow: "0 1px 3px rgba(0,0,0,0.8)"
-        }}>
-          {lastName}
-        </div>
-
-        {/* Pricing / Points footer - Centered to prevent clipping from sloped edges */}
-        <div style={{ 
-          display: "flex", 
-          justifyContent: "center", 
-          alignItems: "center", 
-          gap: "6px",
-          borderTop: "1px solid rgba(255,255,255,0.08)", 
-          paddingTop: "4px",
-          zIndex: 10 
-        }}>
-          <span style={{ fontSize: "8px", color: "var(--color-text-muted)" }}>FPS {fps}</span>
-          <span style={{ fontSize: "8px", color: "rgba(255,255,255,0.2)" }}>•</span>
-          <span style={{ fontSize: "9px", fontWeight: 850, color: "var(--color-accent)" }}>{yieldVal}</span>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function LandingPage() {
   const [activeMatchId, setActiveMatchId] = useState<string>("match-1");
@@ -375,39 +182,17 @@ export default function LandingPage() {
         {/* Overhauled Navigation Bar */}
         <header className="console-header-overhaul">
           <Link href="/" className="header-logo-container">
-            <div className="logo-sashes">
-              <span className="logo-slash green"></span>
-              <span className="logo-slash blue"></span>
-              <span className="logo-slash purple"></span>
-              <span className="logo-slash teal"></span>
-            </div>
-            <span className="logo-text">AURA</span>
-            <span className="logo-ver">DEVNET.v1</span>
+            <SashLogo versionText="DEVNET.v1" showVersion={true} />
           </Link>
 
           <nav className="console-nav-overhaul">
-            <Link href="/dashboard" className="nav-item">
-              <span className="nav-slash green">/</span>
-              <span className="nav-text">Trade Portal</span>
-            </Link>
-            <Link href="/fantasy" className="nav-item">
-              <span className="nav-slash blue">/</span>
-              <span className="nav-text">Liquid Fantasy</span>
-            </Link>
-            <Link href="/bracket" className="nav-item">
-              <span className="nav-slash purple">/</span>
-              <span className="nav-text">Bracket Indexes</span>
-            </Link>
+            <SlantedNavItem href="/dashboard" slashColor="green">Trade Portal</SlantedNavItem>
+            <SlantedNavItem href="/fantasy" slashColor="blue">Liquid Fantasy</SlantedNavItem>
+            <SlantedNavItem href="/bracket" slashColor="purple">Bracket Indexes</SlantedNavItem>
           </nav>
 
           <div className="console-actions-overhaul">
-            <div className="wallet-container-slanted">
-              <span className="wallet-slash teal">/</span>
-              <div className="wallet-content">
-                <span className="wallet-address font-mono">GQZn...GK2P</span>
-                <span className="wallet-balance">995.40 SOL</span>
-              </div>
-            </div>
+            <WalletBadge address="GQZn...GK2P" balance="995.40 SOL" />
           </div>
         </header>
 
@@ -523,93 +308,7 @@ export default function LandingPage() {
             </div>
 
             {/* Column 2: Circular SVG Bracket Diagram */}
-            <div className="bracket-tree-diagram layout-flex-center">
-              <svg viewBox="0 0 360 360" className="w-full max-w-[320px] mx-auto">
-                <defs>
-                  <filter id="glow-green" x="-25%" y="-25%" width="150%" height="150%">
-                    <feGaussianBlur stdDeviation="3" result="blur" />
-                    <feMerge>
-                      <feMergeNode in="blur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                  <filter id="glow-blue" x="-25%" y="-25%" width="150%" height="150%">
-                    <feGaussianBlur stdDeviation="3" result="blur" />
-                    <feMerge>
-                      <feMergeNode in="blur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                </defs>
-
-                {/* Circular Concentric Rings */}
-                <circle cx="180" cy="180" r="140" fill="none" stroke="rgba(255, 255, 255, 0.03)" strokeWidth="1" />
-                <circle cx="180" cy="180" r="90" fill="none" stroke="rgba(255, 255, 255, 0.03)" strokeWidth="1" />
-                <circle cx="180" cy="180" r="40" fill="none" stroke="rgba(255, 255, 255, 0.03)" strokeWidth="1" />
-
-                {/* Radial Connection Vectors */}
-                {/* Left Branch - Argentina side */}
-                <path d="M 40 180 L 90 180" fill="none" stroke="#22c55e" strokeWidth="2.5" filter="url(#glow-green)" />
-                <path d="M 50 100 L 90 180" fill="none" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="1.5" />
-                <path d="M 50 260 L 90 180" fill="none" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="1.5" />
-                <path d="M 90 180 L 140 180" fill="none" stroke="#22c55e" strokeWidth="2" />
-
-                {/* Right Branch - France side */}
-                <path d="M 320 180 L 270 180" fill="none" stroke="#3b82f6" strokeWidth="2.5" filter="url(#glow-blue)" />
-                <path d="M 310 100 L 270 180" fill="none" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="1.5" />
-                <path d="M 310 260 L 270 180" fill="none" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="1.5" />
-                <path d="M 270 180 L 220 180" fill="none" stroke="rgba(255, 255, 255, 0.15)" strokeWidth="1.5" />
-
-                {/* Outer Round Badges (Flagcdn image nodes via foreignObject) */}
-                <foreignObject x="35" y="85" width="30" height="30">
-                  <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <img src="https://flagcdn.com/w80/hr.png" alt="Croatia" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  </div>
-                </foreignObject>
-                <circle cx="50" cy="100" r="15" fill="none" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.5" />
-
-                <foreignObject x="35" y="245" width="30" height="30">
-                  <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <img src="https://flagcdn.com/w80/br.png" alt="Brazil" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  </div>
-                </foreignObject>
-                <circle cx="50" cy="260" r="15" fill="none" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.5" />
-
-                <foreignObject x="295" y="85" width="30" height="30">
-                  <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <img src="https://flagcdn.com/w80/ma.png" alt="Morocco" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  </div>
-                </foreignObject>
-                <circle cx="310" cy="100" r="15" fill="none" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.5" />
-
-                <foreignObject x="295" y="245" width="30" height="30">
-                  <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <img src="https://flagcdn.com/w80/pt.png" alt="Portugal" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  </div>
-                </foreignObject>
-                <circle cx="310" cy="260" r="15" fill="none" stroke="rgba(255, 255, 255, 0.25)" strokeWidth="1.5" />
-
-                {/* Semifinals Badges */}
-                <foreignObject x="70" y="160" width="40" height="40">
-                  <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <img src="https://flagcdn.com/w80/ar.png" alt="Argentina" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  </div>
-                </foreignObject>
-                <circle cx="90" cy="180" r="20" fill="none" stroke="#22c55e" strokeWidth="2.5" filter="url(#glow-green)" />
-
-                <foreignObject x="250" y="160" width="40" height="40">
-                  <div style={{ width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <img src="https://flagcdn.com/w80/fr.png" alt="France" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  </div>
-                </foreignObject>
-                <circle cx="270" cy="180" r="20" fill="none" stroke="#3b82f6" strokeWidth="2.5" filter="url(#glow-blue)" />
-
-                {/* Winner Center Node */}
-                <circle cx="180" cy="180" r="26" fill="rgba(34, 197, 94, 0.05)" stroke="#22c55e" strokeWidth="1.5" strokeDasharray="3 3" />
-                <circle cx="180" cy="180" r="20" fill="#090d1a" stroke="#22c55e" strokeWidth="2" />
-                <text x="180" y="183.5" fill="#22c55e" fontSize="11" fontWeight="bold" textAnchor="middle">🏆</text>
-              </svg>
-            </div>
+            <BracketDiagram />
           </div>
         </section>
 
@@ -618,7 +317,7 @@ export default function LandingPage() {
           <div className="fantasy-preview-grid">
             {/* Column 1: Dynamic Pentagonal Shield Roster Cards */}
             <div className="fantasy-roster-grid">
-              <LandingPlayerCard
+              <PlayerCard
                 name="Lionel Messi"
                 position="MID"
                 flag="https://flagcdn.com/w80/ar.png"
@@ -627,7 +326,7 @@ export default function LandingPage() {
                 yieldVal="+18.5%"
                 accentColor="#22c55e"
               />
-              <LandingPlayerCard
+              <PlayerCard
                 name="Kylian Mbappé"
                 position="FWD"
                 flag="https://flagcdn.com/w80/fr.png"
@@ -636,7 +335,7 @@ export default function LandingPage() {
                 yieldVal="+15.2%"
                 accentColor="#3b82f6"
               />
-              <LandingPlayerCard
+              <PlayerCard
                 name="Emiliano Martínez"
                 position="GK"
                 flag="https://flagcdn.com/w80/ar.png"
@@ -698,14 +397,7 @@ export default function LandingPage() {
             {/* Column 1: Brand Info */}
             <div className="footer-brand-col">
               <div className="header-logo-container mb-3">
-                <div className="logo-sashes">
-                  <span className="logo-slash green"></span>
-                  <span className="logo-slash blue"></span>
-                  <span className="logo-slash purple"></span>
-                  <span className="logo-slash teal"></span>
-                </div>
-                <span className="logo-text">AURA</span>
-                <span className="logo-ver font-mono">DEVNET</span>
+                <SashLogo versionText="DEVNET" showVersion={true} />
               </div>
               <p className="footer-subtext">
                 Sports prediction index protocol on Solana. Verified on-chain consensus settling instantly.
@@ -716,18 +408,9 @@ export default function LandingPage() {
             <div className="footer-links-col">
               <span className="footer-col-lbl">[ PROTOCOL ]</span>
               <div className="footer-vertical-links">
-                <Link href="/api-dump" className="nav-item">
-                  <span className="nav-slash green">/</span>
-                  <span className="nav-text">API Raw Dump</span>
-                </Link>
-                <Link href="/admin" className="nav-item">
-                  <span className="nav-slash blue">/</span>
-                  <span className="nav-text">TxLINE Admin</span>
-                </Link>
-                <a href="https://txline-docs.txodds.com" target="_blank" rel="noopener noreferrer" className="nav-item">
-                  <span className="nav-slash purple">/</span>
-                  <span className="nav-text">TxLINE Docs</span>
-                </a>
+                <SlantedNavItem href="/api-dump" slashColor="green">API Raw Dump</SlantedNavItem>
+                <SlantedNavItem href="/admin" slashColor="blue">TxLINE Admin</SlantedNavItem>
+                <SlantedNavItem href="https://txline-docs.txodds.com" slashColor="purple">TxLINE Docs</SlantedNavItem>
               </div>
             </div>
 
@@ -735,18 +418,9 @@ export default function LandingPage() {
             <div className="footer-links-col">
               <span className="footer-col-lbl">[ MARKETS ]</span>
               <div className="footer-vertical-links">
-                <Link href="/markets" className="nav-item">
-                  <span className="nav-slash teal">/</span>
-                  <span className="nav-text">Fantasy Markets</span>
-                </Link>
-                <Link href="/portfolio" className="nav-item">
-                  <span className="nav-slash green">/</span>
-                  <span className="nav-text">Fan Portfolio</span>
-                </Link>
-                <Link href="/dashboard" className="nav-item">
-                  <span className="nav-slash blue">/</span>
-                  <span className="nav-text">Trade Portal</span>
-                </Link>
+                <SlantedNavItem href="/markets" slashColor="teal">Fantasy Markets</SlantedNavItem>
+                <SlantedNavItem href="/portfolio" slashColor="green">Fan Portfolio</SlantedNavItem>
+                <SlantedNavItem href="/dashboard" slashColor="blue">Trade Portal</SlantedNavItem>
               </div>
             </div>
           </div>

@@ -29,9 +29,9 @@ export default async function AdminPage({ searchParams }: { searchParams: { sync
 
       <div className="grid-cols-2">
         {/* Left Column: TxLINE Connection Health */}
-        <div className="glass-panel" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "20px" }}>
-          <h3 style={{ fontSize: "18px", display: "flex", alignItems: "center", gap: "8px", borderBottom: "1px solid var(--border-light)", paddingBottom: "12px" }}>
-            <ShieldCheck size={20} color="var(--color-accent)" />
+        <div className="glass-panel" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "20px", borderRadius: "0px" }}>
+          <h3 style={{ fontSize: "18px", display: "flex", alignItems: "center", gap: "8px", borderBottom: "1px solid var(--border-light)", paddingBottom: "12px", fontWeight: 800 }}>
+            <span style={{ color: "var(--color-accent)", marginRight: "6px" }}>/</span>
             API Connection Status
           </h3>
 
@@ -63,9 +63,11 @@ export default async function AdminPage({ searchParams }: { searchParams: { sync
           </div>
 
           <form action={triggerSync} style={{ marginTop: "12px" }}>
-            <button type="submit" className="btn-primary" style={{ width: "100%" }}>
-              <RefreshCcw size={16} />
-              Force Database Sync
+            <button type="submit" className="btn-primary" style={{ width: "100%", borderRadius: "0px" }}>
+              <span style={{ display: "inline-block", transform: "skewX(12deg)" }}>
+                <RefreshCcw size={16} style={{ display: "inline", marginRight: "6px", verticalAlign: "middle" }} />
+                Force Database Sync
+              </span>
             </button>
             {synced && (
               <p style={{ textAlign: "center", color: "var(--color-success)", fontSize: "12px", marginTop: "8px", fontWeight: 600 }}>
@@ -76,9 +78,9 @@ export default async function AdminPage({ searchParams }: { searchParams: { sync
         </div>
 
         {/* Right Column: Local Keypair & Solana Wallet */}
-        <div className="glass-panel" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "20px" }}>
-          <h3 style={{ fontSize: "18px", display: "flex", alignItems: "center", gap: "8px", borderBottom: "1px solid var(--border-light)", paddingBottom: "12px" }}>
-            <Key size={20} color="var(--color-primary-light)" />
+        <div className="glass-panel" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "20px", borderRadius: "0px" }}>
+          <h3 style={{ fontSize: "18px", display: "flex", alignItems: "center", gap: "8px", borderBottom: "1px solid var(--border-light)", paddingBottom: "12px", fontWeight: 800 }}>
+            <span style={{ color: "var(--color-accent)", marginRight: "6px" }}>/</span>
             Local Solana Keypair Config
           </h3>
 
@@ -93,11 +95,13 @@ export default async function AdminPage({ searchParams }: { searchParams: { sync
               </span>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               <span style={{ fontSize: "12px", color: "var(--color-text-muted)" }}>Public Key Address:</span>
-              <span style={{ fontFamily: "monospace", fontSize: "12px", background: "rgba(0,0,0,0.3)", padding: "8px", borderRadius: "6px", wordBreak: "break-all" }}>
-                {status.walletAddress}
-              </span>
+              <div style={{ transform: "skewX(-12deg)", border: "1px solid var(--border-light)", background: "rgba(0,0,0,0.3)", padding: "8px 12px", margin: "0 4px" }}>
+                <span style={{ transform: "skewX(12deg)", display: "block", fontFamily: "monospace", fontSize: "12px", wordBreak: "break-all" }}>
+                  {status.walletAddress}
+                </span>
+              </div>
             </div>
 
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
@@ -110,19 +114,24 @@ export default async function AdminPage({ searchParams }: { searchParams: { sync
             padding: "12px", 
             background: "rgba(245, 158, 11, 0.05)", 
             border: "1px solid rgba(245, 158, 11, 0.25)",
+            borderRadius: "0px",
+            transform: "skewX(-12deg)",
+            margin: "0 6px",
             fontSize: "12px",
             lineHeight: "1.5",
             color: "var(--color-warning)"
           }}>
-            <strong>Free Tier Subscriptions:</strong> Registration on-chain requires a small amount of SOL for transaction fees. If your balance is 0 SOL, fund this wallet address on Devnet using a faucet tool.
+            <div style={{ transform: "skewX(12deg)" }}>
+              <strong>Free Tier Subscriptions:</strong> Registration on-chain requires a small amount of SOL for transaction fees. If your balance is 0 SOL, fund this wallet address on Devnet using a faucet tool.
+            </div>
           </div>
         </div>
       </div>
 
       {/* Database Diagnostic logs */}
-      <section className="glass-panel" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
-        <h3 style={{ fontSize: "18px", display: "flex", alignItems: "center", gap: "8px" }}>
-          <Terminal size={18} />
+      <section className="glass-panel" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "16px", borderRadius: "0px" }}>
+        <h3 style={{ fontSize: "18px", display: "flex", alignItems: "center", gap: "8px", fontWeight: 800 }}>
+          <span style={{ color: "var(--color-accent)", marginRight: "6px" }}>/</span>
           Database Diagnostic Status
         </h3>
 
@@ -131,7 +140,7 @@ export default async function AdminPage({ searchParams }: { searchParams: { sync
           fontSize: "12px", 
           background: "rgba(0,0,0,0.4)", 
           padding: "16px", 
-          borderRadius: "8px",
+          borderRadius: "0px",
           display: "flex",
           flexDirection: "column",
           gap: "8px",

@@ -66,15 +66,15 @@ export default async function MarketsPage({ searchParams }: { searchParams: { ma
   const success = searchParams.success === "true";
 
   return (
-    <div className="grid-cols-3" style={{ alignItems: "start" }}>
+    <div className="grid-cols-3" style={{ alignItems: "start", gap: "24px" }}>
       {/* Left Column: Markets List */}
-      <div className="glass-panel" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
-        <h3 style={{ fontSize: "18px", display: "flex", alignItems: "center", gap: "8px" }}>
-          <TrendingUp size={18} color="var(--color-accent)" />
+      <div className="glass-panel" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px", borderRadius: "0px" }}>
+        <h3 style={{ fontSize: "18px", display: "flex", alignItems: "center", gap: "8px", fontWeight: 800 }}>
+          <span style={{ color: "var(--color-accent)", fontWeight: 900 }}>/</span>
           Active Markets
         </h3>
         
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {markets.map(m => {
             const isActive = m.id === activeId;
             return (
@@ -84,18 +84,22 @@ export default async function MarketsPage({ searchParams }: { searchParams: { ma
                 className="glass-panel" 
                 style={{ 
                   padding: "16px", 
-                  background: isActive ? "rgba(95, 59, 246, 0.12)" : "rgba(255, 255, 255, 0.01)",
-                  borderColor: isActive ? "var(--color-primary-light)" : "var(--border-light)",
+                  background: isActive ? "rgba(34, 197, 94, 0.1)" : "rgba(255, 255, 255, 0.01)",
+                  borderColor: isActive ? "var(--color-accent)" : "var(--border-light)",
+                  borderRadius: "0px",
+                  transform: "skewX(-12deg)",
+                  margin: "0 6px",
                   display: "flex",
                   justifyContent: "space-between",
-                  alignItems: "center"
+                  alignItems: "center",
+                  transition: "var(--transition-smooth)"
                 }}
               >
-                <div>
-                  <h4 style={{ fontSize: "14px", color: isActive ? "#fff" : "var(--color-text-main)" }}>{m.name}</h4>
+                <div style={{ transform: "skewX(12deg)" }}>
+                  <h4 style={{ fontSize: "14px", color: isActive ? "#fff" : "var(--color-text-main)", fontWeight: 700 }}>{m.name}</h4>
                   <span style={{ fontSize: "11px", color: "var(--color-text-dim)", textTransform: "uppercase" }}>{m.type}</span>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                <div style={{ transform: "skewX(12deg)", display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
                   <span style={{ fontSize: "16px", fontWeight: 800, color: "var(--color-accent)" }}>{m.yesPrice}¢</span>
                   <span style={{ fontSize: "9px", color: "var(--color-text-dim)" }}>YES</span>
                 </div>
@@ -106,7 +110,7 @@ export default async function MarketsPage({ searchParams }: { searchParams: { ma
       </div>
 
       {/* Right Column: Active Market Trading Panel */}
-      <div className="glass-panel" style={{ padding: "24px", gridColumn: "span 2", display: "flex", flexDirection: "column", gap: "24px" }}>
+      <div className="glass-panel" style={{ padding: "24px", gridColumn: "span 2", display: "flex", flexDirection: "column", gap: "24px", borderRadius: "0px" }}>
         {!selectedMarket ? (
           <div style={{ textAlign: "center", padding: "80px", color: "var(--color-text-dim)" }}>
             <HelpCircle size={48} style={{ marginBottom: "16px", opacity: 0.3 }} />
@@ -117,13 +121,26 @@ export default async function MarketsPage({ searchParams }: { searchParams: { ma
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div>
-                  <span style={{ fontSize: "11px", textTransform: "uppercase", fontWeight: 700, color: "var(--color-primary-light)" }}>
-                    {selectedMarket.type.replace("_", " ")}
+                  <span style={{ 
+                    background: "rgba(34, 197, 94, 0.15)", 
+                    border: "1px solid var(--color-accent)",
+                    padding: "3px 8px", 
+                    borderRadius: "0px",
+                    transform: "skewX(-12deg)",
+                    display: "inline-block",
+                    fontSize: "11px",
+                    textTransform: "uppercase",
+                    color: "var(--color-accent)",
+                    letterSpacing: "0.5px"
+                  }}>
+                    <span style={{ display: "inline-block", transform: "skewX(12deg)" }}>
+                      {selectedMarket.type.replace("_", " ")}
+                    </span>
                   </span>
-                  <h2 style={{ fontSize: "24px", marginTop: "4px" }}>{selectedMarket.name}</h2>
+                  <h2 style={{ fontSize: "24px", marginTop: "8px", fontWeight: 800 }}>{selectedMarket.name}</h2>
                 </div>
                 {success && (
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--color-success)", fontSize: "13px", fontWeight: 600, background: "rgba(16, 185, 129, 0.1)", padding: "6px 12px", borderRadius: "6px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--color-success)", fontSize: "13px", fontWeight: 600, background: "rgba(16, 185, 129, 0.1)", padding: "6px 12px", borderRadius: "0px", border: "1px solid rgba(16, 185, 129, 0.15)" }}>
                     <CheckCircle2 size={14} />
                     Order Placed
                   </div>
@@ -135,22 +152,44 @@ export default async function MarketsPage({ searchParams }: { searchParams: { ma
             </div>
 
             {/* Price Estimator Widget */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-              <div className="glass-panel" style={{ padding: "16px", textAlign: "center", borderLeft: "4px solid var(--color-accent)" }}>
-                <span style={{ fontSize: "12px", color: "var(--color-text-dim)", textTransform: "uppercase", fontWeight: 600 }}>YES Shares Price</span>
-                <h3 style={{ fontSize: "36px", color: "var(--color-accent)", margin: "8px 0" }}>{selectedMarket.yesPrice}¢</h3>
-                <span style={{ fontSize: "11px", color: "var(--color-text-muted)" }}>Pays 100¢ if Resolved YES</span>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+              <div className="glass-panel" style={{ 
+                padding: "20px 16px", 
+                textAlign: "center", 
+                borderRadius: "0px", 
+                transform: "skewX(-12deg)",
+                margin: "0 10px",
+                background: "linear-gradient(135deg, rgba(34, 197, 94, 0.08) 0%, rgba(10, 15, 38, 0.8) 100%)",
+                border: "1px solid rgba(34, 197, 94, 0.3)",
+                borderLeft: "4px solid var(--color-accent)"
+              }}>
+                <div style={{ transform: "skewX(12deg)" }}>
+                  <span style={{ fontSize: "12px", color: "var(--color-text-dim)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.5px" }}>YES Shares Price</span>
+                  <h3 style={{ fontSize: "38px", fontWeight: 900, color: "var(--color-accent)", margin: "6px 0", fontFamily: "monospace" }}>{selectedMarket.yesPrice}¢</h3>
+                  <span style={{ fontSize: "11px", color: "var(--color-text-muted)" }}>Pays 100¢ if Resolved YES</span>
+                </div>
               </div>
-              <div className="glass-panel" style={{ padding: "16px", textAlign: "center", borderLeft: "4px solid var(--color-danger)" }}>
-                <span style={{ fontSize: "12px", color: "var(--color-text-dim)", textTransform: "uppercase", fontWeight: 600 }}>NO Shares Price</span>
-                <h3 style={{ fontSize: "36px", color: "var(--color-danger)", margin: "8px 0" }}>{selectedMarket.noPrice}¢</h3>
-                <span style={{ fontSize: "11px", color: "var(--color-text-muted)" }}>Pays 100¢ if Resolved NO</span>
+              <div className="glass-panel" style={{ 
+                padding: "20px 16px", 
+                textAlign: "center", 
+                borderRadius: "0px", 
+                transform: "skewX(-12deg)",
+                margin: "0 10px",
+                background: "linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(10, 15, 38, 0.8) 100%)",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+                borderLeft: "4px solid var(--color-danger)"
+              }}>
+                <div style={{ transform: "skewX(12deg)" }}>
+                  <span style={{ fontSize: "12px", color: "var(--color-text-dim)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.5px" }}>NO Shares Price</span>
+                  <h3 style={{ fontSize: "38px", fontWeight: 900, color: "var(--color-danger)", margin: "6px 0", fontFamily: "monospace" }}>{selectedMarket.noPrice}¢</h3>
+                  <span style={{ fontSize: "11px", color: "var(--color-text-muted)" }}>Pays 100¢ if Resolved NO</span>
+                </div>
               </div>
             </div>
 
             {/* Trade Submission Form */}
-            <form action={placeTrade} className="glass-panel" style={{ padding: "20px", background: "rgba(0,0,0,0.15)", display: "flex", flexDirection: "column", gap: "16px" }}>
-              <h4 style={{ fontSize: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
+            <form action={placeTrade} className="glass-panel" style={{ padding: "20px", borderRadius: "0px", background: "rgba(0,0,0,0.15)", display: "flex", flexDirection: "column", gap: "16px" }}>
+              <h4 style={{ fontSize: "16px", display: "flex", alignItems: "center", gap: "8px", fontWeight: 700 }}>
                 <ShoppingBag size={16} />
                 Trade Shares Order form
               </h4>
@@ -160,63 +199,87 @@ export default async function MarketsPage({ searchParams }: { searchParams: { ma
                 {/* Order Type */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                   <label style={{ fontSize: "12px", color: "var(--color-text-muted)" }}>I want to predict:</label>
-                  <select 
-                    name="orderType" 
-                    className="premium-select"
-                    style={{ 
-                      padding: "10px 30px 10px 12px"
-                    }}
-                  >
-                    <option value="BuyYes">YES (Buy Outcome)</option>
-                    <option value="BuyNo">NO (Buy Opposition)</option>
-                  </select>
+                  <div style={{ transform: "skewX(-12deg)", border: "1px solid var(--border-light)", background: "var(--bg-secondary)", display: "flex", alignItems: "center" }}>
+                    <select 
+                      name="orderType" 
+                      className="premium-select"
+                      style={{ 
+                        transform: "skewX(12deg)",
+                        background: "none",
+                        border: "none",
+                        width: "100%",
+                        padding: "10px 30px 10px 12px"
+                      }}
+                    >
+                      <option value="BuyYes" style={{ background: "#0b0f19" }}>YES (Buy Outcome)</option>
+                      <option value="BuyNo" style={{ background: "#0b0f19" }}>NO (Buy Opposition)</option>
+                    </select>
+                  </div>
                 </div>
 
                 {/* Price (1-99 cents) */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                   <label style={{ fontSize: "12px", color: "var(--color-text-muted)" }}>Limit Price (cents per share):</label>
-                  <input 
-                    type="number" 
-                    name="price" 
-                    min="1" 
-                    max="99" 
-                    defaultValue={selectedMarket.yesPrice}
-                    style={{ 
-                      background: "var(--bg-secondary)", 
-                      color: "#fff", 
-                      border: "1px solid var(--border-light)", 
-                      borderRadius: "8px", 
-                      padding: "10px",
-                      outline: "none"
-                    }}
-                    required
-                  />
+                  <div style={{ transform: "skewX(-12deg)", border: "1px solid var(--border-light)", background: "var(--bg-secondary)", padding: "0 10px" }}>
+                    <input 
+                      type="number" 
+                      name="price" 
+                      min="1" 
+                      max="99" 
+                      defaultValue={selectedMarket.yesPrice}
+                      style={{ 
+                        transform: "skewX(12deg)",
+                        background: "none", 
+                        color: "#fff", 
+                        border: "none", 
+                        width: "100%",
+                        padding: "10px 0",
+                        outline: "none"
+                      }}
+                      required
+                    />
+                  </div>
                 </div>
 
                 {/* Quantity */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                   <label style={{ fontSize: "12px", color: "var(--color-text-muted)" }}>Quantity (shares count):</label>
-                  <input 
-                    type="number" 
-                    name="sharesCount" 
-                    min="1" 
-                    defaultValue="10"
-                    style={{ 
-                      background: "var(--bg-secondary)", 
-                      color: "#fff", 
-                      border: "1px solid var(--border-light)", 
-                      borderRadius: "8px", 
-                      padding: "10px",
-                      outline: "none"
-                    }}
-                    required
-                  />
+                  <div style={{ transform: "skewX(-12deg)", border: "1px solid var(--border-light)", background: "var(--bg-secondary)", padding: "0 10px" }}>
+                    <input 
+                      type="number" 
+                      name="sharesCount" 
+                      min="1" 
+                      defaultValue="10"
+                      style={{ 
+                        transform: "skewX(12deg)",
+                        background: "none", 
+                        color: "#fff", 
+                        border: "none", 
+                        width: "100%",
+                        padding: "10px 0",
+                        outline: "none"
+                      }}
+                      required
+                    />
+                  </div>
                 </div>
               </div>
 
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <button type="submit" className="btn-primary" style={{ minWidth: "150px" }}>
-                  Submit Order
+                <button 
+                  type="submit" 
+                  className="btn-secondary" 
+                  style={{ 
+                    minWidth: "150px", 
+                    borderRadius: "0px", 
+                    transform: "skewX(-12deg)", 
+                    background: "var(--color-accent-dim)", 
+                    border: "1px solid var(--color-accent)", 
+                    color: "var(--color-accent)",
+                    height: "38px"
+                  }}
+                >
+                  <span style={{ display: "inline-block", transform: "skewX(12deg)" }}>Submit Order</span>
                 </button>
               </div>
             </form>
@@ -224,8 +287,10 @@ export default async function MarketsPage({ searchParams }: { searchParams: { ma
             {/* Trade History logs */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
               {/* Open Book Orders */}
-              <div className="glass-panel" style={{ padding: "16px", background: "rgba(0,0,0,0.05)" }}>
-                <h4 style={{ fontSize: "14px", borderBottom: "1px solid var(--border-light)", paddingBottom: "8px", marginBottom: "12px" }}>Active Order Book</h4>
+              <div className="glass-panel" style={{ padding: "16px", background: "rgba(0,0,0,0.05)", borderRadius: "0px" }}>
+                <h4 style={{ fontSize: "14px", borderBottom: "1px solid var(--border-light)", paddingBottom: "8px", marginBottom: "12px", fontWeight: 700 }}>
+                  <span style={{ color: "var(--color-accent)", marginRight: "6px" }}>/</span>Active Order Book
+                </h4>
                 {openOrders.length === 0 ? (
                   <p style={{ color: "var(--color-text-dim)", fontSize: "12px" }}>No active limit orders listed.</p>
                 ) : (
@@ -243,8 +308,10 @@ export default async function MarketsPage({ searchParams }: { searchParams: { ma
               </div>
 
               {/* Executed Trades */}
-              <div className="glass-panel" style={{ padding: "16px", background: "rgba(0,0,0,0.05)" }}>
-                <h4 style={{ fontSize: "14px", borderBottom: "1px solid var(--border-light)", paddingBottom: "8px", marginBottom: "12px" }}>Match Execution History</h4>
+              <div className="glass-panel" style={{ padding: "16px", background: "rgba(0,0,0,0.05)", borderRadius: "0px" }}>
+                <h4 style={{ fontSize: "14px", borderBottom: "1px solid var(--border-light)", paddingBottom: "8px", marginBottom: "12px", fontWeight: 700 }}>
+                  <span style={{ color: "var(--color-accent)", marginRight: "6px" }}>/</span>Match Execution History
+                </h4>
                 {trades.length === 0 ? (
                   <p style={{ color: "var(--color-text-dim)", fontSize: "12px" }}>No matches traded yet.</p>
                 ) : (

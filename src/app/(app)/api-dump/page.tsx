@@ -57,17 +57,17 @@ export default async function ApiDumpPage() {
   return (
     <div style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "24px" }}>
       <div>
-        <h2 style={{ fontSize: "22px", color: "var(--color-primary-light)" }}>TxLINE API Raw Data Dump</h2>
+        <h2 style={{ fontSize: "22px", fontWeight: 800 }}>TxLINE API Raw Data Dump</h2>
         <p style={{ color: "var(--color-text-muted)", fontSize: "14px", marginTop: "4px" }}>
           Real-time diagnostics showing raw communication with the TxLINE sports oracle API.
         </p>
       </div>
 
-      <div className="glass-panel" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
-        <h3 style={{ fontSize: "16px", borderBottom: "1px solid var(--border-light)", paddingBottom: "8px" }}>
-          1. Connection & Wallet Status
+      <div className="glass-panel" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px", borderRadius: "0px" }}>
+        <h3 style={{ fontSize: "16px", borderBottom: "1px solid var(--border-light)", paddingBottom: "8px", fontWeight: 800 }}>
+          <span style={{ color: "var(--color-accent)", marginRight: "6px" }}>/</span>1. Connection & Wallet Status
         </h3>
-        <pre style={{ background: "rgba(0,0,0,0.3)", padding: "12px", borderRadius: "8px", fontSize: "12px", overflowX: "auto" }}>
+        <pre style={{ background: "rgba(0,0,0,0.3)", padding: "12px", borderRadius: "0px", fontSize: "12px", overflowX: "auto" }}>
           {JSON.stringify({
             network: status.network,
             apiEndpoint: status.apiEndpoint,
@@ -79,16 +79,16 @@ export default async function ApiDumpPage() {
         </pre>
       </div>
 
-      <div className="glass-panel" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
-        <h3 style={{ fontSize: "16px", borderBottom: "1px solid var(--border-light)", paddingBottom: "8px" }}>
-          2. Guest Authentication Flow
+      <div className="glass-panel" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px", borderRadius: "0px" }}>
+        <h3 style={{ fontSize: "16px", borderBottom: "1px solid var(--border-light)", paddingBottom: "8px", fontWeight: 800 }}>
+          <span style={{ color: "var(--color-accent)", marginRight: "6px" }}>/</span>2. Guest Authentication Flow
         </h3>
         <div style={{ fontSize: "13px" }}>
           <strong>Target Endpoint:</strong> <code>{status.apiEndpoint}/auth/guest/start</code>
         </div>
         <div>
           <strong>Guest JWT (Truncated):</strong>
-          <pre style={{ background: "rgba(0,0,0,0.3)", padding: "12px", borderRadius: "8px", fontSize: "12px", wordBreak: "break-all", whiteSpace: "pre-wrap" }}>
+          <pre style={{ background: "rgba(0,0,0,0.3)", padding: "12px", borderRadius: "0px", fontSize: "12px", wordBreak: "break-all", whiteSpace: "pre-wrap" }}>
             {guestJwt !== "None" ? `${guestJwt.substring(0, 100)}... [Length: ${guestJwt.length}]` : "None"}
           </pre>
         </div>
@@ -99,9 +99,9 @@ export default async function ApiDumpPage() {
         )}
       </div>
 
-      <div className="glass-panel" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
-        <h3 style={{ fontSize: "16px", borderBottom: "1px solid var(--border-light)", paddingBottom: "8px" }}>
-          3. Raw Fixtures Snapshot Query
+      <div className="glass-panel" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "16px", borderRadius: "0px" }}>
+        <h3 style={{ fontSize: "16px", borderBottom: "1px solid var(--border-light)", paddingBottom: "8px", fontWeight: 800 }}>
+          <span style={{ color: "var(--color-accent)", marginRight: "6px" }}>/</span>3. Raw Fixtures Snapshot Query
         </h3>
         <div style={{ fontSize: "13px" }}>
           <strong>Target Endpoint:</strong> <code>{status.apiEndpoint}/api/fixtures/snapshot</code>
@@ -111,7 +111,7 @@ export default async function ApiDumpPage() {
             <div style={{ color: "var(--color-success)", fontSize: "13px", marginBottom: "8px" }}>
               <strong>Status:</strong> 200 OK (Received {apiResponse.length} fixtures)
             </div>
-            <pre style={{ background: "rgba(0,0,0,0.3)", padding: "12px", borderRadius: "8px", fontSize: "12px", overflowX: "auto", maxHeight: "400px" }}>
+            <pre style={{ background: "rgba(0,0,0,0.3)", padding: "12px", borderRadius: "0px", fontSize: "12px", overflowX: "auto", maxHeight: "400px" }}>
               {JSON.stringify(apiResponse.slice(0, 5), null, 2)}
             </pre>
           </div>
@@ -120,7 +120,7 @@ export default async function ApiDumpPage() {
             <div style={{ color: "var(--color-danger)", fontSize: "13px", marginBottom: "8px" }}>
               <strong>Query Failed / Forbidden:</strong>
             </div>
-            <pre style={{ background: "rgba(0,0,0,0.3)", padding: "12px", borderRadius: "8px", fontSize: "12px", overflowX: "auto", color: "var(--color-danger)" }}>
+            <pre style={{ background: "rgba(0,0,0,0.3)", padding: "12px", borderRadius: "0px", fontSize: "12px", overflowX: "auto", color: "var(--color-danger)" }}>
               {apiError}
             </pre>
             <div style={{ fontSize: "13px", marginTop: "12px", color: "var(--color-text-muted)" }}>

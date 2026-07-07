@@ -538,16 +538,18 @@ export default function FantasyPage() {
             color: "#fff"
           }}>
             <span style={{ 
-              background: "rgba(95, 59, 246, 0.15)", 
-              border: "1px solid var(--color-primary-light)",
+              background: "rgba(34, 197, 94, 0.15)", 
+              border: "1px solid var(--color-accent)",
               padding: "3px 8px", 
-              borderRadius: "6px",
+              borderRadius: "0px",
+              transform: "skewX(-12deg)",
+              display: "inline-block",
               fontSize: "11px",
               textTransform: "uppercase",
-              color: "var(--color-primary-light)",
+              color: "var(--color-accent)",
               letterSpacing: "0.5px"
             }}>
-              Play Day: {activePlayDay}
+              <span style={{ display: "inline-block", transform: "skewX(12deg)" }}>Play Day: {activePlayDay}</span>
             </span>
             <span style={{ color: "rgba(255,255,255,0.15)" }}>&bull;</span>
             <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
@@ -573,11 +575,12 @@ export default function FantasyPage() {
             gap: "8px", 
             background: "rgba(255,255,255,0.05)", 
             border: "1px solid var(--border-light)", 
-            borderRadius: "8px", 
+            borderRadius: "0px", 
+            transform: "skewX(-12deg)",
             padding: "0 10px 0 12px", 
             height: "38px" 
           }}>
-            <span style={{ fontSize: "11px", color: "var(--color-text-muted)", textTransform: "uppercase", fontWeight: 800 }}>Formation</span>
+            <span style={{ transform: "skewX(12deg)", display: "inline-block", fontSize: "11px", color: "var(--color-text-muted)", textTransform: "uppercase", fontWeight: 800 }}>Formation</span>
             <select
               value={formation}
               onChange={(e) => {
@@ -589,6 +592,7 @@ export default function FantasyPage() {
               }}
               className="premium-select"
               style={{
+                transform: "skewX(12deg)",
                 background: "none",
                 border: "none",
                 fontSize: "13px",
@@ -622,7 +626,7 @@ export default function FantasyPage() {
           <button 
             onClick={syncStats} 
             disabled={isSyncing}
-            className="btn-accent" 
+            className="btn-secondary" 
             style={{ 
               padding: "8px 14px", 
               fontSize: "13px", 
@@ -683,33 +687,33 @@ export default function FantasyPage() {
 
       {/* Guide/Scoring Rules */}
       {showGuide && (
-        <div className="glass-panel animate-fade-in" style={{ padding: "28px", background: "linear-gradient(135deg, rgba(95, 59, 246, 0.12) 0%, rgba(10, 15, 38, 0.8) 100%)", border: "1px solid rgba(95, 59, 246, 0.25)" }}>
-          <h3 style={{ fontSize: "19px", fontWeight: 800, marginBottom: "20px", color: "var(--color-primary-light)", display: "flex", alignItems: "center", gap: "10px" }}>
+        <div className="glass-panel animate-fade-in" style={{ padding: "28px", borderRadius: "0px", background: "linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(10, 15, 38, 0.8) 100%)", border: "1px solid rgba(34, 197, 94, 0.25)" }}>
+          <h3 style={{ fontSize: "19px", fontWeight: 800, marginBottom: "20px", color: "var(--color-accent)", display: "flex", alignItems: "center", gap: "10px" }}>
             <Sparkles size={22} color="var(--color-accent)" /> Aura Liquid Fantasy: How It Works
           </h3>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px", fontSize: "13.5px", lineHeight: "1.6" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span style={{ background: "rgba(157, 255, 0, 0.15)", color: "var(--color-accent)", width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 800 }}>1</span>
+                <span style={{ background: "rgba(34, 197, 94, 0.15)", color: "var(--color-accent)", width: "24px", height: "24px", borderRadius: "0px", transform: "skewX(-12deg)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 800 }}><span style={{ transform: "skewX(12deg)" }}>1</span></span>
                 <strong style={{ color: "#fff" }}>Live Option Pricing</strong>
               </div>
               <p style={{ color: "var(--color-text-muted)", margin: 0 }}>
                 Every player's draft price is tied directly to the live trading price of their <strong>YES Option</strong> in the prediction markets.
               </p>
-              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.03)", fontSize: "12px", fontFamily: "monospace" }}>
+              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px", borderRadius: "0px", border: "1px solid rgba(255,255,255,0.03)", fontSize: "12px", fontFamily: "monospace" }}>
                 <span style={{ color: "var(--color-accent)" }}>Yamal YES trades at 65¢</span> &rarr; <span style={{ color: "#fff" }}>$9.8M Draft Cost</span>
               </div>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span style={{ background: "rgba(95, 59, 246, 0.2)", color: "var(--color-primary-light)", width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 800 }}>2</span>
+                <span style={{ background: "rgba(34, 197, 94, 0.15)", color: "var(--color-accent)", width: "24px", height: "24px", borderRadius: "0px", transform: "skewX(-12deg)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 800 }}><span style={{ transform: "skewX(12deg)" }}>2</span></span>
                 <strong style={{ color: "#fff" }}>Web3 Collateral Lock</strong>
               </div>
               <p style={{ color: "var(--color-text-muted)", margin: 0 }}>
                 When locking your 11-player squad, deposit a fixed collateral fee of <strong>0.05 SOL</strong>. This enters your portfolio directly into the Solana yield pool.
               </p>
-              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.03)", fontSize: "12px", display: "flex", justifyContent: "space-between" }}>
+              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px", borderRadius: "0px", border: "1px solid rgba(255,255,255,0.03)", fontSize: "12px", display: "flex", justifyContent: "space-between" }}>
                 <span style={{ color: "var(--color-text-dim)" }}>Devnet Stake Required:</span>
                 <strong style={{ color: "var(--color-success)" }}>0.05 SOL</strong>
               </div>
@@ -717,13 +721,13 @@ export default function FantasyPage() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span style={{ background: "rgba(6, 182, 212, 0.15)", color: "#06b6d4", width: "24px", height: "24px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 800 }}>3</span>
+                <span style={{ background: "rgba(34, 197, 94, 0.15)", color: "var(--color-accent)", width: "24px", height: "24px", borderRadius: "0px", transform: "skewX(-12deg)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 800 }}><span style={{ transform: "skewX(12deg)" }}>3</span></span>
                 <strong style={{ color: "#fff" }}>Claim Real Yield (ROI)</strong>
               </div>
               <p style={{ color: "var(--color-text-muted)", margin: 0 }}>
                 Each drafted player who scores, assists, or keeps a clean sheet resolves their YES contract to 100¢. Your return yield is based on successfully resolved contracts!
               </p>
-              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.03)", fontSize: "12px", display: "flex", justifyContent: "space-between" }}>
+              <div style={{ background: "rgba(0,0,0,0.25)", padding: "10px", borderRadius: "0px", border: "1px solid rgba(255,255,255,0.03)", fontSize: "12px", display: "flex", justifyContent: "space-between" }}>
                 <span style={{ color: "var(--color-text-dim)" }}>Average 8/11 Success Payout:</span>
                 <strong style={{ color: "var(--color-accent)" }}>0.072 SOL (+44% ROI)</strong>
               </div>
@@ -749,9 +753,11 @@ export default function FantasyPage() {
         const squadYield = squad?.yieldRate ?? 0;
         return (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "16px" }}>
-            <div className="glass-panel" style={{ padding: "16px", display: "flex", alignItems: "center", gap: "16px" }}>
-              <div style={{ background: "rgba(157, 255, 0, 0.1)", borderRadius: "10px", padding: "10px" }}>
-                <Coins size={24} color="var(--color-accent)" />
+            <div className="glass-panel" style={{ padding: "16px", borderRadius: "0px", display: "flex", alignItems: "center", gap: "16px" }}>
+              <div style={{ background: "rgba(34, 197, 94, 0.1)", borderRadius: "0px", transform: "skewX(-12deg)", padding: "10px", display: "inline-flex" }}>
+                <div style={{ transform: "skewX(12deg)", display: "flex" }}>
+                  <Coins size={24} color="var(--color-accent)" />
+                </div>
               </div>
               <div>
                 <div style={{ fontSize: "11px", color: "var(--color-text-muted)", textTransform: "uppercase" }}>Remaining Budget</div>
@@ -761,9 +767,11 @@ export default function FantasyPage() {
               </div>
             </div>
 
-            <div className="glass-panel" style={{ padding: "16px", display: "flex", alignItems: "center", gap: "16px" }}>
-              <div style={{ background: "rgba(95, 59, 246, 0.15)", borderRadius: "10px", padding: "10px" }}>
-                <Award size={24} color="var(--color-primary-light)" />
+            <div className="glass-panel" style={{ padding: "16px", borderRadius: "0px", display: "flex", alignItems: "center", gap: "16px" }}>
+              <div style={{ background: "rgba(34, 197, 94, 0.1)", borderRadius: "0px", transform: "skewX(-12deg)", padding: "10px", display: "inline-flex" }}>
+                <div style={{ transform: "skewX(12deg)", display: "flex" }}>
+                  <Award size={24} color="var(--color-accent)" />
+                </div>
               </div>
               <div>
                 <div style={{ fontSize: "11px", color: "var(--color-text-muted)", textTransform: "uppercase" }}>Total points</div>
@@ -773,9 +781,11 @@ export default function FantasyPage() {
               </div>
             </div>
 
-            <div className="glass-panel" style={{ padding: "16px", display: "flex", alignItems: "center", gap: "16px" }}>
-              <div style={{ background: "rgba(6, 182, 212, 0.1)", borderRadius: "10px", padding: "10px" }}>
-                <Zap size={24} color="#06b6d4" />
+            <div className="glass-panel" style={{ padding: "16px", borderRadius: "0px", display: "flex", alignItems: "center", gap: "16px" }}>
+              <div style={{ background: "rgba(6, 182, 212, 0.1)", borderRadius: "0px", transform: "skewX(-12deg)", padding: "10px", display: "inline-flex" }}>
+                <div style={{ transform: "skewX(12deg)", display: "flex" }}>
+                  <Zap size={24} color="#06b6d4" />
+                </div>
               </div>
               <div>
                 <div style={{ fontSize: "11px", color: "var(--color-text-muted)", textTransform: "uppercase" }}>Draft count</div>
@@ -785,13 +795,17 @@ export default function FantasyPage() {
               </div>
             </div>
 
-            <div className="glass-panel" style={{ padding: "16px", display: "flex", alignItems: "center", gap: "16px" }}>
+            <div className="glass-panel" style={{ padding: "16px", borderRadius: "0px", display: "flex", alignItems: "center", gap: "16px" }}>
               <div style={{ 
                 background: squad && squad.playerIds && squad.playerIds.length > 0 ? "rgba(16, 185, 129, 0.1)" : "rgba(255,255,255,0.03)", 
-                borderRadius: "10px", 
-                padding: "10px" 
+                borderRadius: "0px", 
+                transform: "skewX(-12deg)",
+                padding: "10px",
+                display: "inline-flex"
               }}>
-                <Wallet size={24} color={squad && squad.playerIds && squad.playerIds.length > 0 ? "var(--color-success)" : "var(--color-text-muted)"} />
+                <div style={{ transform: "skewX(12deg)", display: "flex" }}>
+                  <Wallet size={24} color={squad && squad.playerIds && squad.playerIds.length > 0 ? "var(--color-success)" : "var(--color-text-muted)"} />
+                </div>
               </div>
               <div>
                 <div style={{ fontSize: "11px", color: "var(--color-text-muted)", textTransform: "uppercase" }}>Locked Collateral</div>
@@ -801,13 +815,17 @@ export default function FantasyPage() {
               </div>
             </div>
 
-            <div className="glass-panel" style={{ padding: "16px", display: "flex", alignItems: "center", gap: "16px" }}>
+            <div className="glass-panel" style={{ padding: "16px", borderRadius: "0px", display: "flex", alignItems: "center", gap: "16px" }}>
               <div style={{ 
-                background: squad && squad.playerIds && squad.playerIds.length > 0 && squadYield >= 0 ? "rgba(157, 255, 0, 0.1)" : "rgba(255, 46, 116, 0.1)", 
-                borderRadius: "10px", 
-                padding: "10px" 
+                background: squad && squad.playerIds && squad.playerIds.length > 0 && squadYield >= 0 ? "rgba(34, 197, 94, 0.1)" : "rgba(255, 46, 116, 0.1)", 
+                borderRadius: "0px", 
+                transform: "skewX(-12deg)",
+                padding: "10px",
+                display: "inline-flex"
               }}>
-                <TrendingUp size={24} color={squad && squad.playerIds && squad.playerIds.length > 0 && squadYield >= 0 ? "var(--color-accent)" : "var(--color-danger)"} />
+                <div style={{ transform: "skewX(12deg)", display: "flex" }}>
+                  <TrendingUp size={24} color={squad && squad.playerIds && squad.playerIds.length > 0 && squadYield >= 0 ? "var(--color-accent)" : "var(--color-danger)"} />
+                </div>
               </div>
               <div>
                 <div style={{ fontSize: "11px", color: "var(--color-text-muted)", textTransform: "uppercase" }}>
@@ -845,7 +863,7 @@ export default function FantasyPage() {
         {/* The Football Pitch Container */}
         <div style={{ 
           background: "linear-gradient(180deg, #05180f 0%, #020704 100%)",
-          borderRadius: "24px",
+          borderRadius: "0px",
           border: "2px solid rgba(22, 101, 52, 0.5)",
           padding: "45px 20px",
           position: "relative",
@@ -853,7 +871,7 @@ export default function FantasyPage() {
           overflow: "hidden"
         }}>
           {/* Field Markings */}
-          <div style={{ position: "absolute", inset: "25px", border: "1px dashed rgba(16, 185, 129, 0.22)", borderRadius: "12px", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", inset: "25px", border: "1px dashed rgba(16, 185, 129, 0.22)", borderRadius: "0px", pointerEvents: "none" }} />
           <div style={{ position: "absolute", left: "50%", top: "25px", bottom: "25px", width: "1px", borderLeft: "1px dashed rgba(16, 185, 129, 0.22)", pointerEvents: "none" }} />
           <div style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%)", width: "160px", height: "160px", borderRadius: "50%", border: "1px dashed rgba(16, 185, 129, 0.22)", pointerEvents: "none" }} />
 
@@ -987,7 +1005,7 @@ export default function FantasyPage() {
                       width: "100%", 
                       background: "rgba(0,0,0,0.25)", 
                       border: "1px solid var(--border-light)", 
-                      borderRadius: "8px", 
+                      borderRadius: "0px", 
                       padding: "8px 10px 8px 30px", 
                       fontSize: "12px",
                       color: "#fff"
@@ -1044,7 +1062,7 @@ export default function FantasyPage() {
                         style={{ 
                           padding: "8px 10px", 
                           background: isDrafted ? "rgba(255,255,255,0.01)" : "rgba(255,255,255,0.03)", 
-                          borderRadius: "8px", 
+                          borderRadius: "0px", 
                           display: "flex", 
                           justifyContent: "space-between", 
                           alignItems: "center", 
@@ -1056,8 +1074,10 @@ export default function FantasyPage() {
                         className="roster-item-hover"
                       >
                         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                          <div style={{ width: "24px", height: "24px", borderRadius: "50%", overflow: "hidden" }}>
-                            <PlayerAvatar player={p} />
+                          <div style={{ width: "24px", height: "24px", borderRadius: "0px", overflow: "hidden", transform: "skewX(-12deg)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                            <div style={{ transform: "skewX(12deg)", width: "100%", height: "100%" }}>
+                              <PlayerAvatar player={p} />
+                            </div>
                           </div>
                           <div>
                             <div style={{ fontSize: "12px", fontWeight: 600 }}>{p.name}</div>
@@ -1110,7 +1130,7 @@ export default function FantasyPage() {
                     <div style={{ 
                       padding: "10px", 
                       background: "rgba(239, 68, 68, 0.08)", 
-                      borderRadius: "6px", 
+                      borderRadius: "0px", 
                       fontSize: "11.5px", 
                       color: "var(--color-text-main)",
                       border: "1px solid rgba(239, 68, 68, 0.15)"
@@ -1140,11 +1160,15 @@ export default function FantasyPage() {
                           <span key={team} style={{ 
                             background: "rgba(255,255,255,0.06)", 
                             padding: "2px 6px", 
-                            borderRadius: "4px", 
+                            borderRadius: "0px", 
+                            transform: "skewX(-12deg)",
                             fontSize: "11px",
-                            border: "1px solid rgba(255,255,255,0.05)"
+                            border: "1px solid rgba(255,255,255,0.05)",
+                            display: "inline-block"
                           }}>
-                            {getFlag(team)} {team}
+                            <span style={{ transform: "skewX(12deg)", display: "inline-block" }}>
+                              {getFlag(team)} {team}
+                            </span>
                           </span>
                         ))
                       )}
@@ -1154,9 +1178,9 @@ export default function FantasyPage() {
               </div>
 
               {/* Verification Guide */}
-              <div className="glass-panel" style={{ padding: "20px" }}>
+              <div className="glass-panel" style={{ padding: "20px", borderRadius: "0px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px", borderBottom: "1px solid var(--border-light)", paddingBottom: "10px" }}>
-                  <Info size={16} color="var(--color-primary-light)" />
+                  <Info size={16} color="var(--color-accent)" />
                   <h3 style={{ fontSize: "14px" }}>Verification Guide</h3>
                 </div>
                 <p style={{ fontSize: "12px", color: "var(--color-text-muted)", lineHeight: "1.5" }}>
@@ -1170,14 +1194,17 @@ export default function FantasyPage() {
           {focusedPlayer && (
             <div className="glass-panel" style={{ 
               padding: "20px", 
+              borderRadius: "0px",
               borderLeft: `4px solid ${getSlotColor(focusedPlayer.position)}`,
               background: "rgba(10, 15, 38, 0.95)",
               boxShadow: "0 10px 30px rgba(0,0,0,0.6)"
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <div style={{ width: "36px", height: "36px", borderRadius: "50%", overflow: "hidden", border: `1.5px solid ${getSlotColor(focusedPlayer.position)}` }}>
-                    <PlayerAvatar player={focusedPlayer} />
+                  <div style={{ width: "36px", height: "36px", borderRadius: "0px", overflow: "hidden", transform: "skewX(-12deg)", border: `1.5px solid ${getSlotColor(focusedPlayer.position)}` }}>
+                    <div style={{ transform: "skewX(12deg)", width: "100%", height: "100%" }}>
+                      <PlayerAvatar player={focusedPlayer} />
+                    </div>
                   </div>
                   <div>
                     <h4 style={{ fontSize: "14px", fontWeight: 700 }}>{focusedPlayer.name}</h4>
@@ -1207,11 +1234,11 @@ export default function FantasyPage() {
                 <div style={{ marginTop: "10px", fontSize: "11px", color: "var(--color-text-muted)" }}>
                   <div style={{ fontWeight: 600, color: "var(--color-text-main)", marginBottom: "6px" }}>Statistics Attributed (Deterministic):</div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
-                    <div style={{ padding: "4px 8px", background: "rgba(255,255,255,0.02)", borderRadius: "4px" }}>Goals: {focusedPlayer.goals}</div>
-                    <div style={{ padding: "4px 8px", background: "rgba(255,255,255,0.02)", borderRadius: "4px" }}>Assists: {focusedPlayer.assists}</div>
-                    <div style={{ padding: "4px 8px", background: "rgba(255,255,255,0.02)", borderRadius: "4px" }}>Clean Sheets: {focusedPlayer.cleanSheets}</div>
-                    <div style={{ padding: "4px 8px", background: "rgba(255,255,255,0.02)", borderRadius: "4px" }}>Yellow: {focusedPlayer.yellowCards}</div>
-                    <div style={{ padding: "4px 8px", background: "rgba(255,255,255,0.02)", borderRadius: "4px" }}>Red: {focusedPlayer.redCards}</div>
+                    <div style={{ padding: "4px 8px", background: "rgba(255,255,255,0.02)", borderRadius: "0px", border: "1px solid rgba(255,255,255,0.04)" }}>Goals: {focusedPlayer.goals}</div>
+                    <div style={{ padding: "4px 8px", background: "rgba(255,255,255,0.02)", borderRadius: "0px", border: "1px solid rgba(255,255,255,0.04)" }}>Assists: {focusedPlayer.assists}</div>
+                    <div style={{ padding: "4px 8px", background: "rgba(255,255,255,0.02)", borderRadius: "0px", border: "1px solid rgba(255,255,255,0.04)" }}>Clean Sheets: {focusedPlayer.cleanSheets}</div>
+                    <div style={{ padding: "4px 8px", background: "rgba(255,255,255,0.02)", borderRadius: "0px", border: "1px solid rgba(255,255,255,0.04)" }}>Yellow: {focusedPlayer.yellowCards}</div>
+                    <div style={{ padding: "4px 8px", background: "rgba(255,255,255,0.02)", borderRadius: "0px", border: "1px solid rgba(255,255,255,0.04)" }}>Red: {focusedPlayer.redCards}</div>
                   </div>
                 </div>
               </div>
@@ -1219,7 +1246,7 @@ export default function FantasyPage() {
           )}
 
           {/* Quick Roster Leaderboard / Top Players */}
-          <div className="glass-panel" style={{ padding: "20px" }}>
+          <div className="glass-panel" style={{ padding: "20px", borderRadius: "0px" }}>
             <h3 style={{ fontSize: "14px", marginBottom: "12px", borderBottom: "1px solid var(--border-light)", paddingBottom: "8px" }}>
               Roster Leaders (Round of 32)
             </h3>
@@ -1227,7 +1254,7 @@ export default function FantasyPage() {
               {players.slice(0, 5).map((p, idx) => (
                 <div key={p.id} style={{ display: "flex", justifyContent: "space-between", fontSize: "12px" }}>
                   <span>{idx+1}. {p.name} ({getFlag(p.team)})</span>
-                  <strong style={{ color: "var(--color-primary-light)" }}>{p.currentPoints} pts</strong>
+                  <strong style={{ color: "var(--color-accent)" }}>{p.currentPoints} pts</strong>
                 </div>
               ))}
             </div>
@@ -1238,9 +1265,9 @@ export default function FantasyPage() {
       </div>
 
       {/* World Cup Round Fixtures Recap */}
-      <div className="glass-panel" style={{ padding: "24px" }}>
+      <div className="glass-panel" style={{ padding: "24px", borderRadius: "0px" }}>
         <h3 style={{ fontSize: "18px", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
-          <Calendar size={20} color="var(--color-primary-light)" /> World Cup Round of 32 Matches (Oracle Feeds)
+          <Calendar size={20} color="var(--color-accent)" /> World Cup Round of 32 Matches (Oracle Feeds)
         </h3>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
           {fixtures.slice(0, 16).map(f => {
@@ -1251,9 +1278,9 @@ export default function FantasyPage() {
                 key={f.fixtureId} 
                 style={{ 
                   padding: "12px 16px", 
-                  background: isLive ? "rgba(95, 59, 246, 0.08)" : "rgba(255,255,255,0.02)",
-                  border: isLive ? "1px solid var(--color-primary-light)" : "1px solid var(--border-light)",
-                  borderRadius: "12px",
+                  background: isLive ? "rgba(34, 197, 94, 0.08)" : "rgba(255,255,255,0.02)",
+                  border: isLive ? "1px solid var(--color-accent)" : "1px solid var(--border-light)",
+                  borderRadius: "0px",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
@@ -1306,10 +1333,10 @@ export default function FantasyPage() {
             width: "100%",
             maxWidth: "480px",
             background: "linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(3, 7, 18, 0.98) 100%)",
-            border: "1px solid rgba(95, 59, 246, 0.3)",
-            borderRadius: "16px",
+            border: "1px solid rgba(34, 197, 94, 0.3)",
+            borderRadius: "0px",
             padding: "28px",
-            boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5), 0 0 24px rgba(95, 59, 246, 0.15)",
+            boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5), 0 0 24px rgba(34, 197, 94, 0.15)",
             color: "#fff",
             display: "flex",
             flexDirection: "column",
@@ -1317,7 +1344,7 @@ export default function FantasyPage() {
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "16px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <Wallet size={20} color="var(--color-primary-light)" />
+                <Wallet size={20} color="var(--color-accent)" />
                 <h3 style={{ fontSize: "16px", fontWeight: 800 }}>Solana devnet transaction</h3>
               </div>
               {web3Step !== "signing" && web3Step !== "success" && (
@@ -1334,7 +1361,7 @@ export default function FantasyPage() {
             <div style={{ 
               background: "rgba(0,0,0,0.4)", 
               padding: "16px", 
-              borderRadius: "10px", 
+              borderRadius: "0px", 
               fontFamily: "monospace", 
               fontSize: "12px", 
               display: "flex", 
@@ -1384,7 +1411,7 @@ export default function FantasyPage() {
                 <div style={{ fontSize: "12px", color: "var(--color-text-muted)" }}>
                   You are locking a squad of 11 players. Their dynamically priced performance contracts will be registered in the Solana Liquid Pool:
                 </div>
-                <div style={{ maxHeight: "150px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "6px", background: "rgba(255,255,255,0.02)", padding: "10px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                <div style={{ maxHeight: "150px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "6px", background: "rgba(255,255,255,0.02)", padding: "10px", borderRadius: "0px", border: "1px solid rgba(255,255,255,0.04)" }}>
                   {players.filter(p => selectedRoster.filter(id => id !== null).includes(p.id)).map(p => (
                     <div key={p.id} style={{ display: "flex", justifyContent: "space-between", fontSize: "11px" }}>
                       <span style={{ color: "var(--color-text-main)" }}>{p.name} ({p.team})</span>
@@ -1412,7 +1439,15 @@ export default function FantasyPage() {
                 <button 
                   onClick={() => executeLockRoster(selectedRoster.filter((id): id is number => id !== null))}
                   className="btn-primary"
-                  style={{ flex: 1, height: "42px", background: "var(--color-primary)", border: "1px solid var(--color-primary-light)", boxShadow: "0 0 12px rgba(95, 59, 246, 0.4)" }}
+                  style={{ 
+                    flex: 1, 
+                    height: "42px", 
+                    borderRadius: "0px",
+                    background: "var(--color-accent-dim)", 
+                    border: "1px solid var(--color-accent)", 
+                    color: "var(--color-accent)",
+                    boxShadow: "0 0 12px rgba(34, 197, 94, 0.4)" 
+                  }}
                 >
                   Approve & Sign
                 </button>
@@ -1421,7 +1456,7 @@ export default function FantasyPage() {
 
             {web3Step === "success" && (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", padding: "10px 0" }}>
-                <div style={{ background: "rgba(16, 185, 129, 0.15)", borderRadius: "50%", padding: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ background: "rgba(16, 185, 129, 0.15)", borderRadius: "0px", padding: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <Check size={28} color="var(--color-success)" />
                 </div>
                 <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--color-success)" }}>Transaction Confirmed!</div>
@@ -1437,7 +1472,7 @@ export default function FantasyPage() {
                   <AlertCircle size={20} />
                   <span style={{ fontSize: "13px", fontWeight: 700 }}>Transaction Error</span>
                 </div>
-                <div style={{ fontSize: "12px", color: "var(--color-text-muted)", background: "rgba(255,46,116,0.06)", padding: "10px", borderRadius: "8px", border: "1px solid rgba(255,46,116,0.15)", fontFamily: "monospace" }}>
+                <div style={{ fontSize: "12px", color: "var(--color-text-muted)", background: "rgba(255,46,116,0.06)", padding: "10px", borderRadius: "0px", border: "1px solid rgba(255,46,116,0.15)", fontFamily: "monospace" }}>
                   {web3Error}
                 </div>
                 <button 
@@ -1452,7 +1487,7 @@ export default function FantasyPage() {
                     }, 600);
                   }}
                   className="btn-primary"
-                  style={{ height: "40px" }}
+                  style={{ height: "40px", borderRadius: "0px" }}
                 >
                   Retry Transaction
                 </button>

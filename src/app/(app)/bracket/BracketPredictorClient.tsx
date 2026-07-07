@@ -147,8 +147,8 @@ export default function BracketPredictorClient({
         left: finalLeft,
         right: "",
         winner: finalLeft,
-        status: "Finished",
-        score1: 1,
+        status: finalLeft ? "Finished" : "NotStarted",
+        score1: finalLeft ? 1 : 0,
         score2: 0
       };
     }
@@ -521,39 +521,49 @@ export default function BracketPredictorClient({
     
     if (hasTeam) {
       const actual = getActualTeamsForMatch(stage, matchIdx);
-      if (stage !== "R32") {
-        const prevStage = stagesOrder[stagesOrder.indexOf(stage) - 1];
-        const childMatchIdx = 2 * matchIdx + (slot === "right" ? 1 : 0);
-        const childActual = getActualTeamsForMatch(prevStage, childMatchIdx);
-        
-        if (childActual.status === "Finished") {
-          if (normalizeName(teamName) === normalizeName(childActual.winner)) {
-            strokeColor = "#10B981"; // Correct path
-            isCorrect = true;
+      if (actual.status === "Finished") {
+        if (normalizeName(teamName) === normalizeName(actual.winner)) {
+          strokeColor = "#10B981"; // Won the current match
+          isCorrect = true;
+        } else {
+          strokeColor = "#EF4444"; // Lost the current match
+          isIncorrect = true;
+        }
+      } else if (actual.status === "InPlay") {
+        strokeColor = "#F59E0B";
+        isPending = true;
+      } else {
+        // Current round match has not finished or started yet
+        if (stage !== "R32") {
+          const prevStage = stagesOrder[stagesOrder.indexOf(stage) - 1];
+          const childMatchIdx = 2 * matchIdx + (slot === "right" ? 1 : 0);
+          const childActual = getActualTeamsForMatch(prevStage, childMatchIdx);
+          
+          if (childActual.status === "Finished") {
+            if (normalizeName(teamName) === normalizeName(childActual.winner)) {
+              strokeColor = "#10B981"; // Correct qualification
+              isCorrect = true;
+            } else {
+              strokeColor = "#EF4444"; // Incorrect qualification
+              isIncorrect = true;
+            }
           } else {
-            strokeColor = "#EF4444"; // Incorrect path
-            isIncorrect = true;
+            strokeColor = "#3B82F6"; // Pending qualification path
+            isPending = true;
           }
         } else {
-          strokeColor = "#3B82F6"; // Pending path
-          isPending = true;
-        }
-      } else {
-        // Starting teams outer ring
-        if (actual.status === "Finished") {
-          if (normalizeName(teamName) === normalizeName(actual.winner)) {
-            strokeColor = "#10B981";
-          } else {
-            strokeColor = "#EF4444";
-          }
-        } else if (actual.status === "InPlay") {
-          strokeColor = "#F59E0B";
+          // Starting teams outer ring pending match
+          strokeColor = "rgba(255, 255, 255, 0.15)";
         }
       }
     }
 
     const isLocked = isMatchLocked(stage, matchIdx);
     
+    const w = r * 2.3;
+    const h = r * 1.5;
+    const skew = h * 0.15;
+
     return (
       <g
         className="badge-node"
@@ -568,36 +578,34 @@ export default function BracketPredictorClient({
         onMouseMove={(e) => hasTeam && handleMouseMove(e)}
         onMouseLeave={handleMouseLeave}
       >
-        {/* Glow halo outer ring */}
-        <circle
-          cx={x}
-          cy={y}
-          r={r + 3}
-          fill="none"
-          stroke={isCorrect ? "#10B981" : isIncorrect ? "#EF4444" : isPending ? "#3B82F6" : "none"}
-          strokeWidth={2}
-          opacity={0.5}
-          style={{ filter: isCorrect || isIncorrect || isPending ? "blur(3px)" : "none" }}
-        />
+        {/* Glow halo outer parallelogram */}
+        {hasTeam && (isCorrect || isIncorrect || isPending) && (
+          <polygon
+            points={`${x - w/2 - skew - 2},${y - h/2 - 1} ${x + w/2 - skew - 2},${y - h/2 - 1} ${x + w/2 + skew + 2},${y + h/2 + 1} ${x - w/2 + skew + 2},${y + h/2 + 1}`}
+            fill="none"
+            stroke={isCorrect ? "#10B981" : isIncorrect ? "#EF4444" : isPending ? "#3B82F6" : "none"}
+            strokeWidth={2}
+            opacity={0.5}
+            style={{ filter: "blur(3px)" }}
+          />
+        )}
         
-        {/* Base circle background */}
-        <circle
-          cx={x}
-          cy={y}
-          r={r}
+        {/* Base parallelogram background */}
+        <polygon
+          points={`${x - w/2 - skew},${y - h/2} ${x + w/2 - skew},${y - h/2} ${x + w/2 + skew},${y + h/2} ${x - w/2 + skew},${y + h/2}`}
           fill="#131B2E"
           stroke={strokeColor}
-          strokeWidth={hasTeam ? 2.5 : 1.5}
-          strokeDasharray={hasTeam ? "none" : "3, 3"}
+          strokeWidth={hasTeam ? 2 : 1}
+          strokeDasharray={hasTeam ? "none" : "2, 2"}
           style={{ transition: "stroke 0.3s ease" }}
         />
         
         {hasTeam && flagUrl ? (
-          <foreignObject x={x - r} y={y - r} width={r * 2} height={r * 2}>
+          <foreignObject x={x - w/2} y={y - h/2} width={w} height={h}>
             <div style={{
               width: "100%",
               height: "100%",
-              borderRadius: "50%",
+              clipPath: "polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)",
               overflow: "hidden",
               display: "flex",
               alignItems: "center",
@@ -610,8 +618,7 @@ export default function BracketPredictorClient({
                 style={{
                   width: "100%",
                   height: "100%",
-                  objectFit: "cover",
-                  borderRadius: "50%"
+                  objectFit: "cover"
                 }}
               />
             </div>
@@ -619,11 +626,11 @@ export default function BracketPredictorClient({
         ) : (
           <text
             x={x}
-            y={y + (r * 0.3)}
+            y={y + (h * 0.25)}
             textAnchor="middle"
             fill="rgba(255,255,255,0.2)"
-            fontSize={r * 0.85}
-            fontWeight={700}
+            fontSize={h * 0.8}
+            fontWeight={800}
           >
             ?
           </text>
@@ -631,9 +638,9 @@ export default function BracketPredictorClient({
 
         {/* Lock indicator */}
         {hasTeam && isLocked && (
-          <g transform={`translate(${x - 6}, ${y + r - 3})`}>
-            <circle cx={6} cy={6} r={7} fill="#1E293B" stroke="var(--border-light)" strokeWidth={1} />
-            <g transform="translate(3, 3)">
+          <g transform={`translate(${x - 6}, ${y + h/2 - 6})`}>
+            <polygon points="0,0 12,0 15,12 3,12" fill="#1E293B" stroke="var(--border-light)" strokeWidth={1} />
+            <g transform="translate(4, 3)">
               <Lock size={6} color="var(--color-text-muted)" />
             </g>
           </g>
@@ -683,7 +690,7 @@ export default function BracketPredictorClient({
             left: activeTooltip.x,
             top: activeTooltip.y,
             padding: "14px 18px",
-            borderRadius: "14px",
+            borderRadius: "0px",
             border: "1px solid var(--border-light)",
             borderLeft: `3px solid ${accuracyColor}`,
             background: "rgba(6, 10, 26, 0.94)",
@@ -753,47 +760,64 @@ export default function BracketPredictorClient({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }} ref={containerRef}>
-      {/* Legend Map Header */}
-      <div className="glass-panel" style={{ padding: "16px 20px", borderRadius: "12px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-          <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--color-text-main)" }}>Interactive Radial Bracket Layout</span>
-          <span style={{ fontSize: "11px", color: "var(--color-text-muted)" }}>Click any flag badge to advance them inwards. Gold matches are locked.</span>
-        </div>
-        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", fontSize: "11px", fontWeight: 600 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#10B981" }}></span>
-            <span style={{ color: "var(--color-success)" }}>Correct Prediction</span>
+      {/* Legend Map Header - Styled as skewed sharp CAD console toolbar */}
+      <div 
+        className="glass-panel" 
+        style={{ 
+          padding: "16px 20px", 
+          borderRadius: "0px", 
+          borderLeft: "3px solid var(--color-accent)",
+          transform: "skewX(-6deg)",
+          boxShadow: "0 4px 20px -2px rgba(0, 0, 0, 0.4)"
+        }}
+      >
+        <div style={{ transform: "skewX(6deg)", display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", flexWrap: "wrap", gap: "16px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            <span style={{ fontSize: "13px", fontWeight: 900, color: "var(--color-text-main)", textTransform: "uppercase", fontFamily: "var(--font-outfit)" }}>
+              Interactive Radial Bracket Layout
+            </span>
+            <span style={{ fontSize: "11px", color: "var(--color-text-muted)", fontFamily: "monospace" }}>
+              Click any flag badge to advance them inwards. Gold matches are locked.
+            </span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#EF4444" }}></span>
-            <span style={{ color: "var(--color-error)" }}>Incorrect Prediction</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#3B82F6" }}></span>
-            <span style={{ color: "#3B82F6" }}>Active / Pending</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "rgba(255,255,255,0.15)" }}></span>
-            <span style={{ color: "var(--color-text-muted)" }}>Unselected / Empty</span>
+          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", fontSize: "10px", fontWeight: 700, fontFamily: "monospace" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ width: "9px", height: "9px", transform: "skewX(-12deg)", backgroundColor: "#22c55e", display: "inline-block" }}></span>
+              <span style={{ color: "var(--color-success)" }}>CORRECT PREDICTION</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ width: "9px", height: "9px", transform: "skewX(-12deg)", backgroundColor: "#EF4444", display: "inline-block" }}></span>
+              <span style={{ color: "var(--color-danger)" }}>INCORRECT PREDICTION</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ width: "9px", height: "9px", transform: "skewX(-12deg)", backgroundColor: "#3B82F6", display: "inline-block" }}></span>
+              <span style={{ color: "#3B82F6" }}>ACTIVE / PENDING</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ width: "9px", height: "9px", transform: "skewX(-12deg)", backgroundColor: "rgba(255,255,255,0.15)", display: "inline-block" }}></span>
+              <span style={{ color: "var(--color-text-muted)" }}>UNSELECTED / EMPTY</span>
+            </div>
           </div>
         </div>
       </div>
 
       {isSaved && (
         <div className="fade-in" style={{ 
-          background: "rgba(16, 185, 129, 0.15)", 
+          background: "rgba(16, 185, 129, 0.08)", 
           color: "var(--color-success)", 
-          border: "1px solid rgba(16, 185, 129, 0.3)",
-          padding: "10px 16px",
-          borderRadius: "8px",
+          border: "1px solid rgba(16, 185, 129, 0.15)",
+          borderLeft: "4px solid var(--color-success)",
+          padding: "12px 18px",
+          borderRadius: "0px",
           fontSize: "13px",
-          fontWeight: 600,
+          fontWeight: 700,
+          fontFamily: "monospace",
           display: "flex",
           alignItems: "center",
           gap: "8px"
         }}>
           <CheckCircle2 size={16} />
-          Bracket Prediction successfully locked on-chain!
+          BRACKET PREDICTION SUCCESSFULLY LOCKED ON-CHAIN!
         </div>
       )}
 
@@ -807,9 +831,9 @@ export default function BracketPredictorClient({
           width: "100%", 
           maxWidth: "920px", 
           aspectRatio: "1/1",
-          borderRadius: "24px",
-          border: "1px solid var(--border-light)",
-          background: "radial-gradient(circle at center, rgba(15, 23, 42, 0.4) 0%, rgba(3, 7, 18, 0.9) 100%)",
+          borderRadius: "0px",
+          border: "1px solid rgba(255, 255, 255, 0.05)",
+          background: "rgba(10, 15, 30, 0.65)",
           padding: "10px",
           display: "flex",
           justifyContent: "center",
@@ -957,10 +981,9 @@ export default function BracketPredictorClient({
             {/* 4. Central Trophy & Winner Node */}
             <g className="bracket-champion-center">
               {/* Pulsing circular outer border ring */}
-              <circle
-                cx={500}
-                cy={500}
-                r={44}
+              {/* Pulsing slanted outer border ring */}
+              <polygon
+                points="435,465 535,465 565,535 465,535"
                 fill="rgba(255, 215, 0, 0.02)"
                 stroke={champion ? "#FFD700" : "rgba(255,255,255,0.08)"}
                 strokeWidth={3}
@@ -983,11 +1006,11 @@ export default function BracketPredictorClient({
                   onMouseMove={(e) => handleMouseMove(e)}
                   onMouseLeave={handleMouseLeave}
                 >
-                  <foreignObject x={460} y={460} width={80} height={80}>
+                  <foreignObject x={450} y={465} width={100} height={70}>
                     <div style={{
                       width: "100%",
                       height: "100%",
-                      borderRadius: "50%",
+                      clipPath: "polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)",
                       overflow: "hidden",
                       display: "flex",
                       alignItems: "center",
@@ -1002,7 +1025,6 @@ export default function BracketPredictorClient({
                           width: "100%",
                           height: "100%",
                           objectFit: "cover",
-                          borderRadius: "50%",
                           opacity: 0.8
                         }}
                       />
