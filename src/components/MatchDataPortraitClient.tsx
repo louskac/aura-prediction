@@ -1424,7 +1424,8 @@ export default function MatchDataPortraitClient({
               const atk = 6.0;
               const rel = isGoal ? 900.0 : 180.0; // 15 mins for goal, 3 mins for shot
               const rise = 1.0 - Math.exp(-age / atk);
-              const decay = Math.exp(-age / rel);
+              const persistentFactor = 0.40;
+              const decay = persistentFactor + (1.0 - persistentFactor) * Math.exp(-age / rel);
               const envelope = rise * decay;
 
               if (envelope > 0.005) {
@@ -1732,12 +1733,17 @@ export default function MatchDataPortraitClient({
       seamTopHomeVal += (topTargetHome - seamTopHomeVal) * 0.08;
       const seamTopHome = seamTopHomeVal;
 
+      // Dynamic seam fold height based on attacking pressure
+      const homeLipHVal = 0.08 + (homePress / 15.0) * 0.22;
+      const awayLipHVal = 0.08 + (awayPress / 15.0) * 0.22;
+
       // Update uniforms
       const intensity = Math.min(1.0, (homePress + awayPress) / 20.0 + allSpires.length * 0.15);
 
       homeUniforms.uTime.value = elapsed;
       homeUniforms.uIntensity.value = intensity;
       homeUniforms.uTop.value = seamTopHome;
+      homeUniforms.uLipH.value = homeLipHVal;
       homeUniforms.uFlood.value = floodIntensity;
       if (lastGoalEvent) {
         homeUniforms.uFloodTeam.value.set(lastGoalEvent.team === "home" ? homeColor : awayColor);
@@ -1747,6 +1753,7 @@ export default function MatchDataPortraitClient({
       awayUniforms.uTime.value = elapsed;
       awayUniforms.uIntensity.value = intensity;
       awayUniforms.uTop.value = 1.0 - seamTopHome;
+      awayUniforms.uLipH.value = awayLipHVal;
       awayUniforms.uFlood.value = floodIntensity;
       if (lastGoalEvent) {
         awayUniforms.uFloodTeam.value.set(lastGoalEvent.team === "home" ? homeColor : awayColor);
@@ -1756,6 +1763,7 @@ export default function MatchDataPortraitClient({
       homeWallUniforms.uTime.value = elapsed;
       homeWallUniforms.uIntensity.value = intensity;
       homeWallUniforms.uTop.value = seamTopHome;
+      homeWallUniforms.uLipH.value = homeLipHVal;
       homeWallUniforms.uFlood.value = floodIntensity;
       if (lastGoalEvent) {
         homeWallUniforms.uFloodTeam.value.set(lastGoalEvent.team === "home" ? homeColor : awayColor);
@@ -1765,6 +1773,7 @@ export default function MatchDataPortraitClient({
       awayWallUniforms.uTime.value = elapsed;
       awayWallUniforms.uIntensity.value = intensity;
       awayWallUniforms.uTop.value = 1.0 - seamTopHome;
+      awayWallUniforms.uLipH.value = awayLipHVal;
       awayWallUniforms.uFlood.value = floodIntensity;
       if (lastGoalEvent) {
         awayWallUniforms.uFloodTeam.value.set(lastGoalEvent.team === "home" ? homeColor : awayColor);
@@ -1793,8 +1802,19 @@ export default function MatchDataPortraitClient({
           const x = (u - 0.5) * WORLD_X;
           const idx = j * VX + i;
 
-          // Clay ripple fold
-          const baseNoise = fbm2d(x * 0.22 + elapsed * 0.15, z * 0.22 + elapsed * 0.1, 3) * 0.14;
+          // Base low-frequency organic cloth folds (wrinkles)
+          // As momentum changes, waves travel along the pitch representing compression
+          const momentumDiff = homePress - awayPress;
+          const compressionOffset = elapsed * 0.12 - momentumDiff * 0.08;
+          
+          // Large fabric folds along the Z/depth axis (making folds run across the width of the field)
+          const fabricFold1 = Math.sin(x * 0.42 + compressionOffset) * 0.16;
+          const fabricFold2 = Math.cos(z * 0.32 + elapsed * 0.08) * 0.08;
+          
+          // Medium-frequency organic noise for fabric irregularity
+          const fabricNoise = fbm2d(x * 0.35 + elapsed * 0.08, z * 0.35, 2) * 0.12;
+          
+          const baseNoise = fabricFold1 + fabricFold2 + fabricNoise;
 
           // Seam lift
           let seamLift = 0;
@@ -1831,11 +1851,33 @@ export default function MatchDataPortraitClient({
           const tapZ = Math.max(0, Math.min(1.0, (WORLD_Z / 2 - Math.abs(z)) / 0.8));
           const taper = (tapX * tapX * (3.0 - 2.0 * tapX)) * (tapZ * tapZ * (3.0 - 2.0 * tapZ));
 
-          let hH = (baseNoise + seamLift + spiresSumH + homeRidge) * taper;
-          let hA = (baseNoise + seamLift + spiresSumA + awayRidge) * taper;
+          const sharedSpires = spiresSumH + spiresSumA;
+          const sharedRidge = homeRidge + awayRidge;
+          const sharedHeight = (baseNoise + seamLift + sharedSpires + sharedRidge) * taper;
+          let hH = sharedHeight;
+          let hA = sharedHeight;
+
+          let fVal = frontU;
+          
+          // Warp the possession front around the spires so they retain their scorer's color
+          allSpires.forEach(spire => {
+            const dx = x - spire.x;
+            const dz = z - spire.z;
+            const dSq = dx * dx + dz * dz;
+            if (dSq > spire.radiusSq * 8.0) return; // optimization
+            
+            const influence = Math.exp(-dSq / (spire.radiusSq * 1.6));
+            if (influence > 0.01) {
+              if (spire.color === homeColor) {
+                fVal = THREE.MathUtils.lerp(fVal, 0.96, influence);
+              } else {
+                fVal = THREE.MathUtils.lerp(fVal, 0.04, influence);
+              }
+            }
+          });
 
           // Seam-band under-sheet clamp
-          const du = u - frontU;
+          const du = u - fVal;
           const nearSeam = Math.max(0, Math.min(1, 1 - Math.abs(du) / seamWidthVal));
           if (nearSeam > 0) {
             const margin = 0.1;
@@ -1850,8 +1892,8 @@ export default function MatchDataPortraitClient({
 
           hDataHome[idx] = hH;
           hDataAway[idx] = hA;
-          aDataHome[idx] = frontU;
-          aDataAway[idx] = frontU;
+          aDataHome[idx] = fVal;
+          aDataAway[idx] = fVal;
           cDataHome[idx] = 0;
           cDataAway[idx] = 0;
         }
