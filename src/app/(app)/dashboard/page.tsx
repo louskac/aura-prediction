@@ -201,9 +201,28 @@ export default async function DashboardPage() {
                     </div>
                   </div>
                   
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
-                    <span className="status-pill live">LIVE</span>
-                    <span style={{ fontSize: "10px", color: "var(--color-text-dim)", fontFamily: "monospace" }}>MATCHDAY ACTIVE</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
+                      <span className="status-pill live">LIVE</span>
+                      <span style={{ fontSize: "10px", color: "var(--color-text-dim)", fontFamily: "monospace" }}>MATCHDAY ACTIVE</span>
+                    </div>
+                    <Link
+                      href={`/portrait/${match.fixtureId}`}
+                      className="btn-secondary"
+                      style={{
+                        padding: "6px 14px",
+                        fontSize: "11px",
+                        fontWeight: 900,
+                        transform: "skewX(-6deg)",
+                        display: "inline-flex",
+                        alignItems: "center"
+                      }}
+                    >
+                      <span style={{ transform: "skewX(6deg)", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <Activity size={11} />
+                        Portrait
+                      </span>
+                    </Link>
                   </div>
                 </div>
               ))}
@@ -299,6 +318,23 @@ export default async function DashboardPage() {
                   <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
                     <span style={{ fontWeight: 900, color: "var(--color-accent)", fontFamily: "monospace", fontSize: "14px" }}>{match.score1} - {match.score2}</span>
                     <span className="status-pill finished">ENDED</span>
+                    <Link
+                      href={`/portrait/${match.fixtureId}`}
+                      className="btn-secondary"
+                      style={{
+                        padding: "6px 14px",
+                        fontSize: "11px",
+                        fontWeight: 900,
+                        transform: "skewX(-6deg)",
+                        display: "inline-flex",
+                        alignItems: "center"
+                      }}
+                    >
+                      <span style={{ transform: "skewX(6deg)", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <Activity size={11} />
+                        Portrait
+                      </span>
+                    </Link>
                   </div>
                 </div>
               ))}
