@@ -1,0 +1,562 @@
+{
+  "momentum": [
+    {
+      "minute": 0,
+      "v": 0
+    },
+    {
+      "minute": 1,
+      "v": -0.05
+    },
+    {
+      "minute": 2,
+      "v": -0.16
+    },
+    {
+      "minute": 3,
+      "v": -0.11
+    },
+    {
+      "minute": 4,
+      "v": -0.24
+    },
+    {
+      "minute": 5,
+      "v": -0.08
+    },
+    {
+      "minute": 6,
+      "v": -0.08
+    },
+    {
+      "minute": 7,
+      "v": 0
+    },
+    {
+      "minute": 8,
+      "v": -0.11
+    },
+    {
+      "minute": 9,
+      "v": -0.38
+    },
+    {
+      "minute": 10,
+      "v": -0.08
+    },
+    {
+      "minute": 11,
+      "v": -0.14
+    },
+    {
+      "minute": 12,
+      "v": -0.08
+    },
+    {
+      "minute": 13,
+      "v": -0.24
+    },
+    {
+      "minute": 14,
+      "v": -0.08
+    },
+    {
+      "minute": 15,
+      "v": 0.11
+    },
+    {
+      "minute": 16,
+      "v": -0.3
+    },
+    {
+      "minute": 17,
+      "v": -0.6
+    },
+    {
+      "minute": 18,
+      "v": -0.73
+    },
+    {
+      "minute": 19,
+      "v": -0.35
+    },
+    {
+      "minute": 20,
+      "v": -0.11
+    },
+    {
+      "minute": 21,
+      "v": -0.11
+    },
+    {
+      "minute": 22,
+      "v": -0.54
+    },
+    {
+      "minute": 23,
+      "v": -0.54
+    },
+    {
+      "minute": 24,
+      "v": -0.43
+    },
+    {
+      "minute": 25,
+      "v": 0
+    },
+    {
+      "minute": 26,
+      "v": 0
+    },
+    {
+      "minute": 27,
+      "v": -0.11
+    },
+    {
+      "minute": 28,
+      "v": -0.27
+    },
+    {
+      "minute": 29,
+      "v": -0.22
+    },
+    {
+      "minute": 30,
+      "v": 0
+    },
+    {
+      "minute": 31,
+      "v": 0.14
+    },
+    {
+      "minute": 32,
+      "v": -0.03
+    },
+    {
+      "minute": 33,
+      "v": -0.41
+    },
+    {
+      "minute": 34,
+      "v": -0.41
+    },
+    {
+      "minute": 35,
+      "v": -0.35
+    },
+    {
+      "minute": 36,
+      "v": 0.05
+    },
+    {
+      "minute": 37,
+      "v": 0.22
+    },
+    {
+      "minute": 38,
+      "v": 0.11
+    },
+    {
+      "minute": 39,
+      "v": 0.03
+    },
+    {
+      "minute": 40,
+      "v": -0.27
+    },
+    {
+      "minute": 41,
+      "v": -0.3
+    },
+    {
+      "minute": 42,
+      "v": -0.3
+    },
+    {
+      "minute": 43,
+      "v": -0.79
+    },
+    {
+      "minute": 44,
+      "v": -1
+    },
+    {
+      "minute": 45,
+      "v": -1
+    },
+    {
+      "minute": 45.5,
+      "v": -0.31
+    },
+    {
+      "minute": 46,
+      "v": -0.05
+    },
+    {
+      "minute": 47,
+      "v": -0.05
+    },
+    {
+      "minute": 48,
+      "v": 0.03
+    },
+    {
+      "minute": 49,
+      "v": 0.19
+    },
+    {
+      "minute": 50,
+      "v": 0.19
+    },
+    {
+      "minute": 51,
+      "v": -0.05
+    },
+    {
+      "minute": 52,
+      "v": -0.22
+    },
+    {
+      "minute": 53,
+      "v": -0.22
+    },
+    {
+      "minute": 54,
+      "v": 0
+    },
+    {
+      "minute": 55,
+      "v": 0.08
+    },
+    {
+      "minute": 56,
+      "v": 0.24
+    },
+    {
+      "minute": 57,
+      "v": 0.24
+    },
+    {
+      "minute": 58,
+      "v": 0.22
+    },
+    {
+      "minute": 59,
+      "v": 0.05
+    },
+    {
+      "minute": 60,
+      "v": -0.22
+    },
+    {
+      "minute": 61,
+      "v": -0.16
+    },
+    {
+      "minute": 62,
+      "v": -0.05
+    },
+    {
+      "minute": 63,
+      "v": 0.27
+    },
+    {
+      "minute": 64,
+      "v": 0.33
+    },
+    {
+      "minute": 65,
+      "v": -0.33
+    },
+    {
+      "minute": 66,
+      "v": -0.62
+    },
+    {
+      "minute": 67,
+      "v": -0.9
+    },
+    {
+      "minute": 68,
+      "v": -0.35
+    },
+    {
+      "minute": 69,
+      "v": -0.16
+    },
+    {
+      "minute": 70,
+      "v": 0
+    },
+    {
+      "minute": 71,
+      "v": -0.05
+    },
+    {
+      "minute": 72,
+      "v": 0
+    },
+    {
+      "minute": 73,
+      "v": 0.05
+    },
+    {
+      "minute": 74,
+      "v": 0.27
+    },
+    {
+      "minute": 75,
+      "v": 0.22
+    },
+    {
+      "minute": 76,
+      "v": 0.05
+    },
+    {
+      "minute": 77,
+      "v": -0.11
+    },
+    {
+      "minute": 78,
+      "v": -0.49
+    },
+    {
+      "minute": 79,
+      "v": -0.54
+    },
+    {
+      "minute": 80,
+      "v": -0.65
+    },
+    {
+      "minute": 81,
+      "v": -0.38
+    },
+    {
+      "minute": 82,
+      "v": -0.27
+    },
+    {
+      "minute": 83,
+      "v": -0.33
+    },
+    {
+      "minute": 84,
+      "v": -0.19
+    },
+    {
+      "minute": 85,
+      "v": -0.27
+    },
+    {
+      "minute": 86,
+      "v": -0.11
+    },
+    {
+      "minute": 87,
+      "v": -0.19
+    },
+    {
+      "minute": 88,
+      "v": 0.05
+    },
+    {
+      "minute": 89,
+      "v": 0.11
+    },
+    {
+      "minute": 90,
+      "v": 0.11
+    },
+    {
+      "minute": 90.5,
+      "v": 0.08
+    },
+    {
+      "minute": 90.75,
+      "v": 0
+    }
+  ],
+  "shots": [
+    {
+      "min": 6,
+      "team": "home",
+      "playerName": "Teboho Mokoena",
+      "x": 76.5160194192,
+      "y": 36.21125,
+      "expectedGoals": 0.02266026847064495,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 7,
+      "team": "away",
+      "playerName": "Stephen Eustaquio",
+      "x": 78.9936893216,
+      "y": 43.5803821607,
+      "expectedGoals": 0.01811533421278,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 17,
+      "team": "away",
+      "playerName": "Jonathan David",
+      "x": 95.0614035074,
+      "y": 32.24625,
+      "expectedGoals": 0.11184118688106537,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 22,
+      "team": "away",
+      "playerName": "Derek Cornelius",
+      "x": 98.24561403470001,
+      "y": 34.68625,
+      "expectedGoals": 0.32871949672698975,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 23,
+      "team": "home",
+      "playerName": "Teboho Mokoena",
+      "x": 79.66941747679999,
+      "y": 20.84636943,
+      "expectedGoals": 0.024195745587348938,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 35,
+      "team": "away",
+      "playerName": "Tani Oluwaseyi",
+      "x": 96.9912280694,
+      "y": 47.2236942643,
+      "expectedGoals": 0.032418280839920044,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 36,
+      "team": "home",
+      "playerName": "Ime Okon",
+      "x": 92.7,
+      "y": 33.61875,
+      "expectedGoals": 0.01391591690480709,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 41,
+      "team": "away",
+      "playerName": "Tani Oluwaseyi",
+      "x": 96.2192982446,
+      "y": 36.135000000000005,
+      "expectedGoals": 0.05786953121423721,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 44,
+      "team": "away",
+      "playerName": "Moïse Bombito",
+      "x": 100.6379310348,
+      "y": 33.695,
+      "expectedGoals": 0.26249921321868896,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 44,
+      "team": "away",
+      "playerName": "Tajon Buchanan",
+      "x": 102.25000000019999,
+      "y": 29.715714284,
+      "expectedGoals": 0.1756700575351715,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 62,
+      "team": "home",
+      "playerName": "Oswin Appollis",
+      "x": 80.79563106879999,
+      "y": 44.2810191037,
+      "expectedGoals": 0.03495381399989128,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 65,
+      "team": "away",
+      "playerName": "Tani Oluwaseyi",
+      "x": 92,
+      "y": 42.1771875,
+      "expectedGoals": 0.14948770403862,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 66,
+      "team": "away",
+      "playerName": "Luc De Fougerolles",
+      "x": 95.73684210409999,
+      "y": 30.95,
+      "expectedGoals": 0.03580763563513756,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 75,
+      "team": "home",
+      "playerName": "Thalente Mbatha",
+      "x": 77.1917475744,
+      "y": 27.614523809,
+      "expectedGoals": 0.008589662611484528,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 76,
+      "team": "away",
+      "playerName": "Promise David",
+      "x": 78.655825244,
+      "y": 34.22875,
+      "expectedGoals": 0.04147431626915932,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 78,
+      "team": "away",
+      "playerName": "Jonathan David",
+      "x": 100.9224137934,
+      "y": 46.0326114612,
+      "expectedGoals": 0.06547707319259644,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 85,
+      "team": "home",
+      "playerName": "Oswin Appollis",
+      "x": 81.1334951464,
+      "y": 24.2794904507,
+      "expectedGoals": 0.03409194573760033,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 90,
+      "team": "away",
+      "playerName": "Stephen Eustaquio",
+      "x": 87.21176470559999,
+      "y": 28.791190475,
+      "expectedGoals": 0.096674345433712,
+      "eventType": "Goal",
+      "isOwnGoal": false
+    }
+  ]
+}

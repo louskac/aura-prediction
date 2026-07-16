@@ -63,7 +63,7 @@ export default async function DashboardPage() {
   // Group fixtures
   const liveMatches = fixtures.filter(f => f.status === "InPlay");
   const upcomingMatches = fixtures.filter(f => f.status === "NotStarted");
-  const finishedMatches = fixtures.filter(f => f.status === "Finished");
+  const finishedMatches = fixtures.filter(f => f.status === "Finished").reverse();
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
@@ -210,18 +210,12 @@ export default async function DashboardPage() {
                       href={`/portrait/${match.fixtureId}`}
                       className="btn-secondary"
                       style={{
-                        padding: "6px 14px",
-                        fontSize: "11px",
-                        fontWeight: 900,
-                        transform: "skewX(-6deg)",
-                        display: "inline-flex",
-                        alignItems: "center"
+                        padding: "6px 12px",
+                        fontSize: "11px"
                       }}
                     >
-                      <span style={{ transform: "skewX(6deg)", display: "flex", alignItems: "center", gap: "6px" }}>
-                        <Activity size={11} />
-                        Portrait
-                      </span>
+                      <Activity size={11} />
+                      <span>Portrait</span>
                     </Link>
                   </div>
                 </div>
@@ -322,18 +316,12 @@ export default async function DashboardPage() {
                       href={`/portrait/${match.fixtureId}`}
                       className="btn-secondary"
                       style={{
-                        padding: "6px 14px",
-                        fontSize: "11px",
-                        fontWeight: 900,
-                        transform: "skewX(-6deg)",
-                        display: "inline-flex",
-                        alignItems: "center"
+                        padding: "6px 12px",
+                        fontSize: "11px"
                       }}
                     >
-                      <span style={{ transform: "skewX(6deg)", display: "flex", alignItems: "center", gap: "6px" }}>
-                        <Activity size={11} />
-                        Portrait
-                      </span>
+                      <Activity size={11} />
+                      <span>Portrait</span>
                     </Link>
                   </div>
                 </div>

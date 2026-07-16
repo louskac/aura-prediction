@@ -70,15 +70,15 @@ const R32_BRACKET_TEMPLATE = [
   { templateLeft: "Netherlands",   templateRight: "Morocco",             key: "R32_2",  fixtureId: 18172280 }, // Match 75
   { templateLeft: "Germany",       templateRight: "Paraguay",            key: "R32_3",  fixtureId: 18175983 }, // Match 74
   { templateLeft: "France",        templateRight: "Sweden",              key: "R32_4",  fixtureId: 18175981 }, // Match 77
-  { templateLeft: "Brazil",        templateRight: "Japan",               key: "R32_5",  fixtureId: 18172469 }, // Match 76
-  { templateLeft: "Ivory Coast",   templateRight: "Norway",              key: "R32_6",  fixtureId: 18175397 }, // Match 78
-  { templateLeft: "Mexico",        templateRight: "Ecuador",             key: "R32_7",  fixtureId: 18179759 }, // Match 79
-  { templateLeft: "England",       templateRight: "DR Congo",            key: "R32_8",  fixtureId: 18179764 }, // Match 80
+  { templateLeft: "Portugal",      templateRight: "Croatia",             key: "R32_5",  fixtureId: 18179763 }, // Match 83
+  { templateLeft: "Spain",         templateRight: "Austria",             key: "R32_6",  fixtureId: 18179551 }, // Match 84
+  { templateLeft: "United States", templateRight: "Bosnia and Herzegovina", key: "R32_7", fixtureId: 18172379 }, // Match 81
+  { templateLeft: "Belgium",       templateRight: "Senegal",             key: "R32_8",  fixtureId: 18179550 }, // Match 82
   // Right half of bracket
-  { templateLeft: "Portugal",      templateRight: "Croatia",             key: "R32_9",  fixtureId: 18179763 }, // Match 83
-  { templateLeft: "Spain",         templateRight: "Austria",             key: "R32_10", fixtureId: 18179551 }, // Match 84
-  { templateLeft: "United States", templateRight: "Bosnia and Herzegovina", key: "R32_11", fixtureId: 18172379 }, // Match 81
-  { templateLeft: "Belgium",       templateRight: "Senegal",             key: "R32_12", fixtureId: 18179550 }, // Match 82
+  { templateLeft: "Brazil",        templateRight: "Japan",               key: "R32_9",  fixtureId: 18172469 }, // Match 76
+  { templateLeft: "Ivory Coast",   templateRight: "Norway",              key: "R32_10", fixtureId: 18175397 }, // Match 78
+  { templateLeft: "Mexico",        templateRight: "Ecuador",             key: "R32_11", fixtureId: 18179759 }, // Match 79
+  { templateLeft: "England",       templateRight: "DR Congo",            key: "R32_12", fixtureId: 18179764 }, // Match 80
   { templateLeft: "Argentina",     templateRight: "Cape Verde",          key: "R32_13", fixtureId: 18175918 }, // Match 86
   { templateLeft: "Australia",     templateRight: "Egypt",               key: "R32_14", fixtureId: 18176123 }, // Match 88
   { templateLeft: "Switzerland",   templateRight: "Algeria",             key: "R32_15", fixtureId: 18179552 }, // Match 85

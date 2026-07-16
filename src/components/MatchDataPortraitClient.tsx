@@ -247,6 +247,21 @@ export default function MatchDataPortraitClient({
   const momentumDataRef = useRef<MomentumPoint[]>([]);
   const durationRef = useRef(5400);
 
+  const visualTimeRef = useRef(0);
+  const mouseRef = useRef(new THREE.Vector2(-9999, -9999));
+  const hoveredEventRef = useRef<VisualEvent | null>(null);
+  const [hoveredEvent, setHoveredEvent] = useState<VisualEvent | null>(null);
+  const [hoveredTooltip, setHoveredTooltip] = useState<{
+    playerName: string;
+    minute: number;
+    xg: number;
+    team: string;
+    outcome: string;
+    fotmobId?: number;
+    x: number;
+    y: number;
+  } | null>(null);
+
   useEffect(() => {
     momentumDataRef.current = momentumData;
   }, [momentumData]);
@@ -515,6 +530,31 @@ export default function MatchDataPortraitClient({
     mountRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
+    const handleCanvasMouseMove = (e: MouseEvent) => {
+      if (!mountRef.current) return;
+      const rect = mountRef.current.getBoundingClientRect();
+      mouseRef.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouseRef.current.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    };
+
+    const handleCanvasMouseLeave = () => {
+      mouseRef.current.set(-9999, -9999);
+    };
+
+    const handleCanvasClick = () => {
+      if (hoveredEventRef.current) {
+        const ev = hoveredEventRef.current;
+        timeRef.current = ev.t;
+        setCurrentTime(ev.t);
+        setIsPlaying(true);
+      }
+    };
+
+    const canvasDom = renderer.domElement;
+    canvasDom.addEventListener("mousemove", handleCanvasMouseMove);
+    canvasDom.addEventListener("mouseleave", handleCanvasMouseLeave);
+    canvasDom.addEventListener("click", handleCanvasClick);
+
     // Scene
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x060814, 0.010); // neutral background fog
@@ -718,6 +758,25 @@ export default function MatchDataPortraitClient({
     pitchPlane.renderOrder = 0;
     scene.add(pitchPlane);
 
+    // Extract all shots to populate uniforms
+    const shotsList = visualEventsRef.current.filter(ev => ev.kind === "shot" || ev.type === "shot" || ev.isGoal);
+    const count = Math.min(40, shotsList.length);
+
+    const uniformShotsPos = Array.from({ length: 40 }, (_, idx) => {
+      const ev = shotsList[idx];
+      return ev ? new THREE.Vector2(ev.u, ev.v) : new THREE.Vector2();
+    });
+
+    const uniformShotsData = Array.from({ length: 40 }, (_, idx) => {
+      const ev = shotsList[idx];
+      return ev ? new THREE.Vector3(ev.xg || 0.1, ev.isGoal ? 1.0 : 0.0, ev.team === "home" ? 1.0 : 2.0) : new THREE.Vector3();
+    });
+
+    const uniformShotsTime = new Float32Array(40);
+    for (let k = 0; k < count; k++) {
+      uniformShotsTime[k] = shotsList[k].t;
+    }
+
     // Uniform objects for Home and Away blankets
     const homeUniforms = {
       uHeight: { value: hTexHome },
@@ -733,11 +792,11 @@ export default function MatchDataPortraitClient({
       uClay: { value: new THREE.Color('#6a6560') },
       uSat: { value: 0.86 },
       uTint: { value: 1.0 },
-      uTex: { value: 0.86 },
+      uTex: { value: 0.15 }, // smooth, subtle marble texture
       uGlowCol: { value: new THREE.Color('#f0d8c1') },
       uEmber: { value: 1.0 },
       uIntensity: { value: 0 },
-      uDetail: { value: 1.1 },
+      uDetail: { value: 0.05 }, // smooth material (disabled high-frequency carbon grid)
       uDetailScale: { value: 2.58 },
       uPattern: { value: 4.0 },
       uTime: { value: 0 },
@@ -746,7 +805,17 @@ export default function MatchDataPortraitClient({
       uFloodTeam: { value: new THREE.Color(homeColor) },
       uFloodFade: { value: 0.0 },
       uCorner: { value: cTexHome },
-      uCornerCol: { value: new THREE.Color(homeColor) }
+      uCornerCol: { value: new THREE.Color(homeColor) },
+
+      // Persistent shot markers uniforms
+      uShotsPos: { value: uniformShotsPos },
+      uShotsData: { value: uniformShotsData },
+      uShotsTime: { value: uniformShotsTime },
+      uShotsCount: { value: count },
+      uCurrentTime: { value: 0 },
+      uHomeColor: { value: new THREE.Color(homeColor) },
+      uAwayColor: { value: new THREE.Color(awayColor) },
+      uHoveredShotIdx: { value: -1 }
     };
 
     const awayUniforms = {
@@ -763,11 +832,11 @@ export default function MatchDataPortraitClient({
       uClay: { value: new THREE.Color('#6a6560') },
       uSat: { value: 0.86 },
       uTint: { value: 1.0 },
-      uTex: { value: 0.86 },
+      uTex: { value: 0.15 }, // smooth, subtle marble texture
       uGlowCol: { value: new THREE.Color('#f0d8c1') },
       uEmber: { value: 1.0 },
       uIntensity: { value: 0 },
-      uDetail: { value: 1.1 },
+      uDetail: { value: 0.05 }, // smooth material (disabled high-frequency carbon grid)
       uDetailScale: { value: 2.58 },
       uPattern: { value: 4.0 },
       uTime: { value: 0 },
@@ -776,7 +845,17 @@ export default function MatchDataPortraitClient({
       uFloodTeam: { value: new THREE.Color(awayColor) },
       uFloodFade: { value: 0.0 },
       uCorner: { value: cTexAway },
-      uCornerCol: { value: new THREE.Color(awayColor) }
+      uCornerCol: { value: new THREE.Color(awayColor) },
+
+      // Persistent shot markers uniforms
+      uShotsPos: { value: uniformShotsPos },
+      uShotsData: { value: uniformShotsData },
+      uShotsTime: { value: uniformShotsTime },
+      uShotsCount: { value: count },
+      uCurrentTime: { value: 0 },
+      uHomeColor: { value: new THREE.Color(homeColor) },
+      uAwayColor: { value: new THREE.Color(awayColor) },
+      uHoveredShotIdx: { value: -1 }
     };
 
     // Custom material compile for blankets
@@ -830,6 +909,17 @@ export default function MatchDataPortraitClient({
         uniform float uDetail; uniform float uDetailScale; uniform float uPattern;
         uniform float uTime;
         uniform sampler2D uCorner; uniform vec3 uCornerCol;
+        
+        uniform vec2 uWorld;
+        uniform vec2 uShotsPos[40];
+        uniform vec3 uShotsData[40];
+        uniform float uShotsTime[40];
+        uniform int uShotsCount;
+        uniform float uCurrentTime;
+        uniform vec3 uHomeColor;
+        uniform vec3 uAwayColor;
+        uniform int uHoveredShotIdx;
+        
         varying float vHd; varying vec2 vUvN; varying float vDu; varying float vFold;
 
         float h21_s10(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453); }
@@ -882,6 +972,139 @@ export default function MatchDataPortraitClient({
           
           float cw = clamp(texture2D(uCorner, vUvN).r, 0.0, 1.0);
           if (cw > 0.001) col = mix(col, uCornerCol, cw);
+
+          // 1. Spire color bleeding:
+          // Blend the base blanket color towards the shooting team's color near active spires
+          for (int k = 0; k < 40; k++) {
+            if (k >= uShotsCount) break;
+            
+            float shotTime = uShotsTime[k];
+            float age = uCurrentTime - shotTime;
+            if (age >= 0.0) {
+              float isGoalVal = uShotsData[k].y;
+              float rel = (isGoalVal > 0.5) ? 45.0 : 15.0;
+              float envelope = (1.0 - exp(-age / 6.0)) * exp(-age / rel);
+              
+              if (envelope > 0.005) {
+                vec2 shotW = uShotsPos[k] * uWorld;
+                vec2 pixelW = vUvN * uWorld;
+                float dWorld = distance(pixelW, shotW);
+                
+                float xg = uShotsData[k].x;
+                float radiusSq = (isGoalVal > 0.5) ? 8.5 : (3.2 + xg * 5.0);
+                
+                // Color influence blends out from the center of the spire
+                float colorInfluence = envelope * exp(-dWorld * dWorld / (radiusSq * 1.5));
+                if (colorInfluence > 0.01) {
+                  float shotTeam = uShotsData[k].z;
+                  vec3 shotColor = (shotTeam < 1.5) ? uHomeColor : uAwayColor;
+                  
+                  // Blend the team color into the current color
+                  col = mix(col, shotColor, clamp(colorInfluence, 0.0, 1.0));
+                }
+              }
+            }
+          }
+
+          // 2. Draw persistent shot markers
+          vec3 markerCol = vec3(0.0);
+          float markerAlpha = 0.0;
+          
+          for (int k = 0; k < 40; k++) {
+            if (k >= uShotsCount) break;
+            
+            vec2 shotW = uShotsPos[k] * uWorld;
+            vec2 pixelW = vUvN * uWorld;
+            float dWorld = distance(pixelW, shotW);
+            
+            float xg = uShotsData[k].x;
+            bool isGoal = uShotsData[k].y > 0.5;
+            float shotTeam = uShotsData[k].z;
+            float shotTime = uShotsTime[k];
+            float age = uCurrentTime - shotTime;
+            
+            // Substantially larger radii for visibility
+            float rOuter = 0.38 + clamp(xg * 0.25, 0.0, 0.35);
+            float rInner = 0.12 + clamp(xg * 0.10, 0.0, 0.12);
+            
+            bool isHovered = (k == uHoveredShotIdx);
+            if (isHovered) {
+              rOuter *= 1.4;
+              rInner *= 1.2;
+            }
+            
+            if (dWorld < rOuter) {
+              float opacity = 0.90;
+              vec3 colMark = vec3(0.9);
+              if (shotTeam < 1.5) {
+                // Home (blue)
+                colMark = mix(vec3(0.15, 0.55, 1.0), vec3(1.0), 0.2);
+              } else {
+                // Away (red)
+                colMark = mix(vec3(1.0, 0.2, 0.2), vec3(1.0), 0.2);
+              }
+              if (isGoal) {
+                colMark = vec3(1.0, 0.82, 0.10); // gold
+              }
+              
+              if (isHovered) {
+                colMark = mix(colMark, vec3(1.0), 0.5);
+              }
+              
+              if (age < 0.0) {
+                // Future shot: faint ring
+                opacity = 0.35;
+                float ringWidth = 0.04;
+                float dRing = abs(dWorld - rOuter + ringWidth);
+                if (dRing < ringWidth) {
+                  markerCol = colMark;
+                  markerAlpha = max(markerAlpha, opacity * (1.0 - dRing/ringWidth));
+                }
+              } else {
+                // Past/current shot
+                if (age < 6.0) {
+                  // Active/Pulsing highlight
+                  float pulse = 1.0 + 0.35 * sin(uTime * 12.0);
+                  opacity = 1.0;
+                  if (dWorld < rOuter * pulse) {
+                    float edge = smoothstep(rOuter * pulse, rOuter * pulse - 0.05, dWorld);
+                    markerCol = mix(colMark, vec3(1.0), 0.45);
+                    markerAlpha = max(markerAlpha, opacity * edge);
+                  }
+                } else {
+                  if (isHovered) {
+                    // Solid center dot
+                    if (dWorld < rInner) {
+                      markerCol = colMark;
+                      markerAlpha = max(markerAlpha, 1.0);
+                    } else {
+                      // Wide glowing halo
+                      float glowAmt = 1.0 - smoothstep(rInner, rOuter, dWorld);
+                      markerCol = mix(colMark, vec3(1.0), 0.5 * glowAmt);
+                      markerAlpha = max(markerAlpha, 0.85 * glowAmt);
+                    }
+                  } else {
+                    // Solid center dot + outer ring
+                    if (dWorld < rInner) {
+                      markerCol = colMark;
+                      markerAlpha = max(markerAlpha, opacity);
+                    } else {
+                      float ringWidth = 0.03;
+                      float dRing = abs(dWorld - rOuter + ringWidth);
+                      if (dRing < ringWidth) {
+                        markerCol = colMark;
+                        markerAlpha = max(markerAlpha, opacity * 0.75 * (1.0 - dRing/ringWidth));
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          
+          if (markerAlpha > 0.001) {
+            col = mix(col, markerCol, markerAlpha);
+          }
 
           diffuseColor.rgb = col;
           float covEff = covAt();
@@ -1299,7 +1522,10 @@ export default function MatchDataPortraitClient({
       animationFrameId = requestAnimationFrame(tick);
       
       const delta = clock.getDelta();
-      const elapsed = clock.getElapsedTime();
+      if (isPlayingRef.current) {
+        visualTimeRef.current += delta;
+      }
+      const visualTime = visualTimeRef.current;
 
       // Controls update
       if (controlsRef.current) {
@@ -1308,7 +1534,7 @@ export default function MatchDataPortraitClient({
 
       // Gently orbit camera automatically if playing (adds visual interest)
       if (isPlayingRef.current && cameraRef.current) {
-        const orbitAngle = elapsed * 0.04;
+        const orbitAngle = visualTime * 0.04;
         const targetX = Math.cos(orbitAngle) * 19;
         const targetZ = Math.sin(orbitAngle) * 19;
         cameraRef.current.position.x = THREE.MathUtils.lerp(cameraRef.current.position.x, targetX, 0.02);
@@ -1417,14 +1643,14 @@ export default function MatchDataPortraitClient({
               if (ev.isGoal) dynamicGoalsA++;
             }
 
-            // Spike peak (rises in 6s, goals decay over 15 mins, shots decay over 3 mins)
+            // Spike peak (rises in 6s, goals decay in 45s, shots decay in 15s)
             const age = activeT - ev.t;
             if (age >= 0) {
               const isGoal = ev.isGoal;
               const atk = 6.0;
-              const rel = isGoal ? 900.0 : 180.0; // 15 mins for goal, 3 mins for shot
+              const rel = isGoal ? 45.0 : 15.0; // 45s for goal, 15s for shot
               const rise = 1.0 - Math.exp(-age / atk);
-              const persistentFactor = 0.40;
+              const persistentFactor = 0.0; // fully decay to 0
               const decay = persistentFactor + (1.0 - persistentFactor) * Math.exp(-age / rel);
               const envelope = rise * decay;
 
@@ -1471,6 +1697,12 @@ export default function MatchDataPortraitClient({
                     const sX = (projVec.x * 0.5 + 0.5) * width;
                     const sY = (-(projVec.y * 0.5) + 0.5) * height;
 
+                    const clampedGoalX = Math.max(60, Math.min(width - 60, sX));
+                    const clampedGoalY = Math.max(180, Math.min(height - 15, sY));
+
+                    const clampedXgX = Math.max(70, Math.min(width - 70, sX));
+                    const clampedXgY = Math.max(25, Math.min(height - 15, sY));
+
                     if (ev.isGoal) {
                       // Generate deterministic shirt number between 2 and 22 based on name char codes
                       const charCodeSum = (ev.surname || "").split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
@@ -1480,8 +1712,8 @@ export default function MatchDataPortraitClient({
                         playerName: `${ev.name || ""} ${ev.surname || "Player"}`.trim(),
                         team: ev.team === "home" ? homeTeam : awayTeam,
                         position: ev.position || "FWD",
-                        x: sX,
-                        y: sY,
+                        x: clampedGoalX,
+                        y: clampedGoalY,
                         xg,
                         isGoal: true,
                         shirtNumber,
@@ -1492,8 +1724,8 @@ export default function MatchDataPortraitClient({
                     } else if (!currentXgLabelPos || ev.xg! > 0.15) {
                       currentXgLabelPos = {
                         text: `SHOT • ${ev.surname || "Player"} (${xg.toFixed(2)} xG)`,
-                        x: sX,
-                        y: sY
+                        x: clampedXgX,
+                        y: clampedXgY
                       };
                     }
                   }
@@ -1740,7 +1972,8 @@ export default function MatchDataPortraitClient({
       // Update uniforms
       const intensity = Math.min(1.0, (homePress + awayPress) / 20.0 + allSpires.length * 0.15);
 
-      homeUniforms.uTime.value = elapsed;
+      homeUniforms.uTime.value = visualTime;
+      homeUniforms.uCurrentTime.value = activeT;
       homeUniforms.uIntensity.value = intensity;
       homeUniforms.uTop.value = seamTopHome;
       homeUniforms.uLipH.value = homeLipHVal;
@@ -1750,7 +1983,8 @@ export default function MatchDataPortraitClient({
       }
       homeUniforms.uFloodFade.value = (lastGoalEvent && lastGoalEvent.team !== "home") ? floodIntensity : 0.0;
 
-      awayUniforms.uTime.value = elapsed;
+      awayUniforms.uTime.value = visualTime;
+      awayUniforms.uCurrentTime.value = activeT;
       awayUniforms.uIntensity.value = intensity;
       awayUniforms.uTop.value = 1.0 - seamTopHome;
       awayUniforms.uLipH.value = awayLipHVal;
@@ -1760,7 +1994,8 @@ export default function MatchDataPortraitClient({
       }
       awayUniforms.uFloodFade.value = (lastGoalEvent && lastGoalEvent.team === "home") ? floodIntensity : 0.0;
 
-      homeWallUniforms.uTime.value = elapsed;
+      homeWallUniforms.uTime.value = visualTime;
+      homeWallUniforms.uCurrentTime.value = activeT;
       homeWallUniforms.uIntensity.value = intensity;
       homeWallUniforms.uTop.value = seamTopHome;
       homeWallUniforms.uLipH.value = homeLipHVal;
@@ -1770,7 +2005,8 @@ export default function MatchDataPortraitClient({
       }
       homeWallUniforms.uFloodFade.value = (lastGoalEvent && lastGoalEvent.team !== "home") ? floodIntensity : 0.0;
 
-      awayWallUniforms.uTime.value = elapsed;
+      awayWallUniforms.uTime.value = visualTime;
+      awayWallUniforms.uCurrentTime.value = activeT;
       awayWallUniforms.uIntensity.value = intensity;
       awayWallUniforms.uTop.value = 1.0 - seamTopHome;
       awayWallUniforms.uLipH.value = awayLipHVal;
@@ -1805,14 +2041,14 @@ export default function MatchDataPortraitClient({
           // Base low-frequency organic cloth folds (wrinkles)
           // As momentum changes, waves travel along the pitch representing compression
           const momentumDiff = homePress - awayPress;
-          const compressionOffset = elapsed * 0.12 - momentumDiff * 0.08;
+          const compressionOffset = visualTime * 0.12 - momentumDiff * 0.08;
           
           // Large fabric folds along the Z/depth axis (making folds run across the width of the field)
           const fabricFold1 = Math.sin(x * 0.42 + compressionOffset) * 0.16;
-          const fabricFold2 = Math.cos(z * 0.32 + elapsed * 0.08) * 0.08;
+          const fabricFold2 = Math.cos(z * 0.32 + visualTime * 0.08) * 0.08;
           
           // Medium-frequency organic noise for fabric irregularity
-          const fabricNoise = fbm2d(x * 0.35 + elapsed * 0.08, z * 0.35, 2) * 0.12;
+          const fabricNoise = fbm2d(x * 0.35 + visualTime * 0.08, z * 0.35, 2) * 0.12;
           
           const baseNoise = fabricFold1 + fabricFold2 + fabricNoise;
 
@@ -1858,23 +2094,6 @@ export default function MatchDataPortraitClient({
           let hA = sharedHeight;
 
           let fVal = frontU;
-          
-          // Warp the possession front around the spires so they retain their scorer's color
-          allSpires.forEach(spire => {
-            const dx = x - spire.x;
-            const dz = z - spire.z;
-            const dSq = dx * dx + dz * dz;
-            if (dSq > spire.radiusSq * 8.0) return; // optimization
-            
-            const influence = Math.exp(-dSq / (spire.radiusSq * 1.6));
-            if (influence > 0.01) {
-              if (spire.color === homeColor) {
-                fVal = THREE.MathUtils.lerp(fVal, 0.96, influence);
-              } else {
-                fVal = THREE.MathUtils.lerp(fVal, 0.04, influence);
-              }
-            }
-          });
 
           // Seam-band under-sheet clamp
           const du = u - fVal;
@@ -1913,6 +2132,72 @@ export default function MatchDataPortraitClient({
         lightningMaterial.opacity = lightningFlashRef.current;
       }
 
+      // Raycasting to find hovered events (shots/goals)
+      let closestEv: VisualEvent | null = null;
+      if (mouseRef.current.x > -100 && cameraRef.current) {
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(mouseRef.current, cameraRef.current);
+        const pitchPlaneHelper = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+        const intersectPoint = new THREE.Vector3();
+        
+        if (raycaster.ray.intersectPlane(pitchPlaneHelper, intersectPoint)) {
+          let minDist = 0.45;
+          const shots = visualEventsRef.current.filter(ev => ev.kind === "shot" || ev.type === "shot" || ev.isGoal);
+          
+          for (const ev of shots) {
+            const wX = (ev.u - 0.5) * WORLD_X;
+            const wZ = (0.5 - ev.v) * WORLD_Z;
+            const dist = Math.sqrt((intersectPoint.x - wX)**2 + (intersectPoint.z - wZ)**2);
+            if (dist < minDist) {
+              minDist = dist;
+              closestEv = ev;
+            }
+          }
+        }
+      }
+
+      const hoveredIdx = closestEv ? shotsList.indexOf(closestEv) : -1;
+      homeUniforms.uHoveredShotIdx.value = hoveredIdx;
+      awayUniforms.uHoveredShotIdx.value = hoveredIdx;
+
+      if (closestEv !== hoveredEventRef.current) {
+        hoveredEventRef.current = closestEv;
+        setHoveredEvent(closestEv);
+        if (mountRef.current) {
+          mountRef.current.style.cursor = closestEv ? "pointer" : "default";
+        }
+      }
+
+      if (closestEv && cameraRef.current) {
+        const ev = closestEv;
+        const wX = (ev.u - 0.5) * WORLD_X;
+        const wZ = (0.5 - ev.v) * WORLD_Z;
+        
+        const projVec = new THREE.Vector3(wX, 0.15, wZ);
+        projVec.project(cameraRef.current);
+        
+        const sX = (projVec.x * 0.5 + 0.5) * width;
+        const sY = (-(projVec.y * 0.5) + 0.5) * height;
+        
+        const tx = Math.max(130, Math.min(width - 130, sX));
+        const ty = Math.max(120, Math.min(height - 15, sY));
+        
+        currentXgLabelPos = null;
+        
+        setHoveredTooltip({
+          playerName: `${ev.name || ""} ${ev.surname || "Player"}`.trim(),
+          minute: ev.dispMin || Math.floor(ev.t / 60),
+          xg: ev.xg || 0.0,
+          team: ev.team,
+          outcome: ev.outcome,
+          fotmobId: ev.fotmobId,
+          x: tx,
+          y: ty
+        });
+      } else {
+        setHoveredTooltip(null);
+      }
+
       if (rendererRef.current && sceneRef.current && cameraRef.current) {
         rendererRef.current.render(sceneRef.current, cameraRef.current);
       }
@@ -1941,7 +2226,11 @@ export default function MatchDataPortraitClient({
       if (cTexAway) cTexAway.dispose();
       
       if (rendererRef.current && rendererRef.current.domElement) {
-        rendererRef.current.domElement.remove();
+        const domEl = rendererRef.current.domElement;
+        domEl.removeEventListener("mousemove", handleCanvasMouseMove);
+        domEl.removeEventListener("mouseleave", handleCanvasMouseLeave);
+        domEl.removeEventListener("click", handleCanvasClick);
+        domEl.remove();
       }
     };
   }, [loading]);
@@ -2090,6 +2379,99 @@ export default function MatchDataPortraitClient({
               yieldVal={`${activeGoalCard.minute}' GOAL`}
               accentColor={activeGoalCard.teamColor}
             />
+          </div>
+        )}
+
+        {/* Interactive Hover Tooltip */}
+        {hoveredTooltip && (
+          <div style={{
+            position: "absolute",
+            left: `${hoveredTooltip.x}px`,
+            top: `${hoveredTooltip.y}px`,
+            transform: "translate(-50%, -105%)",
+            background: "rgba(10, 12, 22, 0.88)",
+            backdropFilter: "blur(12px)",
+            border: "1px solid rgba(255, 255, 255, 0.12)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.6), 0 0 15px rgba(111, 140, 255, 0.15)",
+            borderRadius: "12px",
+            padding: "10px 14px",
+            color: "#fff",
+            zIndex: 15,
+            pointerEvents: "none", // don't block raycasting/clicks on canvas underneath
+            display: "flex",
+            flexDirection: "column",
+            gap: "6px",
+            width: "220px",
+            animation: "tooltipEntrance 0.15s ease-out forwards"
+          }}>
+            <style jsx>{`
+              @keyframes tooltipEntrance {
+                from { opacity: 0; transform: translate(-50%, -98%) scale(0.95); }
+                to { opacity: 1; transform: translate(-50%, -105%) scale(1.0); }
+              }
+            `}</style>
+            
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              {hoveredTooltip.fotmobId ? (
+                <div style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  background: "rgba(255,255,255,0.05)",
+                  border: `1px solid ${hoveredTooltip.team === "home" ? homeColor : awayColor}`,
+                  overflow: "hidden",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}>
+                  <img 
+                    src={`https://images.fotmob.com/image_resources/playerimages/${hoveredTooltip.fotmobId}.png`} 
+                    alt={hoveredTooltip.playerName} 
+                    style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                    onError={(e) => { e.currentTarget.style.display = "none"; }}
+                  />
+                </div>
+              ) : null}
+              
+              <div style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
+                <span style={{ fontSize: "12px", fontWeight: 800 }}>{hoveredTooltip.playerName}</span>
+                <span style={{ fontSize: "9px", color: "rgba(255,255,255,0.5)", fontFamily: "monospace" }}>
+                  {hoveredTooltip.team === "home" ? homeTeam : awayTeam} • {hoveredTooltip.minute}'
+                </span>
+              </div>
+            </div>
+
+            <div style={{ height: "1px", background: "rgba(255,255,255,0.08)", margin: "2px 0" }} />
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px" }}>
+              <span style={{ color: "rgba(255,255,255,0.6)" }}>Outcome:</span>
+              <span style={{ 
+                fontWeight: 700, 
+                color: hoveredTooltip.outcome === "Goal" ? "#facc15" : "#fff",
+                textTransform: "capitalize"
+              }}>
+                {hoveredTooltip.outcome === "Goal" ? "⚽ GOAL" : hoveredTooltip.outcome}
+              </span>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px" }}>
+              <span style={{ color: "rgba(255,255,255,0.6)" }}>Expected Goals (xG):</span>
+              <span style={{ fontWeight: 800, color: "#ffd166", fontFamily: "monospace" }}>
+                {hoveredTooltip.xg.toFixed(2)}
+              </span>
+            </div>
+
+            <div style={{ 
+              fontSize: "8px", 
+              color: "#a9b8ff", 
+              fontFamily: "monospace", 
+              letterSpacing: "0.5px", 
+              textAlign: "center", 
+              marginTop: "4px",
+              textTransform: "uppercase" 
+            }}>
+              🖱️ Click to jump to this play
+            </div>
           </div>
         )}
 
