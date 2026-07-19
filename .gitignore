@@ -10,6 +10,8 @@ node_modules/
 *.db-journal
 local.db*
 data.db*
+!data.db
+
 
 # Secret tokens and caching
 txline_token_cache.json
