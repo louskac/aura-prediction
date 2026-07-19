@@ -41,6 +41,12 @@ interface MatchDataPortraitClientProps {
   status: string;
 }
 
+function arWeight(a: number, atk: number, rel: number): number {
+  if (a < 0) return 0;
+  const rise = atk > 0.02 ? (1 - Math.exp(-a / atk)) : 1;
+  return rise * Math.exp(-a / rel);
+}
+
 const TEAM_COLORS: Record<string, string> = {
   France: "#387ef0",
   Senegal: "#0c954e",
@@ -198,16 +204,22 @@ export default function MatchDataPortraitClient({
   const lightningLinesRef = useRef<THREE.LineSegments | null>(null);
   const lightningFlashRef = useRef<number>(0);
   
+  // Particle system refs
+  const particlesRef = useRef<THREE.Points | null>(null);
+  const particlesGeomRef = useRef<THREE.BufferGeometry | null>(null);
+  const particleMaterialRef = useRef<THREE.PointsMaterial | null>(null);
+  
   // Visualizer states
   const [loading, setLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [playbackSpeed, setPlaybackSpeed] = useState(15); // multiplier
+  const [playbackSpeed, setPlaybackSpeed] = useState(60); // multiplier (1s = 1 minute)
   const [currentTime, setCurrentTime] = useState(0); 
   const [duration, setDuration] = useState(5400); // 90 mins in seconds
   const [momentumData, setMomentumData] = useState<MomentumPoint[]>([]);
   const [matchStats, setMatchStats] = useState<MatchStats | null>(null);
   const [showExplainer, setShowExplainer] = useState(false);
   const [activeXgLabel, setActiveXgLabel] = useState<{ text: string; x: number; y: number } | null>(null);
+  const [webglError, setWebglError] = useState<string | null>(null);
   
   interface GoalCardState {
     playerName: string;
@@ -240,6 +252,7 @@ export default function MatchDataPortraitClient({
   const timeRef = useRef(0);
   const playbackSpeedRef = useRef(15);
   const visualEventsRef = useRef<VisualEvent[]>([]);
+  const ballLocusRef = useRef<any[]>([]);
   const frontRef = useRef<Float32Array>(new Float32Array(48).fill(0.5));
   const smoothBallRef = useRef({ u: 0.5, v: 0.5 });
   const skyLeanEasedRef = useRef(0);
@@ -311,6 +324,25 @@ export default function MatchDataPortraitClient({
           setMomentumData(result.momentum || []);
           setMatchStats(result.stats || null);
           
+          // Build authentic ball path locus anchors
+          const ONBALL_TYPES = new Set([
+            'Pass', 'BallTouch', 'TakeOn', 'BallRecovery', 'Clearance', 'Dispossessed',
+            'KeeperPickup', 'Save', 'CornerAwarded', 'ShieldBallOpp', 'Goal',
+          ]);
+          const onball = result.timeline.filter((it: any) => ONBALL_TYPES.has(it.type) || it.isTouch || it.kind === 'pass' || it.kind === 'shot');
+          const anchors: any[] = [];
+          for (let i = 0; i < onball.length; i++) {
+            const p = onball[i];
+            const next = onball[i + 1];
+            const gap = next ? Math.max(0.1, next.t - p.t) : 1.2;
+            anchors.push({ t: p.t, u: p.u, v: p.v, team: p.team });
+            if (Number.isFinite(p.eu) && Number.isFinite(p.ev)) {
+              anchors.push({ t: p.t + gap * 0.6, u: p.eu, v: p.ev, team: p.team });
+            }
+          }
+          anchors.sort((a, b) => a.t - b.t);
+          ballLocusRef.current = anchors;
+
           const maxSec = result.timeline.reduce((acc: number, e: VisualEvent) => Math.max(acc, e.t), 5400);
           setDuration(maxSec);
           setLoading(false);
@@ -520,7 +552,14 @@ export default function MatchDataPortraitClient({
     const height = mountRef.current.clientHeight || 520;
 
     // WebGL Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    } catch (err: any) {
+      console.error("WebGL context creation failed:", err);
+      setWebglError(err.message || "WebGL context creation failed");
+      return;
+    }
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.shadowMap.enabled = true;
@@ -616,6 +655,47 @@ export default function MatchDataPortraitClient({
     const centerSpot = new THREE.SpotLight(0xabc4ff, 1.5, 30, Math.PI * 0.25, 0.5, 1);
     centerSpot.position.set(0, 15, 0);
     scene.add(centerSpot);
+
+    // Dynamic Cyber Particle System (Data Dust Stadium Canopy)
+    const particleCount = 600;
+    const particleGeometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const colors = new Float32Array(particleCount * 3);
+    
+    for (let p = 0; p < particleCount; p++) {
+      // Cylindrical coordinates to form a stadium dome shell
+      const radius = 13 + Math.random() * 20;
+      const theta = Math.random() * Math.PI * 2;
+      const y = -1 + Math.random() * 15;
+      
+      positions[p * 3] = radius * Math.cos(theta);
+      positions[p * 3 + 1] = y;
+      positions[p * 3 + 2] = radius * Math.sin(theta);
+      
+      // Default color: subtle muted blue data glow
+      colors[p * 3] = 0.18;
+      colors[p * 3 + 1] = 0.25;
+      colors[p * 3 + 2] = 0.45;
+    }
+    
+    particleGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    particleGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+    
+    const particleMaterial = new THREE.PointsMaterial({
+      size: 0.16,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.40,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+    
+    const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+    scene.add(particleSystem);
+    
+    particlesRef.current = particleSystem;
+    particlesGeomRef.current = particleGeometry;
+    particleMaterialRef.current = particleMaterial;
 
     // --- Ground Grid (The Solid Slab) ---
     const WORLD_X = 16;
@@ -752,11 +832,7 @@ export default function MatchDataPortraitClient({
       `
     });
 
-    const pitchPlane = new THREE.Mesh(new THREE.PlaneGeometry(WORLD_X, WORLD_Z, 1, 1), pitchMat);
-    pitchPlane.position.y = 0.0;
-    pitchPlane.rotation.x = -Math.PI / 2;
-    pitchPlane.renderOrder = 0;
-    scene.add(pitchPlane);
+
 
     // Extract all shots to populate uniforms
     const shotsList = visualEventsRef.current.filter(ev => ev.kind === "shot" || ev.type === "shot" || ev.isGoal);
@@ -796,7 +872,7 @@ export default function MatchDataPortraitClient({
       uGlowCol: { value: new THREE.Color('#f0d8c1') },
       uEmber: { value: 1.0 },
       uIntensity: { value: 0 },
-      uDetail: { value: 0.05 }, // smooth material (disabled high-frequency carbon grid)
+      uDetail: { value: 0.58 }, // high-contrast procedural carbon dot-mesh grid
       uDetailScale: { value: 2.58 },
       uPattern: { value: 4.0 },
       uTime: { value: 0 },
@@ -836,7 +912,7 @@ export default function MatchDataPortraitClient({
       uGlowCol: { value: new THREE.Color('#f0d8c1') },
       uEmber: { value: 1.0 },
       uIntensity: { value: 0 },
-      uDetail: { value: 0.05 }, // smooth material (disabled high-frequency carbon grid)
+      uDetail: { value: 0.58 }, // high-contrast procedural carbon dot-mesh grid
       uDetailScale: { value: 2.58 },
       uPattern: { value: 4.0 },
       uTime: { value: 0 },
@@ -891,6 +967,7 @@ export default function MatchDataPortraitClient({
 
       shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>',
         `#include <begin_vertex>
+          vUvN = uv;
           float hb = HB(uv);
           float frnt = FRONT(uv);
           vDu = uv.x - frnt;
@@ -933,12 +1010,76 @@ export default function MatchDataPortraitClient({
           for (int k=0;k<4;k++){ s += a*vn_s10(p); p = p*2.03 + vec2(11.3,7.7); a *= 0.5; }
           return s;
         }
+
         float pat_s10(vec2 p){
           float a = sin(p.x*6.2831853);
           float b = sin((p.x*0.5 + p.y*0.8660254)*6.2831853);
           float c = sin((p.x*0.5 - p.y*0.8660254)*6.2831853);
           return clamp(0.5 + 0.22*(a+b+c), 0.0, 1.0);
         }
+
+        const float PL = 105.0;
+        const float PW = 68.0;
+
+        float seg7(vec2 puv, vec2 a, vec2 b, float halfW){
+          vec2 P = vec2(puv.x*PL, puv.y*PW);
+          vec2 ab = b-a, ap = P-a;
+          float t = clamp(dot(ap,ab)/max(dot(ab,ab),1e-5),0.0,1.0);
+          float d = length(P-(a+t*ab));
+          float aa = (fwidth(P.x)+fwidth(P.y))*0.5+1e-4;
+          return 1.0 - smoothstep(halfW, halfW+aa, d);
+        }
+
+        float rect7(vec2 puv, vec2 lo, vec2 hi, float halfW){
+          float c=0.0;
+          c=max(c,seg7(puv,vec2(lo.x,lo.y),vec2(hi.x,lo.y),halfW));
+          c=max(c,seg7(puv,vec2(hi.x,lo.y),vec2(hi.x,hi.y),halfW));
+          c=max(c,seg7(puv,vec2(hi.x,hi.y),vec2(lo.x,hi.y),halfW));
+          c=max(c,seg7(puv,vec2(lo.x,hi.y),vec2(lo.x,lo.y),halfW));
+          return c;
+        }
+
+        float ring7(vec2 puv, vec2 cen, float r, float halfW){
+          vec2 P = vec2(puv.x*PL, puv.y*PW);
+          float d = abs(length(P-cen)-r);
+          float aa = (fwidth(P.x)+fwidth(P.y))*0.5+1e-4;
+          return 1.0 - smoothstep(halfW, halfW+aa, d);
+        }
+
+        float dot7(vec2 puv, vec2 cen, float r){
+          vec2 P = vec2(puv.x*PL, puv.y*PW);
+          float d = length(P-cen);
+          float aa = (fwidth(P.x)+fwidth(P.y))*0.5+1e-4;
+          return 1.0 - smoothstep(r, r+aa, d);
+        }
+
+        float pitchLines7(vec2 uv){
+          float hw=0.12;
+          float inset=1.6;
+          vec2 lo=vec2(inset,inset);
+          vec2 hi=vec2(PL-inset,PW-inset);
+          float c=0.0;
+          c=max(c,rect7(uv,lo,hi,hw));
+          c=max(c,seg7(uv,vec2(PL*0.5,lo.y),vec2(PL*0.5,hi.y),hw));
+          c=max(c,ring7(uv,vec2(PL*0.5,PW*0.5),9.15,hw));
+          c=max(c,dot7(uv,vec2(PL*0.5,PW*0.5),0.35));
+          for(int s=0;s<2;s++){
+            float dir=(s==0)?1.0:-1.0;
+            float gx=(s==0)?inset:PL-inset;
+            float pax=gx+dir*16.5;
+            c=max(c,rect7(uv,vec2(min(gx,pax),PW*0.5-20.16),vec2(max(gx,pax),PW*0.5+20.16),hw));
+            float gax=gx+dir*5.5;
+            c=max(c,rect7(uv,vec2(min(gx,gax),PW*0.5-9.16),vec2(max(gx,gax),PW*0.5+9.16),hw));
+            vec2 pSpot=vec2(gx+dir*11.0,PW*0.5);
+            c=max(c,dot7(uv,pSpot,0.35));
+            float arc=ring7(uv,pSpot,9.15,hw);
+            vec2 P=vec2(uv.x*PL,uv.y*PW);
+            float outside=(dir>0.0)?step(pax,P.x):step(P.x,pax);
+            c=max(c,arc*outside);
+          }
+          return clamp(c,0.0,1.0);
+        }
+
         float covAt(){
           float lap = uLap * (1.0 - clamp(uFloodFade, 0.0, 1.0));
           float d = mix(lap - vDu, vDu + lap, uAway);
@@ -967,12 +1108,14 @@ export default function MatchDataPortraitClient({
           float band = 1.0 - smoothstep(0.0, max(uLap*1.6, 0.04), dist);
           float shadow = (1.0 - uTop) * band;
           col *= mix(1.0, 0.40, shadow);
-          
+                    // Draw the pitch white lines directly on the blankets' surface
+          float linesVal = pitchLines7(vUvN) * 0.70;
+          col = mix(col, vec3(0.92, 0.94, 0.97), linesVal);
+
           col = mix(col, uFloodTeam, clamp(uFlood, 0.0, 1.0));
           
           float cw = clamp(texture2D(uCorner, vUvN).r, 0.0, 1.0);
           if (cw > 0.001) col = mix(col, uCornerCol, cw);
-
           // 1. Spire color bleeding:
           // Blend the base blanket color towards the shooting team's color near active spires
           for (int k = 0; k < 40; k++) {
@@ -983,7 +1126,8 @@ export default function MatchDataPortraitClient({
             if (age >= 0.0) {
               float isGoalVal = uShotsData[k].y;
               float rel = (isGoalVal > 0.5) ? 45.0 : 15.0;
-              float envelope = (1.0 - exp(-age / 6.0)) * exp(-age / rel);
+              float pFactor = (isGoalVal > 0.5) ? 0.45 : 0.30;
+              float envelope = (1.0 - exp(-age / 6.0)) * (pFactor + (1.0 - pFactor) * exp(-age / rel));
               
               if (envelope > 0.005) {
                 vec2 shotW = uShotsPos[k] * uWorld;
@@ -1650,8 +1794,7 @@ export default function MatchDataPortraitClient({
               const atk = 6.0;
               const rel = isGoal ? 45.0 : 15.0; // 45s for goal, 15s for shot
               const rise = 1.0 - Math.exp(-age / atk);
-              const persistentFactor = 0.0; // fully decay to 0
-              const decay = persistentFactor + (1.0 - persistentFactor) * Math.exp(-age / rel);
+              const decay = Math.exp(-age / rel);
               const envelope = rise * decay;
 
               if (envelope > 0.005) {
@@ -1742,11 +1885,12 @@ export default function MatchDataPortraitClient({
               else growth = Math.max(0, 1 - (age - 35) / 55);
             }
             if (growth > 0) {
-              const maxWaveH = ev.type === "high_danger_possession" ? 0.22 : 0.12;
+              const maxWaveH = ev.type === "high_danger_possession" ? 1.75 : 0.90;
+              const radSq = ev.type === "high_danger_possession" ? 14.0 : 10.0;
               const wave = {
                 x: wX,
                 z: wZ,
-                radiusSq: 6.0,
+                radiusSq: radSq,
                 height: maxWaveH * growth,
                 color: ev.team === "home" ? homeColor : awayColor
               };
@@ -1790,10 +1934,21 @@ export default function MatchDataPortraitClient({
       setActiveXgLabel(currentXgLabelPos);
       setActiveGoalCard(currentGoalCard);
 
-      // --- DYNAMIC gradient score-tinted sky (ambient leader lean) ---
-      const skyMargin = dynamicGoalsH - dynamicGoalsA;
-      const skyMag = Math.max(0, Math.min(1, Math.abs(skyMargin) / 2));
-      const targetLean = skyMargin === 0 ? 0 : Math.sign(skyMargin) * (0.4 + 0.6 * skyMag);
+      // --- DYNAMIC gradient score-tinted sky (hybrid score + momentum pressure lean) ---
+      const scoreLead = dynamicGoalsH - dynamicGoalsA;
+      let targetLean = 0;
+      if (scoreLead !== 0) {
+        // Goals lead shapes base color balance
+        const skyMag = Math.max(0, Math.min(1, Math.abs(scoreLead) / 2));
+        const baseLean = Math.sign(scoreLead) * (0.32 + 0.48 * skyMag);
+        // Momentum index shapes immediate shifting pressure (+/- 0.22)
+        targetLean = baseLean + momIdx * 0.22;
+      } else {
+        // If tied (0-0, 1-1, etc.), sky drift represents 100% live attacking pressure
+        targetLean = momIdx * 0.55;
+      }
+      targetLean = Math.max(-1.0, Math.min(1.0, targetLean));
+
       skyLeanEasedRef.current += (targetLean - skyLeanEasedRef.current) * 0.08;
       
       const lean = skyLeanEasedRef.current;
@@ -1867,31 +2022,221 @@ export default function MatchDataPortraitClient({
         }
       }
 
-      // Find the ball position at the current playback time
+      // Animate and color-lerp the stadium canopy stardust particle system
+      if (particlesRef.current && particlesGeomRef.current) {
+        // Swirl particles around Y-axis; rotate faster during goals (floodIntensity > 0)
+        particlesRef.current.rotation.y += 0.0003 + 0.0012 * floodIntensity;
+        
+        const colorsAttr = particlesGeomRef.current.attributes.color as THREE.BufferAttribute;
+        const colorsArr = colorsAttr.array as Float32Array;
+        
+        // Base dark blue stardust color
+        const baseColor = new THREE.Color(0x28325a);
+        
+        // Target color: if there is an active goal flood, pulse with scoring team color.
+        // Otherwise, blend based on active momentum (lean / strength).
+        const targetColor = floodIntensity > 0 
+          ? floodKitCol 
+          : (lean >= 0 ? new THREE.Color(homeColor) : new THREE.Color(awayColor));
+        
+        const blendFactor = floodIntensity > 0 
+          ? floodIntensity * 0.95 
+          : strength * 0.55;
+          
+        const activeColor = baseColor.clone().lerp(targetColor, blendFactor);
+        
+        for (let p = 0; p < 600; p++) {
+          // Dynamic light twinkle / noise fluctuation over active time
+          const twinkle = 0.82 + 0.25 * Math.sin(activeT * 2.5 + p);
+          colorsArr[p * 3] = activeColor.r * twinkle;
+          colorsArr[p * 3 + 1] = activeColor.g * twinkle;
+          colorsArr[p * 3 + 2] = activeColor.b * twinkle;
+        }
+        colorsAttr.needsUpdate = true;
+      }
+
+      // Possession front tide base value from momentum
+      const mom = momIdx; // -1..+1
+      const momFront = 0.5 + 0.5 * Math.sign(mom) * Math.pow(Math.abs(mom), 0.65);
+
+      // Find the ball position at the current playback time from authentic locus path
       let ballU = 0.5;
       let ballV = 0.5;
-      let lastEventBeforeT: any = null;
-      for (const ev of visualEventsRef.current) {
-        if (ev.t <= activeT) {
-          if (!lastEventBeforeT || ev.t > lastEventBeforeT.t) {
-            lastEventBeforeT = ev;
+      const A_locus = ballLocusRef.current;
+      let ballFound = false;
+      if (A_locus && A_locus.length > 0) {
+        if (activeT <= A_locus[0].t) {
+          ballU = A_locus[0].u;
+          ballV = A_locus[0].v;
+          ballFound = true;
+        } else if (activeT >= A_locus[A_locus.length - 1].t) {
+          ballU = A_locus[A_locus.length - 1].u;
+          ballV = A_locus[A_locus.length - 1].v;
+          ballFound = true;
+        } else {
+          let idx = 0;
+          while (idx < A_locus.length - 2 && A_locus[idx + 1].t <= activeT) {
+            idx++;
           }
+          const a = A_locus[idx];
+          const b = A_locus[idx + 1];
+          const span = Math.max(1e-4, b.t - a.t);
+          const f = Math.max(0, Math.min(1, (activeT - a.t) / span));
+          const e = f * f * (3 - 2 * f);
+          ballU = THREE.MathUtils.lerp(a.u, b.u, e);
+          ballV = THREE.MathUtils.lerp(a.v, b.v, e);
+          ballFound = true;
         }
       }
-      if (lastEventBeforeT) {
-        ballU = lastEventBeforeT.u;
-        ballV = lastEventBeforeT.v;
+
+      if (!ballFound) {
+        // Fallback to passing orbit if no locus is present
+        const orbitRadiusU = 0.14;
+        const orbitRadiusV = 0.32;
+        const timeScale = visualTime * 0.72;
+        ballU = momFront + orbitRadiusU * Math.sin(timeScale * 0.65);
+        ballV = 0.5 + orbitRadiusV * Math.cos(timeScale * 0.42) * (0.8 + 0.25 * Math.sin(timeScale * 1.3));
       }
 
       // Smooth the ball coordinate
-      smoothBallRef.current.u += (ballU - smoothBallRef.current.u) * 0.12;
-      smoothBallRef.current.v += (ballV - smoothBallRef.current.v) * 0.12;
+      smoothBallRef.current.u += (ballU - smoothBallRef.current.u) * 0.10;
+      smoothBallRef.current.v += (ballV - smoothBallRef.current.v) * 0.10;
 
-      // Possession front tide update
-      const mom = momIdx; // -1..+1
-      const momFront = 0.5 + 0.5 * Math.sign(mom) * Math.pow(Math.abs(mom), 0.65);
-      
+      // Slices/channels variables for Thrust Fingers and Attack Reach
+      const A_thrustH = new Float32Array(48);
+      const A_thrustA = new Float32Array(48);
+      const A_thrustWH = new Float32Array(48);
+      const A_thrustWA = new Float32Array(48);
+
+      const A_reachH = new Float32Array(48);
+      const A_reachA = new Float32Array(48);
+      const A_reachWH = new Float32Array(48);
+      const A_reachWA = new Float32Array(48);
+
+      for (const e of visualEventsRef.current) {
+        if (e.t > activeT) break;
+        const age = activeT - e.t;
+        if (age < 0) continue;
+
+        // 1. Thrust Fingers (fast attack, fast decay: window of last 20 seconds)
+        if (age < 20.0) {
+          const isShot = e.kind === 'shot' || e.type === 'Goal' || e.isGoal;
+          const isPass = e.kind === 'pass' && e.eu !== undefined && Number.isFinite(e.eu);
+          if (isShot || isPass) {
+            const env = arWeight(age, 0.25, 4.33); // 3.0s half-life -> rel = 4.33s
+            if (env >= 0.03) {
+              const evVal = e.ev ?? 0.5;
+              const vVal = e.v ?? 0.5;
+              let fv = (e.ev !== undefined && Number.isFinite(e.ev)) ? evVal : ((e.v !== undefined && Number.isFinite(e.v)) ? vVal : 0.5);
+              let endU = 0.5;
+              let w = 0;
+              if (isShot) {
+                fv = (e.v !== undefined && Number.isFinite(e.v)) ? vVal : 0.5;
+                const su = Number.isFinite(e.u) ? e.u : (e.team === 'home' ? 0.94 : 0.06);
+                endU = e.team === 'home' ? Math.min(1.0, Math.max(0.94, su) + 0.05) : Math.max(0.0, Math.min(0.06, su) - 0.05);
+                const xg = e.xg || 0.15;
+                w = (1.3 + 5.2 * xg) * env;
+              } else {
+                const euVal = e.eu ?? 0.5;
+                const fwd = e.team === 'home' ? (euVal - e.u) : (e.u - euVal);
+                if (fwd >= 0.06) {
+                  const deep = e.team === 'home' ? (euVal >= 0.60) : (euVal <= 0.40);
+                  if (deep || e.through || (fwd > 0.12)) {
+                    const fastBoost = 1.0;
+                    const thruBoost = e.through ? 1.8 : 1.0;
+                    const longBoost = e.long ? 1.4 : 1.0;
+                    w = Math.min(1.2, fwd * 3.0) * fastBoost * thruBoost * longBoost * env;
+                    fv = evVal;
+                    endU = Math.max(0.06, Math.min(0.94, euVal));
+                  }
+                }
+              }
+
+              if (w >= 0.02) {
+                const sigma = 0.11;
+                const reachDist = sigma * 3.0;
+                const inv2sig2 = 1.0 / (2.0 * sigma * sigma);
+                const jLo = Math.max(0, Math.floor((1.0 - (fv + reachDist)) * 47));
+                const jHi = Math.min(47, Math.ceil((1.0 - (fv - reachDist)) * 47));
+                for (let j = jLo; j <= jHi; j++) {
+                  const vv = 1.0 - j / 47;
+                  const dv = vv - fv;
+                  const lw = Math.exp(-dv * dv * inv2sig2) * w;
+                  if (lw < 0.02) continue;
+                  if (e.team === 'home') {
+                    A_thrustH[j] += endU * lw;
+                    A_thrustWH[j] += lw;
+                  } else {
+                    A_thrustA[j] += endU * lw;
+                    A_thrustWA[j] += lw;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        // 2. Attack Reach (medium decay: window of last 40 seconds)
+        if (age < 40.0) {
+          const isShot = e.kind === 'shot' || e.type === 'Goal' || e.isGoal;
+          const isCorner = e.corner || e.type === 'CornerAwarded';
+          const isPass = e.kind === 'pass' && e.eu !== undefined && Number.isFinite(e.eu);
+          if (isShot || isCorner || isPass) {
+            const env = arWeight(age, 0.6, 5.77); // 4.0s half-life -> rel = 5.77s
+            if (env >= 0.03) {
+              const evVal = e.ev ?? 0.5;
+              const vVal = e.v ?? 0.5;
+              let fv = (e.ev !== undefined && Number.isFinite(e.ev)) ? evVal : ((e.v !== undefined && Number.isFinite(e.v)) ? vVal : 0.5);
+              let endU = 0.5;
+              let w = 0;
+              if (isShot) {
+                endU = e.team === 'home' ? 0.94 : 0.06;
+                const xg = e.xg || 0.15;
+                w = (0.7 + 3.4 * xg) * env;
+                fv = (e.v !== undefined && Number.isFinite(e.v)) ? vVal : fv;
+              } else if (isCorner) {
+                endU = e.team === 'home' ? 0.94 : 0.06;
+                fv = vVal < 0.5 ? 0.06 : 0.94;
+                w = 1.15 * env;
+              } else if (isPass) {
+                const euVal = e.eu ?? 0.5;
+                const deepEnd = e.team === 'home' ? euVal : (1.0 - euVal);
+                const isCross = !!e.cross;
+                if (isCross || deepEnd >= 0.66) {
+                  endU = Math.max(0.06, Math.min(0.94, euVal));
+                  w = (isCross ? 1.0 : 0.75) * Math.max(0, Math.min(1, (deepEnd - 0.5) / 0.5)) * env;
+                }
+              }
+
+              if (w >= 0.03) {
+                const sigma = 0.13;
+                const reachDist = sigma * 3.0;
+                const inv2sig2 = 1.0 / (2.0 * sigma * sigma);
+                const jLo = Math.max(0, Math.floor((1.0 - (fv + reachDist)) * 47));
+                const jHi = Math.min(47, Math.ceil((1.0 - (fv - reachDist)) * 47));
+                for (let j = jLo; j <= jHi; j++) {
+                  const vv = 1.0 - j / 47;
+                  const dv = vv - fv;
+                  const lw = Math.exp(-dv * dv * inv2sig2) * w;
+                  if (lw < 0.02) continue;
+                  if (e.team === 'home') {
+                    A_reachH[j] += endU * lw;
+                    A_reachWH[j] += lw;
+                  } else {
+                    A_reachA[j] += endU * lw;
+                    A_reachWA[j] += lw;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
       const tempFront = new Float32Array(48);
+      const lo = 0.06;
+      const hi = 0.94;
+
       for (let j = 0; j < 48; j++) {
         const vv = j / 47;
         const dv = vv - smoothBallRef.current.v;
@@ -1906,10 +2251,61 @@ export default function MatchDataPortraitClient({
           targetFrontVal = THREE.MathUtils.lerp(targetFrontVal, dest, floodIntensity);
         }
         
-        targetFrontVal = Math.max(0.08, Math.min(0.92, targetFrontVal));
+        targetFrontVal = Math.max(lo, Math.min(hi, targetFrontVal));
+        let fr = targetFrontVal;
+
+        // Combine Attack Reach
+        const wH = A_reachWH[j];
+        const wA = A_reachWA[j];
+        const iH = wH > 1e-4 ? 1 - Math.exp(-wH) : 0;
+        const iA = wA > 1e-4 ? 1 - Math.exp(-wA) : 0;
+        const netReach = iH - iA; // >0 Home dominate, <0 Away dominate
         
-        // Temporal ease
-        frontRef.current[j] += (targetFrontVal - frontRef.current[j]) * 0.10;
+        const REACH_MAX_PULL = 0.42;
+        if (netReach > 0.02 && wH > 1e-4) {
+          const target = A_reachH[j] / wH;
+          if (target > fr) {
+            fr = fr + Math.min(target - fr, REACH_MAX_PULL) * netReach;
+          }
+        } else if (netReach < -0.02 && wA > 1e-4) {
+          const target = A_reachA[j] / wA;
+          if (target < fr) {
+            fr = fr - Math.min(fr - target, REACH_MAX_PULL) * (-netReach);
+          }
+        }
+
+        // Combine Thrust Fingers
+        const THRUST_MAX_PULL = 0.72;
+        if (A_thrustWH[j] > 1e-4) {
+          const endU = A_thrustH[j] / A_thrustWH[j];
+          const conf = Math.max(0, Math.min(1, A_thrustWH[j]));
+          const target = THREE.MathUtils.lerp(fr, endU, conf);
+          if (target > fr) {
+            fr = Math.min(target, fr + THRUST_MAX_PULL);
+          }
+        }
+        if (A_thrustWA[j] > 1e-4) {
+          const endU = A_thrustA[j] / A_thrustWA[j];
+          const conf = Math.max(0, Math.min(1, A_thrustWA[j]));
+          const target = THREE.MathUtils.lerp(fr, endU, conf);
+          if (target < fr) {
+            fr = Math.max(target, fr - THRUST_MAX_PULL);
+          }
+        }
+
+        // Attack Reach Hold (prevent opponent thrust from denting owned territory)
+        if (netReach > 0.02 && wH > 1e-4) {
+          const rH = A_reachH[j] / wH;
+          const hold = THREE.MathUtils.lerp(targetFrontVal, Math.min(rH, hi), netReach);
+          if (fr < hold) fr = hold;
+        } else if (netReach < -0.02 && wA > 1e-4) {
+          const rA = A_reachA[j] / wA;
+          const hold = THREE.MathUtils.lerp(targetFrontVal, Math.max(rA, lo), -netReach);
+          if (fr > hold) fr = hold;
+        }
+
+        fr = Math.max(lo, Math.min(hi, fr));
+        frontRef.current[j] += (fr - frontRef.current[j]) * 0.12;
         tempFront[j] = frontRef.current[j];
       }
       
@@ -1937,27 +2333,6 @@ export default function MatchDataPortraitClient({
         const zIdx = Math.max(0, Math.min(47, Math.floor(v * 48)));
         activeFront[j] = frontRef.current[zIdx];
       }
-
-      // Apply active lunges
-      activeLunges.forEach(lunge => {
-        for (let j = 0; j < VY; j++) {
-          const dj = j - lunge.jc;
-          const g = Math.exp(-(dj * dj) / (2 * lunge.sig * lunge.sig)) * lunge.env;
-          if (g < 0.05) continue;
-          
-          const w = Math.min(1.0, g * 2.2);
-          const fr = activeFront[j];
-          if (lunge.home) {
-            // Home stabs toward u -> 1
-            const tgt = THREE.MathUtils.lerp(fr, Math.min(0.97, lunge.su + 0.03), w);
-            if (tgt > fr) activeFront[j] = tgt;
-          } else {
-            // Away stabs toward u -> 0
-            const tgt = THREE.MathUtils.lerp(fr, Math.max(0.03, lunge.su - 0.03), w);
-            if (tgt < fr) activeFront[j] = tgt;
-          }
-        }
-      });
 
       // Easing possession top-sheet choice
       const centerFrontU = activeFront[Math.floor(VY / 2)];
@@ -2059,17 +2434,13 @@ export default function MatchDataPortraitClient({
             const f = distSeam / 1.2;
             seamLift = 0.15 * f * (1.0 - f);
           }
-
-          // Spire deformations separated by team
-          let spiresSumH = 0;
-          let spiresSumA = 0;
+          // Spire deformations (shared and max-combined to prevent height stacking and cliffs)
+          let spiresSum = 0;
           allSpires.forEach(spire => {
             const dSq = (x - spire.x) ** 2 + (z - spire.z) ** 2;
             const val = spire.height * Math.exp(-dSq / spire.radiusSq);
-            if (spire.color === homeColor) spiresSumH += val;
-            else spiresSumA += val;
+            spiresSum = Math.max(spiresSum, val);
           });
-
           // Dominance Ridges
           const hx = 2.0 + Math.min(3.8, homePress * 0.08);
           const hRadSq = 14.0 + homePress * 0.8;
@@ -2086,12 +2457,33 @@ export default function MatchDataPortraitClient({
           const tapX = Math.max(0, Math.min(1.0, (WORLD_X / 2 - Math.abs(x)) / 0.8));
           const tapZ = Math.max(0, Math.min(1.0, (WORLD_Z / 2 - Math.abs(z)) / 0.8));
           const taper = (tapX * tapX * (3.0 - 2.0 * tapX)) * (tapZ * tapZ * (3.0 - 2.0 * tapZ));
+          // Calculate separate team-colored pressure domes representing dominance (high baseline, breathing, horizontal skew)
+          let homeDome = 0;
+          if (u < frontU && frontU > 0.05) {
+            const breathe = 0.04 * Math.sin(visualTime * 1.15 + x * 0.12);
+            const homeHFactor = momIdx >= 0 
+              ? (0.28 + breathe) + momIdx * 0.55 
+              : Math.max(0.04, (0.28 + breathe) * (1.0 + momIdx * 0.85));
+            // Skew Home wave horizontally towards seam when Home has positive momentum
+            const homeSkew = momIdx >= 0 ? 1.0 - momIdx * 0.45 : 1.0 - momIdx * 0.25;
+            homeDome = homeHFactor * Math.sin(Math.pow(u / frontU, homeSkew) * Math.PI) * Math.sin(v * Math.PI);
+          }
 
-          const sharedSpires = spiresSumH + spiresSumA;
-          const sharedRidge = homeRidge + awayRidge;
-          const sharedHeight = (baseNoise + seamLift + sharedSpires + sharedRidge) * taper;
-          let hH = sharedHeight;
-          let hA = sharedHeight;
+          let awayDome = 0;
+          if (u > frontU && frontU < 0.95) {
+            const breathe = 0.04 * Math.sin(visualTime * 1.15 + x * 0.12);
+            const awayHFactor = momIdx <= 0 
+              ? (0.28 + breathe) - momIdx * 0.55 
+              : Math.max(0.04, (0.28 + breathe) * (1.0 - momIdx * 0.85));
+            // Skew Away wave horizontally towards seam when Away has negative momentum
+            const awaySkew = momIdx <= 0 ? 1.0 + momIdx * 0.45 : 1.0 + momIdx * 0.25;
+            const uNormAway = (1.0 - u) / (1.0 - frontU);
+            awayDome = awayHFactor * Math.sin(Math.pow(uNormAway, awaySkew) * Math.PI) * Math.sin(v * Math.PI);
+          }
+
+          // Calculate team heights (sharing spiresSum outside taper to let goal line spires rise fully)
+          let hH = (baseNoise + seamLift + homeDome) * taper + spiresSum;
+          let hA = (baseNoise + seamLift + awayDome) * taper + spiresSum;
 
           let fVal = frontU;
 
@@ -2099,12 +2491,12 @@ export default function MatchDataPortraitClient({
           const du = u - fVal;
           const nearSeam = Math.max(0, Math.min(1, 1 - Math.abs(du) / seamWidthVal));
           if (nearSeam > 0) {
-            const margin = 0.1;
+            const margin = 0.05;
             if (seamTopHome >= 0.5) {
               const cap = hH - margin;
               if (hA > cap) hA = THREE.MathUtils.lerp(hA, cap, nearSeam);
             } else {
-              const cap = aHVal > 0 ? (hA - margin) : (hA - margin); // safe clamp
+              const cap = hA - margin;
               if (hH > cap) hH = THREE.MathUtils.lerp(hH, cap, nearSeam);
             }
           }
@@ -2216,6 +2608,10 @@ export default function MatchDataPortraitClient({
       if (awayWallGeom) awayWallGeom.dispose();
       if (pitchMat) pitchMat.dispose();
       if (skyTex) skyTex.dispose();
+      
+      // Dispose stardust particle system resources
+      if (particlesGeomRef.current) particlesGeomRef.current.dispose();
+      if (particleMaterialRef.current) particleMaterialRef.current.dispose();
 
       // Dispose DataTextures
       if (hTexHome) hTexHome.dispose();
@@ -2251,27 +2647,62 @@ export default function MatchDataPortraitClient({
             onClick={() => router.push("/dashboard")}
             style={{
               background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: "8px",
-              width: "36px",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: "0px",
+              width: "42px",
               height: "36px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               cursor: "pointer",
-              transition: "background 0.2s"
+              transform: "skewX(-12deg)",
+              transition: "all 0.2s"
             }}
-            onMouseOver={e => e.currentTarget.style.background = "rgba(255,255,255,0.1)"}
-            onMouseOut={e => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+            onMouseOver={e => {
+              e.currentTarget.style.background = "rgba(34, 197, 94, 0.15)";
+              e.currentTarget.style.borderColor = "var(--color-accent)";
+            }}
+            onMouseOut={e => {
+              e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+            }}
           >
-            <ArrowLeft size={18} />
+            <span style={{ display: "flex", transform: "skewX(12deg)" }}>
+              <ArrowLeft size={18} />
+            </span>
           </button>
           <div>
-            <div style={{ fontSize: "11px", fontFamily: "monospace", letterSpacing: "2.5px", color: "rgba(255,255,255,0.45)", textTransform: "uppercase" }}>
-              FIFA World Cup 2026 • 3D Terrain Data Portrait
+            <div style={{ fontSize: "11px", fontFamily: "monospace", letterSpacing: "2.5px", color: "var(--color-accent)", textTransform: "uppercase" }}>
+              <span style={{ color: "var(--color-accent)", marginRight: "4px", fontWeight: 900 }}>/</span> 3D Terrain Data Portrait
             </div>
-            <h2 style={{ fontSize: "20px", fontWeight: 800, margin: "2px 0 0" }}>
-              {homeTeam} <span style={{ color: homeColor }}>{currentHomeScore}</span> vs <span style={{ color: awayColor }}>{currentAwayScore}</span> {awayTeam}
+            <h2 style={{ fontSize: "22px", fontWeight: 900, margin: "2px 0 0", display: "flex", alignItems: "center", gap: "12px" }}>
+              <span style={{ textTransform: "uppercase" }}>{homeTeam}</span>
+              <span style={{ 
+                background: "rgba(34, 197, 94, 0.1)", 
+                border: "1px solid var(--color-accent)", 
+                padding: "2px 10px", 
+                color: homeColor,
+                fontFamily: "monospace",
+                fontWeight: 800,
+                transform: "skewX(-12deg)",
+                display: "inline-flex"
+              }}>
+                <span style={{ transform: "skewX(12deg)" }}>{currentHomeScore}</span>
+              </span>
+              <span style={{ color: "rgba(255,255,255,0.4)" }}>vs</span>
+              <span style={{ 
+                background: "rgba(34, 197, 94, 0.1)", 
+                border: "1px solid var(--color-accent)", 
+                padding: "2px 10px", 
+                color: awayColor,
+                fontFamily: "monospace",
+                fontWeight: 800,
+                transform: "skewX(-12deg)",
+                display: "inline-flex"
+              }}>
+                <span style={{ transform: "skewX(12deg)" }}>{currentAwayScore}</span>
+              </span>
+              <span style={{ textTransform: "uppercase" }}>{awayTeam}</span>
             </h2>
           </div>
         </div>
@@ -2279,30 +2710,35 @@ export default function MatchDataPortraitClient({
         <button 
           onClick={() => setShowExplainer(!showExplainer)}
           style={{
-            background: "rgba(111, 140, 255, 0.1)",
-            border: "1px solid rgba(111, 140, 255, 0.22)",
-            color: "#a9b8ff",
-            padding: "8px 16px",
-            borderRadius: "999px",
+            background: "transparent",
+            border: "1px solid var(--color-accent)",
+            color: "var(--color-accent)",
+            padding: "8px 18px",
+            borderRadius: "0px",
             fontSize: "12px",
-            fontWeight: 600,
+            fontWeight: 800,
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
             display: "flex",
             alignItems: "center",
             gap: "8px",
             cursor: "pointer",
+            transform: "skewX(-12deg)",
             transition: "all 0.2s"
           }}
           onMouseOver={e => {
-            e.currentTarget.style.background = "rgba(111, 140, 255, 0.18)";
-            e.currentTarget.style.borderColor = "rgba(111, 140, 255, 0.35)";
+            e.currentTarget.style.background = "var(--color-accent-dim)";
+            e.currentTarget.style.boxShadow = "0 0 10px rgba(34, 197, 94, 0.2)";
           }}
           onMouseOut={e => {
-            e.currentTarget.style.background = "rgba(111, 140, 255, 0.1)";
-            e.currentTarget.style.borderColor = "rgba(111, 140, 255, 0.22)";
+            e.currentTarget.style.background = "transparent";
+            e.currentTarget.style.boxShadow = "none";
           }}
         >
-          <HelpCircle size={15} />
-          How to Read It
+          <span style={{ display: "flex", alignItems: "center", gap: "6px", transform: "skewX(12deg)" }}>
+            <HelpCircle size={15} />
+            How to Read It
+          </span>
         </button>
       </div>
 
@@ -2314,14 +2750,36 @@ export default function MatchDataPortraitClient({
         minHeight: "680px", 
         background: "radial-gradient(circle at center, #100f24 0%, #06050b 100%)", 
         border: "1px solid rgba(255,255,255,0.06)", 
-        borderRadius: "20px", 
+        borderTop: "3px solid var(--color-accent)",
+        borderRadius: "0px", 
         overflow: "hidden" 
       }}>
-        {loading && (
+        {webglError ? (
+          <div style={{ 
+            position: "absolute", 
+            inset: 0, 
+            display: "flex", 
+            flexDirection: "column", 
+            alignItems: "center", 
+            justifyContent: "center", 
+            background: "#06050b", 
+            zIndex: 10,
+            padding: "24px",
+            textAlign: "center"
+          }}>
+            <span style={{ fontSize: "28px", marginBottom: "16px" }}>⚠️</span>
+            <span style={{ fontSize: "14px", color: "#f87171", fontWeight: 800, textTransform: "uppercase", fontFamily: "monospace", letterSpacing: "1px" }}>
+              WebGL Initialization Failed
+            </span>
+            <p style={{ marginTop: "12px", fontSize: "12px", color: "rgba(255,255,255,0.6)", maxWidth: "420px", lineHeight: "1.6", margin: "12px 0 0 0" }}>
+              Could not create a WebGL context. Please make sure WebGL is enabled in your browser settings and hardware acceleration is active.
+            </p>
+          </div>
+        ) : loading && (
           <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#06050b", zIndex: 10 }}>
-            <div style={{ width: "32px", height: "32px", border: "3px solid rgba(111,140,255,0.2)", borderTopColor: "#6f8cff", borderRadius: "50%", animation: "spin 1s linear infinite" }}></div>
-            <span style={{ marginTop: "14px", fontSize: "13px", color: "rgba(255,255,255,0.45)", fontFamily: "monospace" }}>Retrieving Match Coordinates...</span>
-            <style jsx>{`
+            <div style={{ width: "32px", height: "32px", border: "3px solid rgba(34, 197, 94, 0.15)", borderTopColor: "var(--color-accent)", borderRadius: "50%", animation: "spin 1s linear infinite" }}></div>
+            <span style={{ marginTop: "14px", fontSize: "11px", color: "var(--color-accent)", fontFamily: "monospace", letterSpacing: "1px", textTransform: "uppercase" }}>Retrieving Match Coordinates...</span>
+            <style>{`
               @keyframes spin {
                 to { transform: rotate(360deg); }
               }
@@ -2331,7 +2789,7 @@ export default function MatchDataPortraitClient({
 
         {/* Floating xG labels projection overlay */}
         {activeXgLabel && (
-          <div style={{
+          <div className="glass-panel" style={{
             position: "absolute",
             left: `${activeXgLabel.x}px`,
             top: `${activeXgLabel.y}px`,
@@ -2340,7 +2798,7 @@ export default function MatchDataPortraitClient({
             border: "1px solid rgba(255, 209, 102, 0.3)",
             boxShadow: "0 4px 16px rgba(0,0,0,0.6)",
             padding: "4px 8px",
-            borderRadius: "4px",
+            borderRadius: "0px",
             fontSize: "10px",
             fontFamily: "monospace",
             color: "#ffd166",
@@ -2360,10 +2818,10 @@ export default function MatchDataPortraitClient({
             top: `${activeGoalCard.y}px`,
             transform: "translate(-50%, -105%)",
             zIndex: 10,
-            pointerEvents: "auto", // enable mouse interaction to hover/tilt the card!
+            pointerEvents: "auto", 
             animation: "cardEntrance 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards"
           }}>
-            <style jsx>{`
+            <style>{`
               @keyframes cardEntrance {
                 from { opacity: 0; transform: translate(-50%, -90%) scale(0.85); }
                 to { opacity: 1; transform: translate(-50%, -105%) scale(1.0); }
@@ -2384,27 +2842,28 @@ export default function MatchDataPortraitClient({
 
         {/* Interactive Hover Tooltip */}
         {hoveredTooltip && (
-          <div style={{
+          <div className="glass-panel" style={{
             position: "absolute",
             left: `${hoveredTooltip.x}px`,
             top: `${hoveredTooltip.y}px`,
             transform: "translate(-50%, -105%)",
-            background: "rgba(10, 12, 22, 0.88)",
+            background: "rgba(10, 15, 30, 0.95)",
             backdropFilter: "blur(12px)",
-            border: "1px solid rgba(255, 255, 255, 0.12)",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.6), 0 0 15px rgba(111, 140, 255, 0.15)",
-            borderRadius: "12px",
+            border: "1px solid var(--color-accent)",
+            borderTop: "3px solid var(--color-accent)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.6), 0 0 15px rgba(34, 197, 94, 0.15)",
+            borderRadius: "0px",
             padding: "10px 14px",
             color: "#fff",
             zIndex: 15,
-            pointerEvents: "none", // don't block raycasting/clicks on canvas underneath
+            pointerEvents: "none", 
             display: "flex",
             flexDirection: "column",
             gap: "6px",
             width: "220px",
             animation: "tooltipEntrance 0.15s ease-out forwards"
           }}>
-            <style jsx>{`
+            <style>{`
               @keyframes tooltipEntrance {
                 from { opacity: 0; transform: translate(-50%, -98%) scale(0.95); }
                 to { opacity: 1; transform: translate(-50%, -105%) scale(1.0); }
@@ -2479,35 +2938,52 @@ export default function MatchDataPortraitClient({
         <div ref={mountRef} style={{ width: "100%", height: "100%", position: "absolute", inset: 0 }} />
 
         {/* A. FLOATING GLASS STATS PANEL (Top-Left) */}
-        <div style={{
+        <div className="glass-panel" style={{
           position: "absolute",
           top: "20px",
           left: "20px",
           width: "240px",
-          background: "rgba(10, 12, 22, 0.65)",
-          backdropFilter: "blur(12px)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: "14px",
+          background: "rgba(10, 15, 30, 0.85)",
+          border: "1px solid rgba(34, 197, 94, 0.25)",
+          borderRadius: "0px",
           padding: "16px",
           zIndex: 4,
           display: "flex",
           flexDirection: "column",
           gap: "12px",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.5)"
+          boxShadow: "0 8px 32px rgba(0,0,0,0.6)"
         }}>
-          <span style={{ fontSize: "10px", letterSpacing: "1.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.4)", fontWeight: 700 }}>
-            Accumulated Stats (Min {Math.floor(currentTime/60)})
-          </span>
+          <div style={{ 
+            display: "inline-flex", 
+            alignItems: "center", 
+            transform: "skewX(-12deg)", 
+            background: "var(--color-accent-dim)", 
+            padding: "4px 10px", 
+            borderLeft: "3px solid var(--color-accent)",
+            alignSelf: "flex-start",
+            marginBottom: "4px"
+          }}>
+            <span style={{ 
+              transform: "skewX(12deg)", 
+              fontSize: "9px", 
+              letterSpacing: "1.5px", 
+              textTransform: "uppercase", 
+              color: "#fff", 
+              fontWeight: 900 
+            }}>
+              Stats • Min {Math.floor(currentTime/60)}
+            </span>
+          </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "12px", fontSize: "12px" }}>
             {/* Shots */}
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
-                <span style={{ fontWeight: 700 }}>{dynamicStats.home.shots}</span>
-                <span style={{ color: "rgba(255,255,255,0.55)" }}>Total Shots</span>
-                <span style={{ fontWeight: 700 }}>{dynamicStats.away.shots}</span>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px", alignItems: "center" }}>
+                <span style={{ fontWeight: 800, color: homeColor, fontFamily: "monospace" }}>{dynamicStats.home.shots}</span>
+                <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Shots</span>
+                <span style={{ fontWeight: 800, color: awayColor, fontFamily: "monospace" }}>{dynamicStats.away.shots}</span>
               </div>
-              <div style={{ height: "3px", background: "rgba(255,255,255,0.08)", borderRadius: "1.5px", overflow: "hidden", display: "flex" }}>
+              <div style={{ height: "6px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0px", overflow: "hidden", display: "flex" }}>
                 <div style={{ width: `${dynamicStats.home.shots + dynamicStats.away.shots > 0 ? (dynamicStats.home.shots / (dynamicStats.home.shots + dynamicStats.away.shots)) * 100 : 50}%`, background: homeColor }} />
                 <div style={{ width: `${dynamicStats.home.shots + dynamicStats.away.shots > 0 ? (dynamicStats.away.shots / (dynamicStats.home.shots + dynamicStats.away.shots)) * 100 : 50}%`, background: awayColor }} />
               </div>
@@ -2515,12 +2991,12 @@ export default function MatchDataPortraitClient({
 
             {/* xG */}
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
-                <span style={{ fontWeight: 700 }}>{dynamicStats.home.xg.toFixed(2)}</span>
-                <span style={{ color: "rgba(255,255,255,0.55)" }}>Expected Goals (xG)</span>
-                <span style={{ fontWeight: 700 }}>{dynamicStats.away.xg.toFixed(2)}</span>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px", alignItems: "center" }}>
+                <span style={{ fontWeight: 800, color: homeColor, fontFamily: "monospace" }}>{dynamicStats.home.xg.toFixed(2)}</span>
+                <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px" }}>xG</span>
+                <span style={{ fontWeight: 800, color: awayColor, fontFamily: "monospace" }}>{dynamicStats.away.xg.toFixed(2)}</span>
               </div>
-              <div style={{ height: "3px", background: "rgba(255,255,255,0.08)", borderRadius: "1.5px", overflow: "hidden", display: "flex" }}>
+              <div style={{ height: "6px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0px", overflow: "hidden", display: "flex" }}>
                 <div style={{ width: `${dynamicStats.home.xg + dynamicStats.away.xg > 0 ? (dynamicStats.home.xg / (dynamicStats.home.xg + dynamicStats.away.xg)) * 100 : 50}%`, background: homeColor }} />
                 <div style={{ width: `${dynamicStats.home.xg + dynamicStats.away.xg > 0 ? (dynamicStats.away.xg / (dynamicStats.home.xg + dynamicStats.away.xg)) * 100 : 50}%`, background: awayColor }} />
               </div>
@@ -2528,12 +3004,12 @@ export default function MatchDataPortraitClient({
 
             {/* Corners */}
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
-                <span style={{ fontWeight: 700 }}>{dynamicStats.home.corners}</span>
-                <span style={{ color: "rgba(255,255,255,0.55)" }}>Corners Awarded</span>
-                <span style={{ fontWeight: 700 }}>{dynamicStats.away.corners}</span>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px", alignItems: "center" }}>
+                <span style={{ fontWeight: 800, color: homeColor, fontFamily: "monospace" }}>{dynamicStats.home.corners}</span>
+                <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Corners</span>
+                <span style={{ fontWeight: 800, color: awayColor, fontFamily: "monospace" }}>{dynamicStats.away.corners}</span>
               </div>
-              <div style={{ height: "3px", background: "rgba(255,255,255,0.08)", borderRadius: "1.5px", overflow: "hidden", display: "flex" }}>
+              <div style={{ height: "6px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0px", overflow: "hidden", display: "flex" }}>
                 <div style={{ width: `${dynamicStats.home.corners + dynamicStats.away.corners > 0 ? (dynamicStats.home.corners / (dynamicStats.home.corners + dynamicStats.away.corners)) * 100 : 50}%`, background: homeColor }} />
                 <div style={{ width: `${dynamicStats.home.corners + dynamicStats.away.corners > 0 ? (dynamicStats.away.corners / (dynamicStats.home.corners + dynamicStats.away.corners)) * 100 : 50}%`, background: awayColor }} />
               </div>
@@ -2542,26 +3018,43 @@ export default function MatchDataPortraitClient({
         </div>
 
         {/* B. FLOATING GLASS MILESTONES FEED (Top-Right) */}
-        <div style={{
+        <div className="glass-panel" style={{
           position: "absolute",
           top: "20px",
           right: "20px",
           width: "250px",
           maxHeight: "260px",
-          background: "rgba(10, 12, 22, 0.65)",
-          backdropFilter: "blur(12px)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: "14px",
+          background: "rgba(10, 15, 30, 0.85)",
+          border: "1px solid rgba(111, 140, 255, 0.25)",
+          borderRadius: "0px",
           padding: "14px",
           zIndex: 4,
           display: "flex",
           flexDirection: "column",
           gap: "10px",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.5)"
+          boxShadow: "0 8px 32px rgba(0,0,0,0.6)"
         }}>
-          <span style={{ fontSize: "10px", letterSpacing: "1.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.4)", fontWeight: 700 }}>
-            Milestones Feed
-          </span>
+          <div style={{ 
+            display: "inline-flex", 
+            alignItems: "center", 
+            transform: "skewX(-12deg)", 
+            background: "rgba(111, 140, 255, 0.15)", 
+            padding: "4px 10px", 
+            borderLeft: "3px solid #6f8cff",
+            alignSelf: "flex-start",
+            marginBottom: "4px"
+          }}>
+            <span style={{ 
+              transform: "skewX(12deg)", 
+              fontSize: "9px", 
+              letterSpacing: "1.5px", 
+              textTransform: "uppercase", 
+              color: "#fff", 
+              fontWeight: 900 
+            }}>
+              Milestones Feed
+            </span>
+          </div>
           
           <div style={{ display: "flex", flexDirection: "column", gap: "6px", overflowY: "auto", flexGrow: 1, paddingRight: "4px" }}>
             {visualEventsRef.current.filter(e => e.isGoal || e.type === "Card").map((ev, idx) => {
@@ -2577,10 +3070,10 @@ export default function MatchDataPortraitClient({
                     display: "flex", 
                     alignItems: "center", 
                     justifyContent: "space-between", 
-                    padding: "6px 8px", 
-                    borderRadius: "6px", 
-                    background: isPast ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.01)",
-                    border: isPast ? "1px solid rgba(255,255,255,0.08)" : "1px solid transparent",
+                    padding: "6px 10px", 
+                    borderRadius: "0px", 
+                    background: isPast ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.01)",
+                    borderLeft: isPast ? `3px solid ${ev.team === "home" ? homeColor : awayColor}` : "3px solid rgba(255,255,255,0.1)",
                     opacity: isPast ? 1 : 0.4,
                     cursor: "pointer",
                     fontSize: "11px",
@@ -2588,23 +3081,38 @@ export default function MatchDataPortraitClient({
                   }}
                   onMouseOver={e => {
                     e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+                    e.currentTarget.style.borderLeftColor = "var(--color-accent)";
                   }}
                   onMouseOut={e => {
-                    e.currentTarget.style.background = isPast ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.01)";
-                    e.currentTarget.style.borderColor = isPast ? "rgba(255,255,255,0.08)" : "transparent";
+                    e.currentTarget.style.background = isPast ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.01)";
+                    e.currentTarget.style.borderLeftColor = isPast ? (ev.team === "home" ? homeColor : awayColor) : "rgba(255,255,255,0.1)";
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                     {ev.isGoal ? (
-                      <span style={{ fontSize: "10px" }}>⚽</span>
+                      <span style={{ color: "#ffd166", fontWeight: 800 }}>⚽</span>
                     ) : (
-                      <div style={{ width: "6px", height: "9px", background: ev.outcome === "Red" ? "#ef4444" : "#facc15", borderRadius: "1px" }} />
+                      <div style={{ width: "8px", height: "12px", background: ev.outcome === "Red" ? "var(--color-danger)" : "var(--color-warning)", border: "1px solid rgba(0,0,0,0.3)" }} />
                     )}
-                    <span style={{ fontWeight: ev.isGoal ? 700 : 500 }}>{ev.surname || "Player"} ({ev.label}')</span>
+                    <span style={{ fontWeight: ev.isGoal ? 800 : 600, color: isPast ? "#fff" : "rgba(255,255,255,0.4)" }}>
+                      {ev.surname || "Player"} <span style={{ opacity: 0.6, fontSize: "10px", fontFamily: "monospace" }}>{ev.label}'</span>
+                    </span>
                   </div>
-                  <span style={{ fontSize: "9px", color: ev.team === "home" ? homeColor : awayColor, textTransform: "uppercase", fontWeight: 700 }}>
-                    {ev.team === "home" ? homeTeam.substring(0, 3) : awayTeam.substring(0, 3)}
+                  <span style={{ 
+                    fontSize: "9px", 
+                    color: ev.team === "home" ? homeColor : awayColor, 
+                    textTransform: "uppercase", 
+                    fontWeight: 900,
+                    fontFamily: "monospace",
+                    background: "rgba(255,255,255,0.03)",
+                    padding: "2px 6px",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    transform: "skewX(-12deg)",
+                    display: "inline-block"
+                  }}>
+                    <span style={{ display: "block", transform: "skewX(12deg)" }}>
+                      {ev.team === "home" ? homeTeam.substring(0, 3) : awayTeam.substring(0, 3)}
+                    </span>
                   </span>
                 </div>
               );
@@ -2612,143 +3120,68 @@ export default function MatchDataPortraitClient({
           </div>
         </div>
 
-        {/* C. FLOATING GLASS CONTROLS PANEL (Bottom Center) */}
+        {/* C. SIMPLIFIED FLOATING CONTROLS (Bottom) */}
         <div style={{
           position: "absolute",
-          bottom: "20px",
-          left: "20px",
-          right: "20px",
-          background: "rgba(10, 12, 22, 0.65)",
-          backdropFilter: "blur(12px)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: "16px",
-          padding: "16px",
+          bottom: "30px",
+          left: "30px",
+          right: "30px",
           zIndex: 4,
           display: "flex",
-          flexDirection: "column",
-          gap: "12px",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.5)"
+          alignItems: "center",
+          gap: "24px"
         }}>
-          {/* Seismograph drag scrubber container */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "9px", color: "rgba(255,255,255,0.35)", fontFamily: "monospace", letterSpacing: "1.5px", textTransform: "uppercase" }}>
-              <span>{homeTeam} Dominance</span>
-              <span>Drag Seismograph to Seek Timeline (0' - 90')</span>
-              <span>{awayTeam} Dominance</span>
-            </div>
-            <div style={{ position: "relative", width: "100%", height: "48px", background: "rgba(0,0,0,0.35)", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)", overflow: "hidden" }}>
-              <canvas 
-                ref={seismographRef} 
-                onMouseDown={handleSeismographMouseDown}
-                onMouseMove={handleSeismographMouseMove}
-                onMouseUp={handleSeismographMouseUp}
-                onMouseLeave={handleSeismographMouseUp}
-                onTouchStart={handleSeismographTouchStart}
-                onTouchMove={handleSeismographTouchMove}
-                onTouchEnd={handleSeismographMouseUp}
-                style={{ width: "100%", height: "100%", display: "block", cursor: "ew-resize" }} 
-              />
-              {/* Playhead vertical marker */}
-              <div style={{
-                position: "absolute",
-                left: `${(currentTime / duration) * 100}%`,
-                top: 0,
-                bottom: 0,
-                width: "2px",
-                background: "#6f8cff",
-                boxShadow: "0 0 8px #6f8cff",
-                pointerEvents: "none",
-                zIndex: 3
-              }} />
-            </div>
-          </div>
+          {/* Circular Play/Pause Button */}
+          <button 
+            onClick={() => setIsPlaying(!isPlaying)}
+            style={{
+              background: "#ffffff",
+              border: "none",
+              borderRadius: "50%",
+              width: "48px",
+              height: "48px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.5)",
+              transition: "transform 0.2s",
+              flexShrink: 0
+            }}
+            onMouseOver={e => e.currentTarget.style.transform = "scale(1.08)"}
+            onMouseOut={e => e.currentTarget.style.transform = "scale(1)"}
+          >
+            {isPlaying ? (
+              <Pause size={18} fill="#06050b" stroke="#06050b" />
+            ) : (
+              <Play size={18} fill="#06050b" stroke="#06050b" style={{ marginLeft: "3px" }} />
+            )}
+          </button>
 
-          {/* Action Row */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            {/* Play/Pause controls */}
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <button 
-                onClick={() => setIsPlaying(!isPlaying)}
-                style={{
-                  background: isPlaying ? "rgba(255,255,255,0.08)" : "#6f8cff",
-                  color: isPlaying ? "#fff" : "#0e0d21",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  borderRadius: "50%",
-                  width: "36px",
-                  height: "36px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer",
-                  transition: "all 0.2s"
-                }}
-                onMouseOver={e => e.currentTarget.style.transform = "scale(1.05)"}
-                onMouseOut={e => e.currentTarget.style.transform = "scale(1)"}
-              >
-                {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" style={{ marginLeft: "2px" }} />}
-              </button>
-
-              <button 
-                onClick={() => {
-                  timeRef.current = 0;
-                  setCurrentTime(0);
-                  setIsPlaying(true);
-                }}
-                style={{
-                  background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  borderRadius: "50%",
-                  width: "30px",
-                  height: "30px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer",
-                  transition: "all 0.2s"
-                }}
-                onMouseOver={e => e.currentTarget.style.background = "rgba(255,255,255,0.1)"}
-                onMouseOut={e => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
-              >
-                <RotateCcw size={13} />
-              </button>
-
-              <div style={{ display: "flex", alignItems: "baseline", gap: "6px", marginLeft: "10px", fontSize: "13px", fontFamily: "monospace" }}>
-                <span style={{ color: "#6f8cff", fontWeight: 700 }}>{formatTime(currentTime)}</span>
-                <span style={{ color: "rgba(255,255,255,0.3)" }}>/</span>
-                <span style={{ color: "rgba(255,255,255,0.5)" }}>{formatTime(duration)}</span>
-              </div>
-            </div>
-
-            {/* Time Warp speed selector */}
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <span style={{ fontSize: "10px", textTransform: "uppercase", color: "rgba(255,255,255,0.4)", letterSpacing: "1px", fontWeight: 700 }}>Time Warp</span>
-              <div style={{ display: "flex", background: "rgba(0,0,0,0.25)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "8px", padding: "2px" }}>
-                {[
-                  { label: "1x", val: 1 },
-                  { label: "15x", val: 15 },
-                  { label: "30x", val: 30 },
-                  { label: "60x", val: 60 }
-                ].map(opt => (
-                  <button
-                    key={opt.val}
-                    onClick={() => setPlaybackSpeed(opt.val)}
-                    style={{
-                      background: playbackSpeed === opt.val ? "rgba(111, 140, 255, 0.12)" : "none",
-                      border: "none",
-                      color: playbackSpeed === opt.val ? "#a9b8ff" : "rgba(255,255,255,0.55)",
-                      fontSize: "10px",
-                      fontWeight: playbackSpeed === opt.val ? 700 : 500,
-                      padding: "3px 7px",
-                      borderRadius: "6px",
-                      cursor: "pointer",
-                      transition: "all 0.2s"
-                    }}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+          {/* Transparent Seismograph Scrubber */}
+          <div style={{ position: "relative", flexGrow: 1, height: "48px" }}>
+            <canvas 
+              ref={seismographRef} 
+              onMouseDown={handleSeismographMouseDown}
+              onMouseMove={handleSeismographMouseMove}
+              onMouseUp={handleSeismographMouseUp}
+              onMouseLeave={handleSeismographMouseUp}
+              onTouchStart={handleSeismographTouchStart}
+              onTouchMove={handleSeismographTouchMove}
+              onTouchEnd={handleSeismographMouseUp}
+              style={{ width: "100%", height: "100%", display: "block", cursor: "ew-resize" }} 
+            />
+            {/* Playhead vertical marker */}
+            <div style={{
+              position: "absolute",
+              left: `${(currentTime / duration) * 100}%`,
+              top: 0,
+              bottom: 0,
+              width: "1.5px",
+              background: "#ffffff",
+              pointerEvents: "none",
+              zIndex: 3
+            }} />
           </div>
         </div>
 
@@ -2757,7 +3190,7 @@ export default function MatchDataPortraitClient({
           <div style={{
             position: "absolute",
             inset: 0,
-            background: "rgba(6, 5, 11, 0.94)",
+            background: "rgba(6, 5, 11, 0.96)",
             padding: "36px",
             display: "flex",
             flexDirection: "column",
@@ -2767,48 +3200,133 @@ export default function MatchDataPortraitClient({
             animation: "fadeIn 0.2s ease-out"
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h3 style={{ fontSize: "20px", fontWeight: 800, margin: 0 }}>Interpretation Manual</h3>
+              <h3 style={{ fontSize: "20px", fontWeight: 800, margin: 0, letterSpacing: "0.5px", textTransform: "uppercase" }}>
+                <span style={{ color: "var(--color-accent)", marginRight: "8px" }}>/</span> Interpretation Manual
+              </h3>
               <button 
                 onClick={() => setShowExplainer(false)}
-                style={{ background: "none", border: "none", color: "#f1eff8", fontSize: "20px", cursor: "pointer" }}
+                style={{
+                  background: "none",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  color: "#f1eff8",
+                  width: "30px",
+                  height: "30px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  transform: "skewX(-12deg)",
+                  transition: "all 0.2s"
+                }}
+                onMouseOver={e => e.currentTarget.style.borderColor = "var(--color-danger)"}
+                onMouseOut={e => e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)"}
               >
-                ✕
+                <span style={{ transform: "skewX(12deg)", fontWeight: 800 }}>✕</span>
               </button>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", fontSize: "13px", lineHeight: "1.6", color: "rgba(255,255,255,0.7)" }}>
-              <div>
-                <h4 style={{ color: "#fff", fontWeight: 700, marginBottom: "6px" }}>1. The Territory Blankets</h4>
-                <p>
+            <div style={{ height: "1px", background: "linear-gradient(90deg, var(--color-accent) 0%, rgba(255,255,255,0.06) 100%)", margin: "4px 0 16px" }}></div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "32px", fontSize: "13.5px", lineHeight: "1.6", color: "rgba(255,255,255,0.7)" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span style={{ 
+                    background: "rgba(34, 197, 94, 0.15)", 
+                    color: "var(--color-accent)", 
+                    width: "24px", 
+                    height: "24px", 
+                    transform: "skewX(-12deg)", 
+                    display: "inline-flex", 
+                    alignItems: "center", 
+                    justifyContent: "center", 
+                    fontSize: "11px", 
+                    fontWeight: 900 
+                  }}>
+                    <span style={{ transform: "skewX(12deg)" }}>1</span>
+                  </span>
+                  <strong style={{ color: "#fff", fontSize: "14px" }}>The Territory Blankets</strong>
+                </div>
+                <p style={{ color: "rgba(255,255,255,0.6)", margin: 0 }}>
                   The pitch is covered by two colored sheets representing each team (Blue for Home, Red/Orange for Away). 
                   The shifting dividing seam (the frontier boundary) shows the flow of play: 
                   who is dominating possession and pressing deeper into the opponent half at any given minute.
                 </p>
               </div>
-              <div>
-                <h4 style={{ color: "#fff", fontWeight: 700, marginBottom: "6px" }}>2. Expected Goals (xG) Spires</h4>
-                <p>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span style={{ 
+                    background: "rgba(34, 197, 94, 0.15)", 
+                    color: "var(--color-accent)", 
+                    width: "24px", 
+                    height: "24px", 
+                    transform: "skewX(-12deg)", 
+                    display: "inline-flex", 
+                    alignItems: "center", 
+                    justifyContent: "center", 
+                    fontSize: "11px", 
+                    fontWeight: 900 
+                  }}>
+                    <span style={{ transform: "skewX(12deg)" }}>2</span>
+                  </span>
+                  <strong style={{ color: "#fff", fontSize: "14px" }}>Expected Goals (xG) Spires</strong>
+                </div>
+                <p style={{ color: "rgba(255,255,255,0.6)", margin: 0 }}>
                   Every shot is mapped as a sharp, pointed needle spire rising directly from the coordinate of the shot. 
                   The height of the spire is determined by its **Expected Goals (xG)** value. 
                   Goals form tall spires with glowing white rings around their bases.
                 </p>
               </div>
-              <div>
-                <h4 style={{ color: "#fff", fontWeight: 700, marginBottom: "6px" }}>3. Possession Tide Folds</h4>
-                <p>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span style={{ 
+                    background: "rgba(34, 197, 94, 0.15)", 
+                    color: "var(--color-accent)", 
+                    width: "24px", 
+                    height: "24px", 
+                    transform: "skewX(-12deg)", 
+                    display: "inline-flex", 
+                    alignItems: "center", 
+                    justifyContent: "center", 
+                    fontSize: "11px", 
+                    fontWeight: 900 
+                  }}>
+                    <span style={{ transform: "skewX(12deg)" }}>3</span>
+                  </span>
+                  <strong style={{ color: "#fff", fontSize: "14px" }}>Possession Tide Folds</strong>
+                </div>
+                <p style={{ color: "rgba(255,255,255,0.6)", margin: 0 }}>
                   Sustained pressure or high-danger attacks create soft, billowy wave folds on the respective team's blanket. 
                   The texture utilizes a procedurally generated hexagonal microgrid, giving it the premium feeling of a physical clay model.
                 </p>
               </div>
-              <div>
-                <h4 style={{ color: "#fff", fontWeight: 700, marginBottom: "6px" }}>4. Goal Floods & Lightning</h4>
-                <p>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span style={{ 
+                    background: "rgba(34, 197, 94, 0.15)", 
+                    color: "var(--color-accent)", 
+                    width: "24px", 
+                    height: "24px", 
+                    transform: "skewX(-12deg)", 
+                    display: "inline-flex", 
+                    alignItems: "center", 
+                    justifyContent: "center", 
+                    fontSize: "11px", 
+                    fontWeight: 900 
+                  }}>
+                    <span style={{ transform: "skewX(12deg)" }}>4</span>
+                  </span>
+                  <strong style={{ color: "#fff", fontSize: "14px" }}>Goal Floods & Lightning</strong>
+                </div>
+                <p style={{ color: "rgba(255,255,255,0.6)", margin: 0 }}>
                   When a goal is scored, the entire slab temporarily floods with the kit color of the scoring team, 
                   symbolizing their dominance. Red cards and goals trigger procedural lightning strikes at the coordinate of the event.
                 </p>
               </div>
             </div>
-            <style jsx>{`
+            <style>{`
               @keyframes fadeIn {
                 from { opacity: 0; }
                 to { opacity: 1; }

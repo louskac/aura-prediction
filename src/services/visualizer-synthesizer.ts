@@ -53,6 +53,9 @@ export interface VisualEvent {
   onSurname?: string;
   position?: string;
   fotmobId?: number;
+  eu?: number;
+  ev?: number;
+  through?: boolean;
 }
 
 export interface MomentumPoint {
