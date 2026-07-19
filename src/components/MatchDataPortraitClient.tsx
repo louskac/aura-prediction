@@ -1599,14 +1599,46 @@ export default function MatchDataPortraitClient({
     buildGoalPosts(true);
     buildGoalPosts(false);
 
+    // --- 3D Holographic Wireframe Materials (for blueprint mode) ---
+    const homeHoloMat = new THREE.MeshBasicMaterial({
+      color: new THREE.Color(homeColor),
+      wireframe: true,
+      transparent: true,
+      opacity: 0.18,
+      side: THREE.DoubleSide
+    });
+    const awayHoloMat = new THREE.MeshBasicMaterial({
+      color: new THREE.Color(awayColor),
+      wireframe: true,
+      transparent: true,
+      opacity: 0.18,
+      side: THREE.DoubleSide
+    });
+    const homeWallHoloMat = new THREE.MeshBasicMaterial({
+      color: new THREE.Color(homeColor),
+      wireframe: true,
+      transparent: true,
+      opacity: 0.1,
+      side: THREE.DoubleSide
+    });
+    const awayWallHoloMat = new THREE.MeshBasicMaterial({
+      color: new THREE.Color(awayColor),
+      wireframe: true,
+      transparent: true,
+      opacity: 0.1,
+      side: THREE.DoubleSide
+    });
+
     // --- 3D Shot Markers for Chances (Dots on pitch) ---
     const shotMarkersGroup = new THREE.Group();
     scene.add(shotMarkersGroup);
 
-    const sphereGeom = new THREE.SphereGeometry(0.18, 16, 16);
-    const cylinderGeom = new THREE.CylinderGeometry(0.08, 0.08, 0.35, 12);
-    const octahedronGeom = new THREE.OctahedronGeometry(0.22, 0);
-    const ringGeom = new THREE.RingGeometry(0.25, 0.32, 32);
+    // Analytical Geometries (Hexagonal Cylinder, Torus O, Box bars for X, Cone for Holo)
+    const hexColumnGeom = new THREE.CylinderGeometry(0.12, 0.12, 0.4, 6);
+    const torusGeom = new THREE.TorusGeometry(0.12, 0.03, 8, 24);
+    const crossBarGeom = new THREE.BoxGeometry(0.04, 0.28, 0.04);
+    const pyramidGeom = new THREE.ConeGeometry(0.15, 0.4, 4, 1);
+    const ringGeom = new THREE.RingGeometry(0.24, 0.30, 32);
 
     const shotsListFor3D = visualEventsRef.current.filter(
       ev => ev.kind === "shot" || ev.type === "shot" || ev.isGoal
@@ -1614,7 +1646,9 @@ export default function MatchDataPortraitClient({
 
     const shotMarkers: Array<{
       ev: any;
-      mesh: THREE.Mesh;
+      meshCyber: THREE.Mesh;
+      meshTactical: THREE.Object3D;
+      meshHolo: THREE.Mesh;
       ring: THREE.Mesh;
       u: number;
       v: number;
@@ -1624,24 +1658,66 @@ export default function MatchDataPortraitClient({
       const wX = (ev.u - 0.5) * WORLD_X;
       const wZ = (0.5 - ev.v) * WORLD_Z;
 
-      // Default marker mesh (Sphere initially, will switch shape in tick)
-      const markerMat = new THREE.MeshStandardMaterial({
-        roughness: 0.1,
-        metalness: 0.9,
+      // 1. Data Analyst Marker (Hexagonal Prism)
+      const cyberMat = new THREE.MeshStandardMaterial({
+        roughness: 0.15,
+        metalness: 0.85,
         transparent: true,
         opacity: 0.95
       });
-      const markerMesh = new THREE.Mesh(sphereGeom, markerMat);
-      markerMesh.castShadow = true;
-      markerMesh.receiveShadow = false;
-      markerMesh.position.set(wX, 0, wZ);
-      shotMarkersGroup.add(markerMesh);
+      const cyberMesh = new THREE.Mesh(hexColumnGeom, cyberMat);
+      cyberMesh.castShadow = true;
+      cyberMesh.receiveShadow = false;
+      cyberMesh.position.set(wX, 0, wZ);
+      shotMarkersGroup.add(cyberMesh);
 
-      // Default ring mesh flat on ground
+      // 2. Tactical Coaches Chalkboard Marker (X or O)
+      let tacticalMesh: THREE.Object3D;
+      const chalkMat = new THREE.MeshStandardMaterial({
+        roughness: 0.95,
+        metalness: 0.0,
+        transparent: false
+      });
+      if (ev.isGoal) {
+        // Torus O (Goal)
+        const torusMesh = new THREE.Mesh(torusGeom, chalkMat);
+        torusMesh.rotation.x = -Math.PI / 2;
+        torusMesh.position.set(wX, 0.04, wZ);
+        shotMarkersGroup.add(torusMesh);
+        tacticalMesh = torusMesh;
+      } else {
+        // Crossed X (Shot missed)
+        const xGroup = new THREE.Group();
+        const bar1 = new THREE.Mesh(crossBarGeom, chalkMat);
+        bar1.rotation.y = Math.PI / 4;
+        bar1.rotation.x = -Math.PI / 2; // lie flat but crossed
+        
+        const bar2 = new THREE.Mesh(crossBarGeom, chalkMat);
+        bar2.rotation.y = -Math.PI / 4;
+        bar2.rotation.x = -Math.PI / 2;
+        
+        xGroup.add(bar1, bar2);
+        xGroup.position.set(wX, 0.04, wZ);
+        shotMarkersGroup.add(xGroup);
+        tacticalMesh = xGroup;
+      }
+
+      // 3. Holographic Blueprint Marker (Wireframe Pyramid)
+      const holoMat = new THREE.MeshBasicMaterial({
+        color: new THREE.Color(ev.team === "home" ? 0x00ffff : 0xff00ff),
+        wireframe: true,
+        transparent: true,
+        opacity: 0.85
+      });
+      const holoMesh = new THREE.Mesh(pyramidGeom, holoMat);
+      holoMesh.position.set(wX, 0, wZ);
+      shotMarkersGroup.add(holoMesh);
+
+      // 4. Anchor Ring
       const ringMat = new THREE.MeshBasicMaterial({
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: 0.6
+        opacity: 0.5
       });
       const ringMesh = new THREE.Mesh(ringGeom, ringMat);
       ringMesh.rotation.x = -Math.PI / 2;
@@ -1650,7 +1726,9 @@ export default function MatchDataPortraitClient({
 
       shotMarkers.push({
         ev,
-        mesh: markerMesh,
+        meshCyber: cyberMesh,
+        meshTactical: tacticalMesh,
+        meshHolo: holoMesh,
         ring: ringMesh,
         u: ev.u,
         v: ev.v
@@ -1663,9 +1741,9 @@ export default function MatchDataPortraitClient({
       if (style === 'cyber') {
         scene.fog = new THREE.FogExp2(0x060814, 0.010);
       } else if (style === 'tactical') {
-        scene.fog = new THREE.FogExp2(0x0f111a, 0.008);
+        scene.fog = new THREE.FogExp2(0x0d1510, 0.008); // chalk green fog
       } else if (style === 'glass') {
-        scene.fog = new THREE.FogExp2(0x1a0b2e, 0.015);
+        scene.fog = new THREE.FogExp2(0x0a0714, 0.015);
       }
 
       // 2. Lights
@@ -1678,80 +1756,81 @@ export default function MatchDataPortraitClient({
         dirLight.color.setHex(0xffffff);
         dirLight.intensity = 2.8;
       } else if (style === 'tactical') {
-        ambientLight.color.setHex(0x334155);
-        ambientLight.intensity = 1.0;
-        hemiLight.color.setHex(0x475569);
-        hemiLight.groundColor.setHex(0x0f172a);
-        hemiLight.intensity = 0.8;
-        dirLight.color.setHex(0xf8fafc);
-        dirLight.intensity = 1.5;
+        // flat tactics board daylight
+        ambientLight.color.setHex(0xd1d5db);
+        ambientLight.intensity = 1.2;
+        hemiLight.color.setHex(0x94a3b8);
+        hemiLight.groundColor.setHex(0x334155);
+        hemiLight.intensity = 0.5;
+        dirLight.color.setHex(0xffffff);
+        dirLight.intensity = 1.4;
       } else if (style === 'glass') {
-        ambientLight.color.setHex(0xd8b4fe);
-        ambientLight.intensity = 0.8;
-        hemiLight.color.setHex(0x8b5cf6);
-        hemiLight.groundColor.setHex(0x311042);
-        hemiLight.intensity = 1.0;
-        dirLight.color.setHex(0xfef08a);
-        dirLight.intensity = 2.0;
+        // Holographic modes use virtually self-illuminated wireframes, so standard lights are dimmed
+        ambientLight.color.setHex(0x312e81);
+        ambientLight.intensity = 0.2;
+        hemiLight.color.setHex(0x4c1d95);
+        hemiLight.groundColor.setHex(0x1e1b4b);
+        hemiLight.intensity = 0.1;
+        dirLight.color.setHex(0xffffff);
+        dirLight.intensity = 0.3;
       }
 
-      // 3. Blanket Materials
-      if (style === 'cyber') {
-        homeMat.wireframe = false;
-        homeMat.transparent = false;
-        homeMat.opacity = 1.0;
-        homeMat.roughness = 0.65;
-        homeMat.metalness = 0.5;
+      // 3. Blanket & Skirt Materials Hot Swapping
+      if (style === 'glass') {
+        // Hot-swap to wireframe BasicMaterials
+        (homeMesh as any).material = homeHoloMat;
+        (awayMesh as any).material = awayHoloMat;
+        (homeWallMesh as any).material = homeWallHoloMat;
+        (awayWallMesh as any).material = awayWallHoloMat;
+      } else {
+        // Restore compiled StandardMaterials
+        (homeMesh as any).material = homeMat;
+        (awayMesh as any).material = awayMat;
+        (homeWallMesh as any).material = homeWallMat;
+        (awayWallMesh as any).material = awayWallMat;
 
-        awayMat.wireframe = false;
-        awayMat.transparent = false;
-        awayMat.opacity = 1.0;
-        awayMat.roughness = 0.65;
-        awayMat.metalness = 0.5;
+        if (style === 'cyber') {
+          homeMat.wireframe = false;
+          homeMat.transparent = false;
+          homeMat.opacity = 1.0;
+          homeMat.roughness = 0.65;
+          homeMat.metalness = 0.5;
 
-        homeWallMat.wireframe = false;
-        homeWallMat.transparent = false;
-        homeWallMat.opacity = 1.0;
+          awayMat.wireframe = false;
+          awayMat.transparent = false;
+          awayMat.opacity = 1.0;
+          awayMat.roughness = 0.65;
+          awayMat.metalness = 0.5;
 
-        awayWallMat.wireframe = false;
-        awayWallMat.transparent = false;
-        awayWallMat.opacity = 1.0;
-      } else if (style === 'tactical') {
-        homeMat.wireframe = false;
-        homeMat.transparent = false;
-        homeMat.opacity = 1.0;
-        homeMat.roughness = 0.95;
-        homeMat.metalness = 0.1;
+          homeWallMat.wireframe = false;
+          homeWallMat.transparent = false;
+          homeWallMat.opacity = 1.0;
 
-        awayMat.wireframe = false;
-        awayMat.transparent = false;
-        awayMat.opacity = 1.0;
-        awayMat.roughness = 0.95;
-        awayMat.metalness = 0.1;
+          awayWallMat.wireframe = false;
+          awayWallMat.transparent = false;
+          awayWallMat.opacity = 1.0;
+        } else if (style === 'tactical') {
+          // chalkboard matte textures
+          homeMat.wireframe = false;
+          homeMat.transparent = false;
+          homeMat.opacity = 1.0;
+          homeMat.roughness = 0.95;
+          homeMat.metalness = 0.05;
 
-        homeWallMat.wireframe = false;
-        homeWallMat.transparent = false;
-        homeWallMat.opacity = 1.0;
+          awayMat.wireframe = false;
+          awayMat.transparent = false;
+          awayMat.opacity = 1.0;
+          awayMat.roughness = 0.95;
+          awayMat.metalness = 0.05;
 
-        awayWallMat.wireframe = false;
-        awayWallMat.transparent = false;
-        awayWallMat.opacity = 1.0;
-      } else if (style === 'glass') {
-        homeMat.wireframe = true;
-        homeMat.transparent = true;
-        homeMat.opacity = 0.45;
+          homeWallMat.wireframe = false;
+          homeWallMat.transparent = false;
+          homeWallMat.opacity = 1.0;
 
-        awayMat.wireframe = true;
-        awayMat.transparent = true;
-        awayMat.opacity = 0.45;
-
-        homeWallMat.wireframe = true;
-        homeWallMat.transparent = true;
-        homeWallMat.opacity = 0.15;
-
-        awayWallMat.wireframe = true;
-        awayWallMat.transparent = true;
-        awayWallMat.opacity = 0.15;
+          awayWallMat.wireframe = false;
+          awayWallMat.transparent = false;
+          awayWallMat.opacity = 1.0;
+        }
       }
 
       // 4. Uniforms
@@ -1770,30 +1849,31 @@ export default function MatchDataPortraitClient({
         awayUniforms.uDetail.value = 0.58;
         awayUniforms.uClay.value.set('#6a6560');
       } else if (style === 'tactical') {
-        homeUniforms.uSat.value = 0.25;
-        homeUniforms.uTint.value = 0.2;
-        homeUniforms.uDetail.value = 0.1;
-        homeUniforms.uClay.value.set('#1e293b');
+        // chalkboard forest green background
+        homeUniforms.uSat.value = 0.15;
+        homeUniforms.uTint.value = 0.08;
+        homeUniforms.uDetail.value = 0.05;
+        homeUniforms.uClay.value.set('#163520');
 
-        awayUniforms.uSat.value = 0.25;
-        awayUniforms.uTint.value = 0.2;
-        awayUniforms.uDetail.value = 0.1;
-        awayUniforms.uClay.value.set('#1e293b');
+        awayUniforms.uSat.value = 0.15;
+        awayUniforms.uTint.value = 0.08;
+        awayUniforms.uDetail.value = 0.05;
+        awayUniforms.uClay.value.set('#163520');
       } else if (style === 'glass') {
         homeUniforms.uSat.value = 1.0;
         homeUniforms.uTint.value = 1.0;
         homeUniforms.uDetail.value = 0.9;
-        homeUniforms.uClay.value.set('#8b5cf6');
+        homeUniforms.uClay.value.set('#00ffff');
 
         awayUniforms.uSat.value = 1.0;
         awayUniforms.uTint.value = 1.0;
         awayUniforms.uDetail.value = 0.9;
-        awayUniforms.uClay.value.set('#8b5cf6');
+        awayUniforms.uClay.value.set('#00ffff');
       }
 
       // 5. Particles
       if (particlesRef.current) {
-        particlesRef.current.visible = (style !== 'tactical');
+        particlesRef.current.visible = (style === 'cyber'); // only cyber has stardust particles
       }
     };
 
@@ -2772,7 +2852,7 @@ export default function MatchDataPortraitClient({
       awayUniforms.uHoveredShotIdx.value = hoveredIdx;
 
       // Update 3D event markers for chances
-      shotMarkers.forEach(({ ev, mesh, ring, u, v }, idx) => {
+      shotMarkers.forEach(({ ev, meshCyber, meshTactical, meshHolo, ring, u, v }, idx) => {
         const age = activeT - ev.t;
         const xg = ev.xg || 0.15;
         const isGoal = ev.isGoal;
@@ -2782,111 +2862,112 @@ export default function MatchDataPortraitClient({
         const gridI = Math.min(GX, Math.max(0, Math.round(u * GX)));
         const gridJ = Math.min(GY, Math.max(0, Math.round(v * GY)));
         const hIdx = gridJ * (GX + 1) + gridI;
-        const terrainY = (ev.team === "home" || ev.team === "home_defense" || ev.team === "home_attack") 
+        const terrainY = (ev.team === "home") 
           ? hDataHome[hIdx] 
           : hDataAway[hIdx];
 
         if (age < 0) {
-          mesh.visible = false;
+          meshCyber.visible = false;
+          meshTactical.visible = false;
+          meshHolo.visible = false;
           ring.visible = false;
           return;
         }
 
-        mesh.visible = true;
-        ring.visible = true;
+        ring.visible = (currentStyle !== 'glass'); // Hide rings in holographic mode
+
+        // Set visibility based on active style
+        meshCyber.visible = (currentStyle === 'cyber');
+        meshTactical.visible = (currentStyle === 'tactical');
+        meshHolo.visible = (currentStyle === 'glass');
 
         // Custom hex colors (Home is Blue, Away is Red/Coral, Goal is Golden yellow)
         const homeColorHex = 0x2563eb;
         const awayColorHex = 0xef4444;
         const goalColorHex = 0xffd166;
-        const evTeamColor = (ev.team === "home" || ev.team === "home_defense" || ev.team === "home_attack") 
+        const evTeamColor = (ev.team === "home") 
           ? homeColorHex 
           : awayColorHex;
 
         if (currentStyle === 'cyber') {
-          mesh.geometry = sphereGeom;
+          // Analyst Mode: Hexagonal Columns (Data Pillars)
           const targetColor = isGoal ? goalColorHex : evTeamColor;
-          (mesh.material as THREE.MeshStandardMaterial).color.setHex(targetColor);
-          (mesh.material as THREE.MeshStandardMaterial).emissive.setHex(targetColor);
-          (mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = isHovered ? 2.5 : 1.2;
-          (mesh.material as THREE.MeshStandardMaterial).roughness = 0.1;
-          (mesh.material as THREE.MeshStandardMaterial).metalness = 0.9;
-          (mesh.material as THREE.MeshStandardMaterial).opacity = 0.95;
+          const mat = meshCyber.material as THREE.MeshStandardMaterial;
+          mat.color.setHex(targetColor);
+          mat.emissive.setHex(targetColor);
+          mat.emissiveIntensity = isHovered ? 2.5 : 1.0;
+          mat.roughness = 0.15;
+          mat.metalness = 0.85;
+          mat.opacity = 0.95;
           
-          const floatOffset = 0.35 + 0.05 * Math.sin(visualTime * 4.0 + idx);
-          mesh.position.y = terrainY + floatOffset;
-          mesh.rotation.y = 0;
-          mesh.rotation.x = 0;
-          mesh.rotation.z = 0;
+          const baseH = 0.35 + xg * 0.55;
+          const currentScale = isHovered ? 1.4 : 1.0;
+          meshCyber.scale.set(currentScale, currentScale * baseH * 2.5, currentScale);
+          meshCyber.position.y = terrainY + (baseH * currentScale) / 2.0;
 
-          const pulse = (age < 6.0) ? (1.0 + 0.25 * Math.sin(visualTime * 12.0)) : 1.0;
-          const baseScale = isGoal ? 1.5 : (1.0 + xg * 0.8);
-          const currentScale = baseScale * pulse * (isHovered ? 1.4 : 1.0);
-          mesh.scale.set(currentScale, currentScale, currentScale);
+          // Rotate Hex column slowly for visual interest
+          meshCyber.rotation.y = visualTime * 0.8 + idx;
+          meshCyber.rotation.x = 0;
+          meshCyber.rotation.z = 0;
 
           ring.position.y = terrainY + 0.02;
           (ring.material as THREE.MeshBasicMaterial).color.setHex(targetColor);
           (ring.material as THREE.MeshBasicMaterial).opacity = 0.6 * (age < 6.0 ? (1.0 - (age % 1.0)) : 0.4);
           const ringScale = (isGoal ? 1.8 : 1.2) * (age < 6.0 ? (1.0 + 0.5 * Math.sin(visualTime * 8.0)) : 1.0) * (isHovered ? 1.3 : 1.0);
           ring.scale.set(ringScale, ringScale, 1.0);
-          ring.rotation.x = -Math.PI / 2;
-          ring.rotation.z = 0;
           
         } else if (currentStyle === 'tactical') {
-          mesh.geometry = cylinderGeom;
-          const targetColor = isGoal ? 0xffffff : evTeamColor;
-          (mesh.material as THREE.MeshStandardMaterial).color.setHex(targetColor);
-          (mesh.material as THREE.MeshStandardMaterial).emissive.setHex(0x000000);
-          (mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = 0.0;
-          (mesh.material as THREE.MeshStandardMaterial).roughness = 0.9;
-          (mesh.material as THREE.MeshStandardMaterial).metalness = 0.15;
-          (mesh.material as THREE.MeshStandardMaterial).opacity = 1.0;
+          // Tactical Chalkboard Mode: 3D Chalk "X" and "O"
+          const targetColor = isGoal 
+            ? 0xffd166 // goal gold
+            : (ev.team === "home" ? 0x60a5fa : 0xf87171); // chalk red/blue
 
-          const basePinHeight = isGoal ? 0.6 : (0.35 + xg * 0.4);
-          const currentScale = isHovered ? 1.3 : 1.0;
-          mesh.scale.set(currentScale, currentScale * basePinHeight * 3.0, currentScale);
+          const currentScale = isHovered ? 1.4 : 1.0;
+          const baseScale = isGoal ? 1.1 : (0.8 + xg * 0.4);
           
-          mesh.position.y = terrainY + (basePinHeight * currentScale) / 2.0;
-          mesh.rotation.y = 0;
-          mesh.rotation.x = 0;
-          mesh.rotation.z = 0;
+          if (isGoal) {
+            meshTactical.scale.set(baseScale * currentScale, baseScale * currentScale, 1.0);
+            meshTactical.position.y = terrainY + 0.04;
+            const mat = (meshTactical as THREE.Mesh).material as THREE.MeshStandardMaterial;
+            mat.color.setHex(targetColor);
+          } else {
+            meshTactical.scale.set(baseScale * currentScale, baseScale * currentScale, baseScale * currentScale);
+            meshTactical.position.y = terrainY + 0.04;
+            meshTactical.children.forEach(child => {
+              const mat = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
+              mat.color.setHex(targetColor);
+            });
+          }
 
+          meshTactical.rotation.y = 0;
+          meshTactical.rotation.x = 0;
+          meshTactical.rotation.z = 0;
+
+          // Subtle chalk outline footprint
           ring.position.y = terrainY + 0.01;
-          (ring.material as THREE.MeshBasicMaterial).color.setHex(0x475569);
-          (ring.material as THREE.MeshBasicMaterial).opacity = 0.35;
-          const ringScale = isGoal ? 1.3 : 0.9;
+          (ring.material as THREE.MeshBasicMaterial).color.setHex(0xffffff);
+          (ring.material as THREE.MeshBasicMaterial).opacity = 0.25;
+          const ringScale = (isGoal ? 1.4 : 0.95) * (isHovered ? 1.3 : 1.0);
           ring.scale.set(ringScale, ringScale, 1.0);
-          ring.rotation.x = -Math.PI / 2;
-          ring.rotation.z = 0;
           
         } else if (currentStyle === 'glass') {
-          mesh.geometry = octahedronGeom;
-          const targetColor = isGoal ? 0xfbbf24 : evTeamColor;
-          (mesh.material as THREE.MeshStandardMaterial).color.setHex(targetColor);
-          (mesh.material as THREE.MeshStandardMaterial).emissive.setHex(targetColor);
-          (mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = isHovered ? 1.8 : 0.6;
-          (mesh.material as THREE.MeshStandardMaterial).roughness = 0.05;
-          (mesh.material as THREE.MeshStandardMaterial).metalness = 0.95;
-          (mesh.material as THREE.MeshStandardMaterial).opacity = 0.75;
+          // Holographic Mode: Spinning Wireframe Pyramids
+          const targetColor = (ev.team === "home" || ev.team === "home_defense" || ev.team === "home_attack") 
+            ? 0x00ffff // neon cyan
+            : 0xff00ff; // neon magenta
 
+          const mat = meshHolo.material as THREE.MeshBasicMaterial;
+          mat.color.setHex(targetColor);
+          
           const floatOffset = 0.4 + 0.08 * Math.sin(visualTime * 2.5 + idx);
-          mesh.position.y = terrainY + floatOffset;
-          mesh.rotation.y = visualTime * 1.5 + idx;
-          mesh.rotation.x = visualTime * 0.6;
-          mesh.rotation.z = 0;
+          meshHolo.position.y = terrainY + floatOffset;
+          meshHolo.rotation.y = visualTime * 1.5 + idx;
+          meshHolo.rotation.x = visualTime * 0.6;
+          meshHolo.rotation.z = 0;
           
-          const baseScale = isGoal ? 1.4 : (0.9 + xg * 0.7);
+          const baseScale = isGoal ? 1.5 : (0.9 + xg * 0.8);
           const currentScale = baseScale * (isHovered ? 1.4 : 1.0);
-          mesh.scale.set(currentScale, currentScale, currentScale);
-
-          ring.position.y = terrainY + floatOffset;
-          (ring.material as THREE.MeshBasicMaterial).color.setHex(0xfbbf24);
-          (ring.material as THREE.MeshBasicMaterial).opacity = 0.8;
-          const ringScale = (isGoal ? 1.6 : 1.1) * (isHovered ? 1.3 : 1.0);
-          ring.scale.set(ringScale, ringScale, 1.0);
-          
-          ring.rotation.x = -Math.PI / 2.3 + 0.1 * Math.sin(visualTime + idx);
-          ring.rotation.z = visualTime * 1.2;
+          meshHolo.scale.set(currentScale, currentScale, currentScale);
         }
       });
 
@@ -2947,10 +3028,17 @@ export default function MatchDataPortraitClient({
       if (pitchMat) pitchMat.dispose();
       if (skyTex) skyTex.dispose();
 
-      if (sphereGeom) sphereGeom.dispose();
-      if (cylinderGeom) cylinderGeom.dispose();
-      if (octahedronGeom) octahedronGeom.dispose();
+      if (hexColumnGeom) hexColumnGeom.dispose();
+      if (torusGeom) torusGeom.dispose();
+      if (crossBarGeom) crossBarGeom.dispose();
+      if (pyramidGeom) pyramidGeom.dispose();
       if (ringGeom) ringGeom.dispose();
+      
+      if (homeHoloMat) homeHoloMat.dispose();
+      if (awayHoloMat) awayHoloMat.dispose();
+      if (homeWallHoloMat) homeWallHoloMat.dispose();
+      if (awayWallHoloMat) awayWallHoloMat.dispose();
+      
       scene.remove(shotMarkersGroup);
       
       // Dispose stardust particle system resources
