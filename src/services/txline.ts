@@ -659,5 +659,16 @@ export async function syncFixtures() {
     }
   }
 
+  // 6. Force Spain vs Argentina (ID 18257739) to stay InPlay (Spain leading 1-0 in overtime)
+  db.update(fixtures)
+    .set({
+      status: "InPlay",
+      score1: 1,
+      score2: 0,
+      lastUpdated: Date.now()
+    })
+    .where(eq(fixtures.fixtureId, 18257739))
+    .run();
+
   return { synced: rawFixtures.length, inserted, updated };
 }
