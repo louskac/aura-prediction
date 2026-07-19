@@ -312,6 +312,240 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Live Analytics Oracle & Prediction Markets Section */}
+        <section className="bracket-preview-section" style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "80px", marginTop: "80px" }}>
+          <div style={{ textAlign: "center", marginBottom: "48px" }}>
+            <span className="section-label" style={{ color: "var(--color-accent)", letterSpacing: "1.5px" }}>[ DECENTRALIZED SPORTS TELEMETRY ]</span>
+            <h2 className="section-title" style={{ marginTop: "12px", fontSize: "36px" }}>
+              Prediction Markets as a <span>Live Analytics Oracle</span>
+            </h2>
+            <p style={{ color: "var(--color-text-muted)", maxWidth: "600px", margin: "12px auto 0 auto", fontSize: "14px", lineHeight: "1.5" }}>
+              We convert live prediction market liquidity and YES/NO contract prices into novel, high-resolution sports metrics in real-time.
+            </p>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "24px", margin: "0 10px" }}>
+            {/* Card 1: psDI */}
+            <div 
+              className="glass-panel"
+              style={{
+                padding: "28px 24px",
+                background: "linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, rgba(10, 15, 38, 0.8) 100%)",
+                border: "1px solid rgba(59, 130, 246, 0.15)",
+                borderTop: "4px solid #3b82f6",
+                borderRadius: "0px",
+                transform: "skewX(-6deg)",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                gap: "20px"
+              }}
+            >
+              <div style={{ transform: "skewX(6deg)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                  <span style={{ fontSize: "10px", color: "#3b82f6", fontWeight: 900, fontFamily: "monospace" }}>// METRIC_NODE_01</span>
+                  <span style={{ fontSize: "9px", background: "rgba(59, 130, 246, 0.1)", color: "#3b82f6", padding: "2px 6px", fontFamily: "monospace" }}>PRE-SHOT</span>
+                </div>
+                <h3 style={{ fontSize: "18px", color: "#fff", fontWeight: 800 }}>Pre-Shot Danger Index</h3>
+                <p style={{ fontSize: "12px", color: "var(--color-text-muted)", marginTop: "8px", height: "40px", lineHeight: "1.4" }}>
+                  Quantifies real-time momentum and attacking threat levels before a shot is registered.
+                </p>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "8px", margin: "24px 0 10px 0" }}>
+                  <span style={{ fontSize: "38px", fontWeight: 900, color: "var(--color-accent)", fontFamily: "monospace" }}>74.2%</span>
+                  <span style={{ fontSize: "11px", color: "var(--color-text-dim)", textTransform: "uppercase", fontWeight: "bold" }}>psDI ATTACK</span>
+                </div>
+                <div style={{ height: "6px", background: "rgba(255,255,255,0.05)", borderRadius: "0px", overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: "74.2%", background: "linear-gradient(90deg, #3b82f6, var(--color-accent))", boxShadow: "0 0 10px rgba(34, 197, 94, 0.5)" }}></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2: xT-Trans */}
+            <div 
+              className="glass-panel"
+              style={{
+                padding: "28px 24px",
+                background: "linear-gradient(135deg, rgba(168, 85, 247, 0.03) 0%, rgba(10, 15, 38, 0.8) 100%)",
+                border: "1px solid rgba(168, 85, 247, 0.15)",
+                borderTop: "4px solid #a855f7",
+                borderRadius: "0px",
+                transform: "skewX(-6deg)",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                gap: "20px"
+              }}
+            >
+              <div style={{ transform: "skewX(6deg)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                  <span style={{ fontSize: "10px", color: "#a855f7", fontWeight: 900, fontFamily: "monospace" }}>// METRIC_NODE_02</span>
+                  <span style={{ fontSize: "9px", background: "rgba(168, 85, 247, 0.1)", color: "#a855f7", padding: "2px 6px", fontFamily: "monospace" }}>TRANSITION</span>
+                </div>
+                <h3 style={{ fontSize: "18px", color: "#fff", fontWeight: 800 }}>Expected Threat Transition</h3>
+                <p style={{ fontSize: "12px", color: "var(--color-text-muted)", marginTop: "8px", height: "40px", lineHeight: "1.4" }}>
+                  Measures probability of final-third entry successfully converting into a shot.
+                </p>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "8px", margin: "24px 0 10px 0" }}>
+                  <span style={{ fontSize: "38px", fontWeight: 900, color: "#3b82f6", fontFamily: "monospace" }}>65.0%</span>
+                  <span style={{ fontSize: "11px", color: "var(--color-text-dim)", textTransform: "uppercase", fontWeight: "bold" }}>xT-TRANS SUCCESS</span>
+                </div>
+                <div style={{ height: "6px", background: "rgba(255,255,255,0.05)", borderRadius: "0px", overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: "65%", background: "linear-gradient(90deg, #a855f7, #3b82f6)", boxShadow: "0 0 10px rgba(59, 130, 246, 0.5)" }}></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3: DVI */}
+            <div 
+              className="glass-panel"
+              style={{
+                padding: "28px 24px",
+                background: "linear-gradient(135deg, rgba(239, 68, 68, 0.03) 0%, rgba(10, 15, 38, 0.8) 100%)",
+                border: "1px solid rgba(239, 68, 68, 0.15)",
+                borderTop: "4px solid #ef4444",
+                borderRadius: "0px",
+                transform: "skewX(-6deg)",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                gap: "20px"
+              }}
+            >
+              <div style={{ transform: "skewX(6deg)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                  <span style={{ fontSize: "10px", color: "#ef4444", fontWeight: 900, fontFamily: "monospace" }}>// METRIC_NODE_03</span>
+                  <span style={{ fontSize: "9px", background: "rgba(239, 68, 68, 0.1)", color: "#ef4444", padding: "2px 6px", fontFamily: "monospace" }}>VULNERABILITY</span>
+                </div>
+                <h3 style={{ fontSize: "18px", color: "#fff", fontWeight: 800 }}>Defensive Vulnerability Index</h3>
+                <p style={{ fontSize: "12px", color: "var(--color-text-muted)", marginTop: "8px", height: "40px", lineHeight: "1.4" }}>
+                  Signals isolation, booking likelihood, or card fatigue on key defenders.
+                </p>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "8px", margin: "24px 0 10px 0" }}>
+                  <span style={{ fontSize: "38px", fontWeight: 900, color: "#ef4444", fontFamily: "monospace" }}>58.5%</span>
+                  <span style={{ fontSize: "11px", color: "var(--color-text-dim)", textTransform: "uppercase", fontWeight: "bold" }}>DVI FRAGILITY</span>
+                </div>
+                <div style={{ height: "6px", background: "rgba(255,255,255,0.05)", borderRadius: "0px", overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: "58.5%", background: "linear-gradient(90deg, #ff00a0, #ef4444)", boxShadow: "0 0 10px rgba(239, 68, 68, 0.5)" }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ textAlign: "center", marginTop: "48px" }}>
+            <Link href="/markets" className="console-btn-primary" style={{ display: "inline-block" }}>
+              <span className="btn-text-wrapper">
+                Launch Live Oracle Trading Desk <ArrowRight size={14} className="spacer-ml-1" />
+              </span>
+            </Link>
+          </div>
+        </section>
+
+        {/* Live 3D Terrain Visualization Section */}
+        <section className="bracket-preview-section" style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "80px", marginTop: "80px" }}>
+          <div className="bracket-preview-grid" style={{ gridTemplateColumns: "1.1fr 0.9fr", gap: "48px", alignItems: "center" }}>
+            {/* Column 1: Info and Copy */}
+            <div>
+              <span className="section-label" style={{ color: "#3b82f6" }}>Live 3D Telemetry</span>
+              <h2 className="section-title">
+                3D Terrain <br /> <span>Data Portraits</span>
+              </h2>
+              <p className="section-description">
+                Experience matches in three-dimensional space. Aura maps coordinates from real-time tracking feeds directly onto a 3D terrain canvas, visualizing attacking pressure, defender shape, and statistical heights.
+              </p>
+              
+              <div className="section-features-list">
+                <div className="section-feature-item">
+                  <div className="feature-dot" style={{ backgroundColor: "#3b82f6" }}></div>
+                  <div className="feature-text-group">
+                    <span className="feature-title">Topographic Pressure Maps</span>
+                    <span className="feature-desc">Attack vectors and possession duration morph the pitch shape into high-pressure peaks.</span>
+                  </div>
+                </div>
+
+                <div className="section-feature-item">
+                  <div className="feature-dot" style={{ backgroundColor: "#3b82f6" }}></div>
+                  <div className="feature-text-group">
+                    <span className="feature-title">3D Telemetry Indicators</span>
+                    <span className="feature-desc">Live player nodes rise and fall relative to on-field xG and threat generation.</span>
+                  </div>
+                </div>
+              </div>
+
+              <Link href="/portrait/18257739" className="console-btn-primary" style={{ borderColor: "#3b82f6", color: "#3b82f6" }}>
+                <span className="btn-text-wrapper">
+                  Explore 3D Terrain <ArrowRight size={14} className="spacer-ml-1" />
+                </span>
+              </Link>
+            </div>
+
+            {/* Column 2: Stacked 3D Pitch Images Deck */}
+            <div style={{ position: "relative", height: "420px", width: "100%" }}>
+              {/* Image 3 (Furthest Back) */}
+              <div 
+                className="hover-bright"
+                style={{ 
+                  position: "absolute",
+                  top: "80px",
+                  left: "80px",
+                  width: "80%",
+                  zIndex: 1,
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  boxShadow: "0 20px 40px rgba(0,0,0,0.6)",
+                  transform: "skewY(-4deg)",
+                  transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                  cursor: "pointer"
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.zIndex = "10"; e.currentTarget.style.transform = "scale(1.08) translate(-20px, -20px) skewY(-4deg)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.zIndex = "1"; e.currentTarget.style.transform = "skewY(-4deg)"; }}
+              >
+                <img src="/images/3d_pitch_3.png" alt="3D Pitch France vs England Base" style={{ width: "100%", display: "block", borderRadius: "0px" }} />
+              </div>
+
+              {/* Image 2 (Middle) */}
+              <div 
+                className="hover-bright"
+                style={{ 
+                  position: "absolute",
+                  top: "40px",
+                  left: "40px",
+                  width: "80%",
+                  zIndex: 2,
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  boxShadow: "0 20px 40px rgba(0,0,0,0.6)",
+                  transform: "skewY(-4deg)",
+                  transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                  cursor: "pointer"
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.zIndex = "10"; e.currentTarget.style.transform = "scale(1.08) translate(-10px, -10px) skewY(-4deg)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.zIndex = "2"; e.currentTarget.style.transform = "skewY(-4deg)"; }}
+              >
+                <img src="/images/3d_pitch_2.png" alt="3D Pitch Possession Height" style={{ width: "100%", display: "block", borderRadius: "0px" }} />
+              </div>
+
+              {/* Image 1 (Front & Glowing) */}
+              <div 
+                className="hover-bright"
+                style={{ 
+                  position: "absolute",
+                  top: "0px",
+                  left: "0px",
+                  width: "80%",
+                  zIndex: 3,
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  boxShadow: "0 25px 50px rgba(0,0,0,0.75), 0 0 30px rgba(59, 130, 246, 0.25)",
+                  transform: "skewY(-4deg)",
+                  transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                  cursor: "pointer"
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.zIndex = "10"; e.currentTarget.style.transform = "scale(1.08) skewY(-4deg)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.zIndex = "3"; e.currentTarget.style.transform = "skewY(-4deg)"; }}
+              >
+                <img src="/images/3d_pitch_1.png" alt="3D Pitch France vs England" style={{ width: "100%", display: "block", borderRadius: "0px" }} />
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Yield-Bearing Liquid Fantasy Section */}
         <section className="fantasy-preview-section">
           <div className="fantasy-preview-grid">

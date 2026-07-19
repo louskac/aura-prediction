@@ -1,0 +1,458 @@
+{
+  "momentum": [
+    {
+      "minute": 0,
+      "v": 0
+    },
+    {
+      "minute": 1,
+      "v": 0
+    },
+    {
+      "minute": 2,
+      "v": 0
+    },
+    {
+      "minute": 3,
+      "v": -0.05
+    },
+    {
+      "minute": 4,
+      "v": -0.05
+    },
+    {
+      "minute": 5,
+      "v": 0.81
+    },
+    {
+      "minute": 6,
+      "v": 1
+    },
+    {
+      "minute": 7,
+      "v": 1
+    },
+    {
+      "minute": 8,
+      "v": 0.33
+    },
+    {
+      "minute": 9,
+      "v": 0.16
+    },
+    {
+      "minute": 10,
+      "v": 0.03
+    },
+    {
+      "minute": 11,
+      "v": 0.08
+    },
+    {
+      "minute": 12,
+      "v": 0.14
+    },
+    {
+      "minute": 13,
+      "v": 0.3
+    },
+    {
+      "minute": 14,
+      "v": 0.24
+    },
+    {
+      "minute": 15,
+      "v": 0.19
+    },
+    {
+      "minute": 16,
+      "v": 0
+    },
+    {
+      "minute": 17,
+      "v": 0.05
+    },
+    {
+      "minute": 18,
+      "v": 0.03
+    },
+    {
+      "minute": 19,
+      "v": 0.19
+    },
+    {
+      "minute": 20,
+      "v": 0.08
+    },
+    {
+      "minute": 21,
+      "v": 0.16
+    },
+    {
+      "minute": 22,
+      "v": -0.05
+    },
+    {
+      "minute": 23,
+      "v": 0.14
+    },
+    {
+      "minute": 24,
+      "v": 0.08
+    },
+    {
+      "minute": 25,
+      "v": 0.19
+    },
+    {
+      "minute": 26,
+      "v": 0
+    },
+    {
+      "minute": 27,
+      "v": 0
+    },
+    {
+      "minute": 28,
+      "v": 0
+    },
+    {
+      "minute": 29,
+      "v": 0
+    },
+    {
+      "minute": 30,
+      "v": 0
+    },
+    {
+      "minute": 31,
+      "v": 0.11
+    },
+    {
+      "minute": 32,
+      "v": 0.33
+    },
+    {
+      "minute": 33,
+      "v": 0.27
+    },
+    {
+      "minute": 34,
+      "v": 0.22
+    },
+    {
+      "minute": 35,
+      "v": 0
+    },
+    {
+      "minute": 36,
+      "v": 0
+    },
+    {
+      "minute": 37,
+      "v": 0
+    },
+    {
+      "minute": 38,
+      "v": 0.22
+    },
+    {
+      "minute": 39,
+      "v": 0.33
+    },
+    {
+      "minute": 40,
+      "v": 0.05
+    },
+    {
+      "minute": 41,
+      "v": -0.11
+    },
+    {
+      "minute": 42,
+      "v": 0.14
+    },
+    {
+      "minute": 43,
+      "v": 0.41
+    },
+    {
+      "minute": 44,
+      "v": 0.35
+    },
+    {
+      "minute": 45,
+      "v": 0
+    },
+    {
+      "minute": 45.5,
+      "v": -0.11
+    },
+    {
+      "minute": 46,
+      "v": 0.11
+    },
+    {
+      "minute": 47,
+      "v": 0.03
+    },
+    {
+      "minute": 48,
+      "v": 0.03
+    },
+    {
+      "minute": 49,
+      "v": -0.08
+    },
+    {
+      "minute": 50,
+      "v": -0.05
+    },
+    {
+      "minute": 51,
+      "v": -0.11
+    },
+    {
+      "minute": 52,
+      "v": -0.11
+    },
+    {
+      "minute": 53,
+      "v": 0
+    },
+    {
+      "minute": 54,
+      "v": 0.05
+    },
+    {
+      "minute": 55,
+      "v": 0.65
+    },
+    {
+      "minute": 56,
+      "v": 0.92
+    },
+    {
+      "minute": 57,
+      "v": 0.92
+    },
+    {
+      "minute": 58,
+      "v": 0.33
+    },
+    {
+      "minute": 59,
+      "v": 0.27
+    },
+    {
+      "minute": 60,
+      "v": 0.27
+    },
+    {
+      "minute": 61,
+      "v": 0.27
+    },
+    {
+      "minute": 62,
+      "v": 0.05
+    },
+    {
+      "minute": 63,
+      "v": 0.11
+    },
+    {
+      "minute": 64,
+      "v": 0.27
+    },
+    {
+      "minute": 65,
+      "v": 0.27
+    },
+    {
+      "minute": 66,
+      "v": 0.27
+    },
+    {
+      "minute": 67,
+      "v": 0.76
+    },
+    {
+      "minute": 68,
+      "v": 0.71
+    },
+    {
+      "minute": 69,
+      "v": 0.65
+    },
+    {
+      "minute": 70,
+      "v": 0
+    },
+    {
+      "minute": 71,
+      "v": -0.03
+    },
+    {
+      "minute": 72,
+      "v": -0.08
+    },
+    {
+      "minute": 73,
+      "v": -0.19
+    },
+    {
+      "minute": 74,
+      "v": 0
+    },
+    {
+      "minute": 75,
+      "v": 0
+    },
+    {
+      "minute": 76,
+      "v": 0
+    },
+    {
+      "minute": 77,
+      "v": 0
+    },
+    {
+      "minute": 78,
+      "v": 0
+    },
+    {
+      "minute": 79,
+      "v": 0
+    },
+    {
+      "minute": 80,
+      "v": 0
+    },
+    {
+      "minute": 81,
+      "v": 0
+    },
+    {
+      "minute": 82,
+      "v": 0
+    },
+    {
+      "minute": 83,
+      "v": 0
+    },
+    {
+      "minute": 84,
+      "v": 0
+    },
+    {
+      "minute": 85,
+      "v": 0
+    },
+    {
+      "minute": 86,
+      "v": 0
+    },
+    {
+      "minute": 87,
+      "v": 0
+    },
+    {
+      "minute": 88,
+      "v": 0
+    },
+    {
+      "minute": 89,
+      "v": 0
+    },
+    {
+      "minute": 90,
+      "v": 0
+    },
+    {
+      "minute": 90.75,
+      "v": 0
+    }
+  ],
+  "shots": [
+    {
+      "min": 5,
+      "team": "home",
+      "playerName": "Lamine Yamal",
+      "x": 98.92105263139999,
+      "y": 21.687133761599995,
+      "expectedGoals": 0.10034488141536713,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 39,
+      "team": "home",
+      "playerName": "Mikel Oyarzabal",
+      "x": 86.4602941172,
+      "y": 30.95,
+      "expectedGoals": 0.09966913610696793,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 43,
+      "team": "home",
+      "playerName": "Marc Cucurella",
+      "x": 83.94902912639999,
+      "y": 50.7268789793,
+      "expectedGoals": 0.0291704460978508,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 46,
+      "team": "home",
+      "playerName": "Álex Baena",
+      "x": 85.279411764,
+      "y": 41.225952381,
+      "expectedGoals": 0.07740076631307602,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 61,
+      "team": "home",
+      "playerName": "Lamine Yamal",
+      "x": 81.24611650560001,
+      "y": 17.6234394922,
+      "expectedGoals": 0.03509753197431564,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 64,
+      "team": "home",
+      "playerName": "Dani Olmo",
+      "x": 80.4577669912,
+      "y": 32.39875,
+      "expectedGoals": 0.04628784582018852,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 65,
+      "team": "home",
+      "playerName": "Dani Olmo",
+      "x": 100.06896551759999,
+      "y": 31.4075,
+      "expectedGoals": 0.1542559415102005,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 67,
+      "team": "home",
+      "playerName": "Ferran Torres",
+      "x": 97.2807017537,
+      "y": 30.316,
+      "expectedGoals": 0.17637234926223755,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    }
+  ]
+}

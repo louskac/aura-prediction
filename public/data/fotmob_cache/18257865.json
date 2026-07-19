@@ -1,0 +1,762 @@
+{
+  "momentum": [
+    {
+      "minute": 0,
+      "v": 0
+    },
+    {
+      "minute": 1,
+      "v": -0.05
+    },
+    {
+      "minute": 2,
+      "v": -0.16
+    },
+    {
+      "minute": 3,
+      "v": -0.22
+    },
+    {
+      "minute": 4,
+      "v": 0
+    },
+    {
+      "minute": 5,
+      "v": 0.43
+    },
+    {
+      "minute": 6,
+      "v": 0.33
+    },
+    {
+      "minute": 7,
+      "v": -0.19
+    },
+    {
+      "minute": 8,
+      "v": -0.81
+    },
+    {
+      "minute": 9,
+      "v": -0.65
+    },
+    {
+      "minute": 10,
+      "v": -0.3
+    },
+    {
+      "minute": 11,
+      "v": 0.43
+    },
+    {
+      "minute": 12,
+      "v": 0.98
+    },
+    {
+      "minute": 13,
+      "v": 1
+    },
+    {
+      "minute": 14,
+      "v": 0.87
+    },
+    {
+      "minute": 15,
+      "v": 0.43
+    },
+    {
+      "minute": 16,
+      "v": 0.27
+    },
+    {
+      "minute": 17,
+      "v": 0.16
+    },
+    {
+      "minute": 18,
+      "v": -0.6
+    },
+    {
+      "minute": 19,
+      "v": -0.6
+    },
+    {
+      "minute": 20,
+      "v": -0.65
+    },
+    {
+      "minute": 21,
+      "v": 0.05
+    },
+    {
+      "minute": 22,
+      "v": 0.24
+    },
+    {
+      "minute": 23,
+      "v": 0.24
+    },
+    {
+      "minute": 24,
+      "v": 0.19
+    },
+    {
+      "minute": 25,
+      "v": 0
+    },
+    {
+      "minute": 26,
+      "v": -0.11
+    },
+    {
+      "minute": 27,
+      "v": -0.16
+    },
+    {
+      "minute": 28,
+      "v": -0.16
+    },
+    {
+      "minute": 29,
+      "v": 0.14
+    },
+    {
+      "minute": 30,
+      "v": 0.41
+    },
+    {
+      "minute": 31,
+      "v": 0.41
+    },
+    {
+      "minute": 32,
+      "v": 0.16
+    },
+    {
+      "minute": 33,
+      "v": -0.11
+    },
+    {
+      "minute": 34,
+      "v": -0.22
+    },
+    {
+      "minute": 35,
+      "v": 0.14
+    },
+    {
+      "minute": 36,
+      "v": 0.41
+    },
+    {
+      "minute": 37,
+      "v": 0.35
+    },
+    {
+      "minute": 38,
+      "v": 0.16
+    },
+    {
+      "minute": 39,
+      "v": -0.27
+    },
+    {
+      "minute": 40,
+      "v": -0.27
+    },
+    {
+      "minute": 41,
+      "v": -0.54
+    },
+    {
+      "minute": 42,
+      "v": -0.33
+    },
+    {
+      "minute": 43,
+      "v": -0.41
+    },
+    {
+      "minute": 44,
+      "v": -0.03
+    },
+    {
+      "minute": 45,
+      "v": -0.03
+    },
+    {
+      "minute": 45.5,
+      "v": -0.14
+    },
+    {
+      "minute": 46,
+      "v": -0.22
+    },
+    {
+      "minute": 47,
+      "v": -0.22
+    },
+    {
+      "minute": 48,
+      "v": 0.27
+    },
+    {
+      "minute": 49,
+      "v": 0.54
+    },
+    {
+      "minute": 50,
+      "v": 0.62
+    },
+    {
+      "minute": 51,
+      "v": 0.19
+    },
+    {
+      "minute": 52,
+      "v": -0.03
+    },
+    {
+      "minute": 53,
+      "v": -0.11
+    },
+    {
+      "minute": 54,
+      "v": 0.33
+    },
+    {
+      "minute": 55,
+      "v": 0.43
+    },
+    {
+      "minute": 56,
+      "v": 0.43
+    },
+    {
+      "minute": 57,
+      "v": 0
+    },
+    {
+      "minute": 58,
+      "v": 0.05
+    },
+    {
+      "minute": 59,
+      "v": -0.54
+    },
+    {
+      "minute": 60,
+      "v": -0.54
+    },
+    {
+      "minute": 61,
+      "v": -0.33
+    },
+    {
+      "minute": 62,
+      "v": 0
+    },
+    {
+      "minute": 63,
+      "v": -1
+    },
+    {
+      "minute": 64,
+      "v": -1
+    },
+    {
+      "minute": 65,
+      "v": -0.95
+    },
+    {
+      "minute": 66,
+      "v": 1
+    },
+    {
+      "minute": 67,
+      "v": 0.62
+    },
+    {
+      "minute": 68,
+      "v": 0.98
+    },
+    {
+      "minute": 69,
+      "v": 0.46
+    },
+    {
+      "minute": 70,
+      "v": 0.46
+    },
+    {
+      "minute": 71,
+      "v": 0
+    },
+    {
+      "minute": 72,
+      "v": 0
+    },
+    {
+      "minute": 73,
+      "v": -0.16
+    },
+    {
+      "minute": 74,
+      "v": -0.22
+    },
+    {
+      "minute": 75,
+      "v": 0.46
+    },
+    {
+      "minute": 76,
+      "v": 0.84
+    },
+    {
+      "minute": 77,
+      "v": 1
+    },
+    {
+      "minute": 78,
+      "v": 0.76
+    },
+    {
+      "minute": 79,
+      "v": 0.65
+    },
+    {
+      "minute": 80,
+      "v": -1
+    },
+    {
+      "minute": 81,
+      "v": 0.33
+    },
+    {
+      "minute": 82,
+      "v": 0.22
+    },
+    {
+      "minute": 83,
+      "v": 1
+    },
+    {
+      "minute": 84,
+      "v": 0.22
+    },
+    {
+      "minute": 85,
+      "v": 0.03
+    },
+    {
+      "minute": 86,
+      "v": -0.03
+    },
+    {
+      "minute": 87,
+      "v": -0.19
+    },
+    {
+      "minute": 88,
+      "v": 0
+    },
+    {
+      "minute": 89,
+      "v": -0.05
+    },
+    {
+      "minute": 90,
+      "v": -0.05
+    },
+    {
+      "minute": 90.5,
+      "v": 0.17
+    },
+    {
+      "minute": 90.75,
+      "v": 0
+    }
+  ],
+  "shots": [
+    {
+      "min": 3,
+      "team": "away",
+      "playerName": "Declan Rice",
+      "x": 83.38592233039999,
+      "y": 44.000764326500004,
+      "expectedGoals": 0.04468254745006561,
+      "eventType": "Goal",
+      "isOwnGoal": false
+    },
+    {
+      "min": 5,
+      "team": "home",
+      "playerName": "Kylian Mbappé",
+      "x": 93.5,
+      "y": 50.166369424900005,
+      "expectedGoals": 0.025885874405503273,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 7,
+      "team": "away",
+      "playerName": "Marcus Rashford",
+      "x": 92.2,
+      "y": 40.721666666999994,
+      "expectedGoals": 0.11686296761035919,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 8,
+      "team": "away",
+      "playerName": "Eberechi Eze",
+      "x": 93.2,
+      "y": 23.859108284899996,
+      "expectedGoals": 0.021832594648003578,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 11,
+      "team": "home",
+      "playerName": "Rayan Cherki",
+      "x": 87.21176470559999,
+      "y": 32.24625,
+      "expectedGoals": 0.04471210390329361,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 11,
+      "team": "home",
+      "playerName": "Warren Zaïre-Emery",
+      "x": 79.66941747679999,
+      "y": 37.732,
+      "expectedGoals": 0.027396373450756073,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 18,
+      "team": "away",
+      "playerName": "Bukayo Saka",
+      "x": 93.2,
+      "y": 25.013437500000002,
+      "expectedGoals": 0.1259230375289917,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 18,
+      "team": "away",
+      "playerName": "Ezri Konsa",
+      "x": 98.0526315785,
+      "y": 36.8975,
+      "expectedGoals": 0.09425434470176697,
+      "eventType": "Goal",
+      "isOwnGoal": false
+    },
+    {
+      "min": 22,
+      "team": "home",
+      "playerName": "Kylian Mbappé",
+      "x": 81.471359224,
+      "y": 50.4466242021,
+      "expectedGoals": 0.023757629096508026,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 33,
+      "team": "away",
+      "playerName": "Marcus Rashford",
+      "x": 75.277184468,
+      "y": 34.4575,
+      "expectedGoals": 0.02254028618335724,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 35,
+      "team": "home",
+      "playerName": "Kylian Mbappé",
+      "x": 95.0614035074,
+      "y": 38.116190478,
+      "expectedGoals": 0.39239662885665894,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 37,
+      "team": "away",
+      "playerName": "Marcus Rashford",
+      "x": 92.4,
+      "y": 45.4721019068,
+      "expectedGoals": 0.3697575330734253,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 37,
+      "team": "away",
+      "playerName": "Bukayo Saka",
+      "x": 93.8,
+      "y": 44.000764326500004,
+      "expectedGoals": 0.16294056177139282,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 37,
+      "team": "away",
+      "playerName": "Bukayo Saka",
+      "x": 96.9912280694,
+      "y": 44.91159235240001,
+      "expectedGoals": 0.3223188519477844,
+      "eventType": "Goal",
+      "isOwnGoal": false
+    },
+    {
+      "min": 45,
+      "team": "away",
+      "playerName": "Bukayo Saka",
+      "x": 88.6,
+      "y": 36.8975,
+      "expectedGoals": 0.09486084431409836,
+      "eventType": "Goal",
+      "isOwnGoal": false
+    },
+    {
+      "min": 45,
+      "team": "away",
+      "playerName": "Ivan Toney",
+      "x": 97.95614035039999,
+      "y": 17.343184715,
+      "expectedGoals": 0.015308531932532787,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 48,
+      "team": "home",
+      "playerName": "Kylian Mbappé",
+      "x": 96.3157894727,
+      "y": 37.732,
+      "expectedGoals": 0.6271352767944336,
+      "eventType": "Goal",
+      "isOwnGoal": false
+    },
+    {
+      "min": 50,
+      "team": "away",
+      "playerName": "Ollie Watkins",
+      "x": 94.1929824545,
+      "y": 18.814522295299998,
+      "expectedGoals": 0.04831918701529503,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 51,
+      "team": "home",
+      "playerName": "Adrien Rabiot",
+      "x": 90.1,
+      "y": 34.838750000000005,
+      "expectedGoals": 0.06485214829444885,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 54,
+      "team": "away",
+      "playerName": "Eberechi Eze",
+      "x": 69.42087378960001,
+      "y": 41.8303125,
+      "expectedGoals": 0.028818652033805847,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 54,
+      "team": "home",
+      "playerName": "Bradley Barcola",
+      "x": 95.9298245603,
+      "y": 37.684,
+      "expectedGoals": 0.38589397072792053,
+      "eventType": "Goal",
+      "isOwnGoal": false
+    },
+    {
+      "min": 59,
+      "team": "away",
+      "playerName": "Ivan Toney",
+      "x": 98.24561403470001,
+      "y": 35.60125,
+      "expectedGoals": 0.09691459685564041,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 61,
+      "team": "home",
+      "playerName": "Michael Olise",
+      "x": 87.21176470559999,
+      "y": 40.217380953,
+      "expectedGoals": 0.11761641502380371,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 64,
+      "team": "away",
+      "playerName": "Eberechi Eze",
+      "x": 92.8,
+      "y": 45.752356684000006,
+      "expectedGoals": 0.02788999117910862,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 64,
+      "team": "home",
+      "playerName": "Ousmane Dembélé",
+      "x": 94.09649122639999,
+      "y": 27.782619046999997,
+      "expectedGoals": 0.1561460644006729,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 65,
+      "team": "home",
+      "playerName": "Dayot Upamecano",
+      "x": 76.8538834968,
+      "y": 32.70374999999999,
+      "expectedGoals": 0.03037816472351551,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 66,
+      "team": "home",
+      "playerName": "Kylian Mbappé",
+      "x": 91,
+      "y": 32.70374999999999,
+      "expectedGoals": 0.07726150751113892,
+      "eventType": "Goal",
+      "isOwnGoal": false
+    },
+    {
+      "min": 68,
+      "team": "home",
+      "playerName": "Kylian Mbappé",
+      "x": 93.6,
+      "y": 37.2025,
+      "expectedGoals": 0.15245455503463745,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 75,
+      "team": "home",
+      "playerName": "Michael Olise",
+      "x": 91.4,
+      "y": 30.645,
+      "expectedGoals": 0.11687751859426498,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 79,
+      "team": "home",
+      "playerName": "Kylian Mbappé",
+      "x": 100.1637931038,
+      "y": 45.4721019068,
+      "expectedGoals": 0.04953046888113022,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 80,
+      "team": "away",
+      "playerName": "Jude Bellingham",
+      "x": 101.9655172416,
+      "y": 40.217380953,
+      "expectedGoals": 0.1256554126739502,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 80,
+      "team": "away",
+      "playerName": "Morgan Rogers",
+      "x": 94.7719298231,
+      "y": 41.9459375,
+      "expectedGoals": 0.06764795631170273,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 81,
+      "team": "home",
+      "playerName": "Michael Olise",
+      "x": 95.73684210409999,
+      "y": 33.61875,
+      "expectedGoals": 0.18926526606082916,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 84,
+      "team": "home",
+      "playerName": "Kylian Mbappé",
+      "x": 81.0208737872,
+      "y": 42.2928125,
+      "expectedGoals": 0.049621257930994034,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 87,
+      "team": "away",
+      "playerName": "Bukayo Saka",
+      "x": 94,
+      "y": 34,
+      "expectedGoals": 0.7884,
+      "eventType": "Goal",
+      "isOwnGoal": false
+    },
+    {
+      "min": 90,
+      "team": "home",
+      "playerName": "Bradley Barcola",
+      "x": 84.51213592239999,
+      "y": 46.452993627000005,
+      "expectedGoals": 0.024690603837370872,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 90,
+      "team": "home",
+      "playerName": "Ousmane Dembélé",
+      "x": 93.2,
+      "y": 26.4009375,
+      "expectedGoals": 0.32487913966178894,
+      "eventType": "Goal",
+      "isOwnGoal": false
+    },
+    {
+      "min": 90,
+      "team": "away",
+      "playerName": "Jude Bellingham",
+      "x": 98.24561403470001,
+      "y": 32.474999999999994,
+      "expectedGoals": 0.31135907769203186,
+      "eventType": "Goal",
+      "isOwnGoal": false
+    }
+  ]
+}

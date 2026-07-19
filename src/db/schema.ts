@@ -101,3 +101,11 @@ export const fantasySquads = sqliteTable("fantasy_squads", {
   createdAt: integer("created_at").notNull(),
 });
 
+// Table: Solana Wallets (simulating CASH and SOL balances for prediction markets)
+export const solanaWallets = sqliteTable("solana_wallets", {
+  walletAddress: text("wallet_address").primaryKey(),
+  cashBalance: integer("cash_balance").notNull().default(100000), // in cents ($1000.00 CASH)
+  solBalance: integer("sol_balance").notNull().default(5000000000), // in lamports (5.00 SOL)
+});
+
+

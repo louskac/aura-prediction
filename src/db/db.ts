@@ -3,6 +3,8 @@ import Database from "better-sqlite3";
 import * as schema from "./schema";
 import path from "path";
 
+import fs from "fs";
+
 const globalForDb = global as unknown as {
   sqlite: Database.Database | undefined;
 };
@@ -10,7 +12,24 @@ const globalForDb = global as unknown as {
 let sqlite: Database.Database;
 
 // SQLite database file path
-const dbPath = path.join(process.cwd(), "data.db");
+let dbPath = path.join(process.cwd(), "data.db");
+
+// Detect if running in a serverless environment (Vercel)
+const isServerless = !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+
+if (isServerless) {
+  const tempDbPath = path.join("/tmp", "data.db");
+  if (!fs.existsSync(tempDbPath)) {
+    try {
+      if (fs.existsSync(dbPath)) {
+        fs.copyFileSync(dbPath, tempDbPath);
+      }
+    } catch (err) {
+      console.error("Failed to copy database to /tmp:", err);
+    }
+  }
+  dbPath = tempDbPath;
+}
 
 if (process.env.NODE_ENV === "production") {
   sqlite = new Database(dbPath);
@@ -125,6 +144,12 @@ export function initDb() {
       formation TEXT NOT NULL DEFAULT '4-3-3',
       play_day TEXT NOT NULL DEFAULT '2026-06-29',
       created_at INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS solana_wallets (
+      wallet_address TEXT PRIMARY KEY,
+      cash_balance INTEGER NOT NULL DEFAULT 100000,
+      sol_balance INTEGER NOT NULL DEFAULT 5000000000
     );
   `);
 

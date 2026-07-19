@@ -1,0 +1,582 @@
+{
+  "momentum": [
+    {
+      "minute": 0,
+      "v": 0
+    },
+    {
+      "minute": 1,
+      "v": 0.16
+    },
+    {
+      "minute": 2,
+      "v": 0.16
+    },
+    {
+      "minute": 3,
+      "v": 0.22
+    },
+    {
+      "minute": 4,
+      "v": 0.05
+    },
+    {
+      "minute": 5,
+      "v": 0.16
+    },
+    {
+      "minute": 6,
+      "v": 0.05
+    },
+    {
+      "minute": 7,
+      "v": 0.22
+    },
+    {
+      "minute": 8,
+      "v": 0.11
+    },
+    {
+      "minute": 9,
+      "v": 0.16
+    },
+    {
+      "minute": 10,
+      "v": 0.05
+    },
+    {
+      "minute": 11,
+      "v": 0.16
+    },
+    {
+      "minute": 12,
+      "v": 0.16
+    },
+    {
+      "minute": 13,
+      "v": 0.05
+    },
+    {
+      "minute": 14,
+      "v": 0.05
+    },
+    {
+      "minute": 15,
+      "v": -0.11
+    },
+    {
+      "minute": 16,
+      "v": -0.05
+    },
+    {
+      "minute": 17,
+      "v": 0.16
+    },
+    {
+      "minute": 18,
+      "v": 0.43
+    },
+    {
+      "minute": 19,
+      "v": 0.65
+    },
+    {
+      "minute": 20,
+      "v": 0.11
+    },
+    {
+      "minute": 21,
+      "v": 0
+    },
+    {
+      "minute": 22,
+      "v": -0.35
+    },
+    {
+      "minute": 23,
+      "v": -0.19
+    },
+    {
+      "minute": 24,
+      "v": -0.35
+    },
+    {
+      "minute": 25,
+      "v": -0.22
+    },
+    {
+      "minute": 26,
+      "v": -0.16
+    },
+    {
+      "minute": 27,
+      "v": 0
+    },
+    {
+      "minute": 28,
+      "v": -0.16
+    },
+    {
+      "minute": 29,
+      "v": -0.16
+    },
+    {
+      "minute": 30,
+      "v": -0.22
+    },
+    {
+      "minute": 31,
+      "v": -0.08
+    },
+    {
+      "minute": 32,
+      "v": -0.08
+    },
+    {
+      "minute": 33,
+      "v": 0.62
+    },
+    {
+      "minute": 34,
+      "v": 0.6
+    },
+    {
+      "minute": 35,
+      "v": 0.73
+    },
+    {
+      "minute": 36,
+      "v": 0.03
+    },
+    {
+      "minute": 37,
+      "v": 0.08
+    },
+    {
+      "minute": 38,
+      "v": -0.05
+    },
+    {
+      "minute": 39,
+      "v": 0
+    },
+    {
+      "minute": 40,
+      "v": -0.05
+    },
+    {
+      "minute": 41,
+      "v": -0.27
+    },
+    {
+      "minute": 42,
+      "v": -0.16
+    },
+    {
+      "minute": 43,
+      "v": -0.11
+    },
+    {
+      "minute": 44,
+      "v": 0.11
+    },
+    {
+      "minute": 45,
+      "v": 0.05
+    },
+    {
+      "minute": 45.5,
+      "v": 0.24
+    },
+    {
+      "minute": 46,
+      "v": -0.16
+    },
+    {
+      "minute": 47,
+      "v": -0.49
+    },
+    {
+      "minute": 48,
+      "v": -0.71
+    },
+    {
+      "minute": 49,
+      "v": -0.54
+    },
+    {
+      "minute": 50,
+      "v": 0.05
+    },
+    {
+      "minute": 51,
+      "v": 0.27
+    },
+    {
+      "minute": 52,
+      "v": 0.43
+    },
+    {
+      "minute": 53,
+      "v": -0.05
+    },
+    {
+      "minute": 54,
+      "v": -0.33
+    },
+    {
+      "minute": 55,
+      "v": 0.22
+    },
+    {
+      "minute": 56,
+      "v": 0.43
+    },
+    {
+      "minute": 57,
+      "v": 0.71
+    },
+    {
+      "minute": 58,
+      "v": -0.16
+    },
+    {
+      "minute": 59,
+      "v": -0.16
+    },
+    {
+      "minute": 60,
+      "v": -0.54
+    },
+    {
+      "minute": 61,
+      "v": -0.43
+    },
+    {
+      "minute": 62,
+      "v": -0.92
+    },
+    {
+      "minute": 63,
+      "v": -0.65
+    },
+    {
+      "minute": 64,
+      "v": -0.65
+    },
+    {
+      "minute": 65,
+      "v": -0.27
+    },
+    {
+      "minute": 66,
+      "v": -0.05
+    },
+    {
+      "minute": 67,
+      "v": -0.22
+    },
+    {
+      "minute": 68,
+      "v": -0.87
+    },
+    {
+      "minute": 69,
+      "v": -1
+    },
+    {
+      "minute": 70,
+      "v": -1
+    },
+    {
+      "minute": 71,
+      "v": -0.27
+    },
+    {
+      "minute": 72,
+      "v": 0
+    },
+    {
+      "minute": 73,
+      "v": 0
+    },
+    {
+      "minute": 74,
+      "v": -0.16
+    },
+    {
+      "minute": 75,
+      "v": -0.95
+    },
+    {
+      "minute": 76,
+      "v": -1
+    },
+    {
+      "minute": 77,
+      "v": -1
+    },
+    {
+      "minute": 78,
+      "v": -0.65
+    },
+    {
+      "minute": 79,
+      "v": -0.16
+    },
+    {
+      "minute": 80,
+      "v": -0.14
+    },
+    {
+      "minute": 81,
+      "v": -0.14
+    },
+    {
+      "minute": 82,
+      "v": -0.19
+    },
+    {
+      "minute": 83,
+      "v": -0.11
+    },
+    {
+      "minute": 84,
+      "v": -0.22
+    },
+    {
+      "minute": 85,
+      "v": -0.43
+    },
+    {
+      "minute": 86,
+      "v": -0.38
+    },
+    {
+      "minute": 87,
+      "v": -0.22
+    },
+    {
+      "minute": 88,
+      "v": -0.22
+    },
+    {
+      "minute": 89,
+      "v": -0.22
+    },
+    {
+      "minute": 90,
+      "v": -0.22
+    },
+    {
+      "minute": 90.5,
+      "v": -0.12
+    },
+    {
+      "minute": 90.75,
+      "v": 0
+    }
+  ],
+  "shots": [
+    {
+      "min": 33,
+      "team": "home",
+      "playerName": "John Stones",
+      "x": 99.3070175438,
+      "y": 26.942142857,
+      "expectedGoals": 0.0548914335668087,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 38,
+      "team": "away",
+      "playerName": "Lionel Messi",
+      "x": 77.7548543704,
+      "y": 39.96523809599999,
+      "expectedGoals": 0.00781681016087532,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 38,
+      "team": "away",
+      "playerName": "Enzo Fernández",
+      "x": 77.529611652,
+      "y": 28.791190475,
+      "expectedGoals": 0.01414372120052576,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 47,
+      "team": "away",
+      "playerName": "Julián Álvarez",
+      "x": 96.3157894727,
+      "y": 22.107515927399998,
+      "expectedGoals": 0.08821173012256622,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 47,
+      "team": "away",
+      "playerName": "Julián Álvarez",
+      "x": 100.06896551759999,
+      "y": 20.4259872642,
+      "expectedGoals": 0.05537157878279686,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 54,
+      "team": "away",
+      "playerName": "Leandro Paredes",
+      "x": 78.2053398072,
+      "y": 17.8336305751,
+      "expectedGoals": 0.017165925353765488,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 55,
+      "team": "home",
+      "playerName": "Anthony Gordon",
+      "x": 100.06896551759999,
+      "y": 35.9825,
+      "expectedGoals": 0.3839074373245239,
+      "eventType": "Goal",
+      "isOwnGoal": false
+    },
+    {
+      "min": 61,
+      "team": "away",
+      "playerName": "Enzo Fernández",
+      "x": 81.0208737872,
+      "y": 20.2858598756,
+      "expectedGoals": 0.01677091419696808,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 66,
+      "team": "home",
+      "playerName": "Declan Rice",
+      "x": 85.279411764,
+      "y": 17.8336305751,
+      "expectedGoals": 0.0226107407361269,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 66,
+      "team": "home",
+      "playerName": "Harry Kane",
+      "x": 76.8538834968,
+      "y": 28.791190475,
+      "expectedGoals": 0.019673140719532967,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 69,
+      "team": "away",
+      "playerName": "Nicolás González",
+      "x": 97.0877192975,
+      "y": 33.466249999999995,
+      "expectedGoals": 0.13997891545295715,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 76,
+      "team": "away",
+      "playerName": "Alexis Mac Allister",
+      "x": 97.8596491223,
+      "y": 34.22875,
+      "expectedGoals": 0.2516768276691437,
+      "eventType": "Post",
+      "isOwnGoal": false
+    },
+    {
+      "min": 76,
+      "team": "away",
+      "playerName": "Julián Álvarez",
+      "x": 97.7631578942,
+      "y": 30.95,
+      "expectedGoals": 0.2933083176612854,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 76,
+      "team": "away",
+      "playerName": "Alexis Mac Allister",
+      "x": 96.2192982446,
+      "y": 30.568749999999998,
+      "expectedGoals": 0.0882592424750328,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 79,
+      "team": "home",
+      "playerName": "Morgan Rogers",
+      "x": 83.160679612,
+      "y": 42.2928125,
+      "expectedGoals": 0.048645999282598495,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 84,
+      "team": "away",
+      "playerName": "Rodrigo De Paul",
+      "x": 76.40339806,
+      "y": 33.466249999999995,
+      "expectedGoals": 0.018864382058382034,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 85,
+      "team": "away",
+      "playerName": "Enzo Fernández",
+      "x": 76.8538834968,
+      "y": 35.60125,
+      "expectedGoals": 0.02660001441836357,
+      "eventType": "Miss",
+      "isOwnGoal": false
+    },
+    {
+      "min": 85,
+      "team": "away",
+      "playerName": "Enzo Fernández",
+      "x": 81.471359224,
+      "y": 28.286904761,
+      "expectedGoals": 0.035226333886384964,
+      "eventType": "Goal",
+      "isOwnGoal": false
+    },
+    {
+      "min": 90,
+      "team": "away",
+      "playerName": "Alexis Mac Allister",
+      "x": 87.53382352919999,
+      "y": 38.200238096999996,
+      "expectedGoals": 0.08021210879087448,
+      "eventType": "AttemptSaved",
+      "isOwnGoal": false
+    },
+    {
+      "min": 90,
+      "team": "away",
+      "playerName": "Lautaro Martínez",
+      "x": 101.58620689680001,
+      "y": 36.135000000000005,
+      "expectedGoals": 0.5286825299263,
+      "eventType": "Goal",
+      "isOwnGoal": false
+    }
+  ]
+}
