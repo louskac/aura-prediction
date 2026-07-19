@@ -640,6 +640,21 @@ export async function syncFixtures() {
           .where(eq(fixtures.fixtureId, f.fixtureId))
           .run();
         updated++;
+      } else {
+        // Self-heal: If the fixture start time is in the past (started more than 2.5 hours ago)
+        // and we have no API scores history, auto-finalize it to avoid blocking the fantasy play day progression.
+        const matchDurationMs = 2.5 * 3600 * 1000;
+        if (f.startTime + matchDurationMs < Date.now() && f.status !== "Finished") {
+          console.log(`Auto-finalizing missing past fixture ${f.fixtureId} (${f.participant1} vs ${f.participant2})`);
+          db.update(fixtures)
+            .set({
+              status: "Finished",
+              lastUpdated: Date.now()
+            })
+            .where(eq(fixtures.fixtureId, f.fixtureId))
+            .run();
+          updated++;
+        }
       }
     }
   }

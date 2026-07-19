@@ -2,12 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { txline } from "@/services/txline";
 import { VisualizerSynthesizer } from "@/services/visualizer-synthesizer";
 import { db } from "@/db/db";
-import { fixtures } from "@/db/schema";
+import { fixtures, fantasyPlayers } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { FotmobScraper } from "@/services/fotmob-scraper";
 import fs from "fs";
 import path from "path";
 import axios from "axios";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 
 const CACHE_DIR = path.join(process.cwd(), "public", "data", "fotmob_cache");
 
@@ -154,6 +158,89 @@ export async function GET(
 
             mappedEvents.sort((a, b) => a.t - b.t);
             richTimeline = mappedEvents;
+
+            // Load FotMob shots to get player names and IDs
+            let fotmobData = null;
+            try {
+              fotmobData = await FotmobScraper.getMatchData(fixtureId, match.participant1, match.participant2);
+            } catch (err: any) {
+              console.warn(`Failed to retrieve FotMob data for rich fixture ${fixtureId}:`, err.message);
+            }
+
+            const dbPlayers = db.select().from(fantasyPlayers).all();
+            const cleanName = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const matchedShots = new Set<any>();
+
+            if (fotmobData && fotmobData.shots && fotmobData.shots.length > 0) {
+              for (const ev of mappedEvents) {
+                if (ev.kind === "shot" || ev.type === "Goal") {
+                  // Find the closest shot in fotmobData.shots of the same team
+                  let bestShot = null;
+                  let minDiff = Infinity;
+                  for (const s of fotmobData.shots) {
+                    if (s.team === ev.team && !matchedShots.has(s)) {
+                      const diff = Math.abs(s.min - ev.dispMin);
+                      if (diff < minDiff) {
+                        minDiff = diff;
+                        bestShot = s;
+                      }
+                    }
+                  }
+                  if (bestShot) {
+                    matchedShots.add(bestShot);
+                    const parts = bestShot.playerName.split(" ");
+                    ev.name = parts.slice(0, -1).join(" ") || parts[0];
+                    ev.surname = parts[parts.length - 1] || "";
+                    
+                    const targetClean = cleanName(bestShot.playerName);
+                    const dbPlayer = dbPlayers.find(p => cleanName(p.name) === targetClean);
+                    
+                    let fotmobId = dbPlayer?.fotmobId;
+                    if (!fotmobId) {
+                      try {
+                        const { fantasyService } = await import("@/services/fantasy");
+                        fotmobId = await fantasyService.resolveFotmobId(bestShot.playerName);
+                      } catch (e) {}
+                    }
+                    if (fotmobId) {
+                      ev.fotmobId = fotmobId;
+                    }
+                  }
+                }
+              }
+            }
+
+            // Fallback: Enrich goals with matchEntry.goals if still missing name/surname
+            if (matchEntry.goals && matchEntry.goals.length > 0) {
+              const matchedGoals = new Set<any>();
+              for (const ev of mappedEvents) {
+                if ((ev.isGoal || ev.type === "Goal") && !ev.surname) {
+                  let bestGoal = null;
+                  let minDiff = Infinity;
+                  for (const g of matchEntry.goals) {
+                    if (g.team === ev.team && !matchedGoals.has(g)) {
+                      const diff = Math.abs(g.minute - ev.dispMin);
+                      if (diff < minDiff) {
+                        minDiff = diff;
+                        bestGoal = g;
+                      }
+                    }
+                  }
+                  if (bestGoal) {
+                    matchedGoals.add(bestGoal);
+                    const parts = bestGoal.player.split(" ");
+                    ev.name = parts.slice(0, -1).join(" ") || parts[0];
+                    ev.surname = parts[parts.length - 1] || "";
+                    
+                    const targetClean = cleanName(bestGoal.player);
+                    const dbPlayer = dbPlayers.find(p => cleanName(p.name) === targetClean);
+                    if (dbPlayer && dbPlayer.fotmobId) {
+                      ev.fotmobId = dbPlayer.fotmobId;
+                    }
+                  }
+                }
+              }
+            }
 
             // Map momentum from matches list
             if (matchEntry.momentum) {

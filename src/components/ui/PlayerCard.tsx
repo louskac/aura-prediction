@@ -53,15 +53,8 @@ export default function PlayerCard({
   const glow = getPositionGlow(position);
   const lastName = name.split(" ").slice(-1)[0];
   
-  // Map specific players to high-quality local assets to prevent broken images
-  let photoUrl = `https://images.fotmob.com/image_resources/playerimages/${fotmobId}.png`;
-  if (fotmobId === 30981) {
-    photoUrl = "/images/messi_avatar.jpg";
-  } else if (fotmobId === 701154) {
-    photoUrl = "/images/mbappe_avatar.jpg";
-  } else if (fotmobId === 268375) {
-    photoUrl = "/images/martinez_avatar.jpg";
-  }
+  const isInvalidId = !fotmobId || fotmobId === 0;
+  let photoUrl = isInvalidId ? "" : `https://images.fotmob.com/image_resources/playerimages/${fotmobId}.png`;
 
   const [imgError, setImgError] = useState(false);
 
@@ -152,7 +145,7 @@ export default function PlayerCard({
           zIndex: 10
         }}>
           <div style={{ width: "100%", height: "100%", position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            {!imgError ? (
+            {!imgError && !isInvalidId ? (
               <img
                 src={photoUrl}
                 alt={name}
